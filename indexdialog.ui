@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IndexDialog</class>
+ <widget class="QDialog" name="IndexDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="1" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QToolButton" name="openButton">
+     <property name="text">
+      <string>Open</string>
+     </property>
+     <property name="icon">
+      <iconset theme="document-open">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="recursiveCheck">
+     <property name="text">
+      <string>Recursive</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="QComboBox" name="pathCombo">
+     <item>
+      <property name="text">
+       <string>YYYY/P.XXXX.XXXX.XXXX/file</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>P.XXXX.XXXX.XXXX/file</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>P.XXXX.XXXX.XXXX_xxxx</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLineEdit" name="pathEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Select path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>381</width>
+       <height>189</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>IndexDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>IndexDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IndexDialog</receiver>
+   <slot>openClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>387</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>624</x>
+     <y>54</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pathCombo</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>IndexDialog</receiver>
+   <slot>updateStatus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>328</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pathEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>IndexDialog</receiver>
+   <slot>updateStatus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>253</x>
+     <y>29</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>openClicked()</slot>
+  <slot>updateStatus()</slot>
+ </slots>
+</ui>
