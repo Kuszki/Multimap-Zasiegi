@@ -30,6 +30,23 @@ QSet<int> SqlModel::getEditable(void) const
 	return Editable;
 }
 
+QVariant SqlModel::getUid(const QModelIndex& Index) const
+{
+	return data(index(Index.row(), 0, Index.parent()));
+}
+
+QModelIndex SqlModel::findByUid(const QVariant& Uid) const
+{
+	for (int i = 0, N = rowCount(); i < N; ++i)
+	{
+		QModelIndex Current = index(i, 0);
+
+		if (data(Current) == Uid) return Current;
+	}
+
+	return QModelIndex();
+}
+
 Qt::ItemFlags SqlModel::flags(const QModelIndex& Index) const
 {
 	auto Flag = QSqlRelationalTableModel::flags(Index);

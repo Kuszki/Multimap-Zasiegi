@@ -56,8 +56,6 @@ class JobWidget : public QWidget
 
 		void selectionChanged(const QModelIndex& Current);
 
-		void searchEdited(const QString& String);
-
 	signals:
 
 		void onIndexChange(int);

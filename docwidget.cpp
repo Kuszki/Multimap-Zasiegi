@@ -71,6 +71,10 @@ QString DocWidget::currentImage(void) const
 void DocWidget::setJobIndex(int Index)
 {
 	model->setFilter(QString("operat = %1").arg(Index));
+	ui->tableView->selectionModel()->clearSelection();
+
+	emit onIndexChange(0);
+	emit onPathChange(QString());
 }
 
 void DocWidget::selectionChanged(const QModelIndex& Current)

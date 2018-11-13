@@ -39,6 +39,10 @@ class SqlModel : public QSqlRelationalTableModel
 		void setEditable(const QSet<int>& Val);
 		QSet<int> getEditable(void) const;
 
+		QVariant getUid(const QModelIndex& Index) const;
+
+		QModelIndex findByUid(const QVariant& Uid) const;
+
 		virtual Qt::ItemFlags flags(const QModelIndex& Index) const override;
 };
 

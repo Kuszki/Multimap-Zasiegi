@@ -10,9 +10,6 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="2">
     <widget class="QTableView" name="tableView">
@@ -76,23 +73,22 @@
   </connection>
   <connection>
    <sender>searchEdit</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>JobWidget</receiver>
-   <slot>searchEdited(QString)</slot>
+   <signal>returnPressed()</signal>
+   <receiver>refreshButton</receiver>
+   <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>298</x>
-     <y>283</y>
+     <x>327</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel">
-     <x>298</x>
-     <y>446</y>
+     <x>373</x>
+     <y>280</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>refreshClicked()</slot>
-  <slot>searchEdited(QString)</slot>
  </slots>
 </ui>

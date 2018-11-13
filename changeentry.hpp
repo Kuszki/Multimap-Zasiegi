@@ -18,91 +18,55 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#ifndef CHANGEENTRY_HPP
+#define CHANGEENTRY_HPP
 
-#include <QtConcurrent>
-#include <QtWidgets>
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
-
-#include "aboutdialog.hpp"
-#include "indexdialog.hpp"
-#include "roledialog.hpp"
-
-#include "changewidget.hpp"
-#include "jobwidget.hpp"
-#include "docwidget.hpp"
+#include <QStringListModel>
+#include <QVariantMap>
+#include <QWidget>
 
 namespace Ui
 {
-	class MainWindow;
+	class ChangeEntry;
 }
 
-class MainWindow : public QMainWindow
+class ChangeEntry : public QWidget
 {
 
 		Q_OBJECT
 
 	private:
 
-		Ui::MainWindow* ui;
-		QSqlDatabase Db;
+		Ui::ChangeEntry* ui;
+		int UID, DID;
 
-		QVariantMap Options;
-
-		ChangeWidget* cwidget;
-		JobWidget* jwidget;
-		DocWidget* dwidget;
-
-		QDockWidget* changes;
-		QDockWidget* jobs;
-		QDockWidget* docs;
-
-		QPixmap Image;
-
-		double Scale = 1.0;
-		int Rotation = 0;
+		const QVariantMap Origin;
 
 	public:
 
-		explicit MainWindow(QWidget* Parent = nullptr);
-		virtual ~MainWindow(void) override;
+		explicit ChangeEntry(const QVariantMap& Data, QWidget* Parent = nullptr);
+		virtual ~ChangeEntry(void) override;
+
+		QVariantMap getData(void) const;
+		void setData(const QVariantMap& Data);
+
+		bool isChanged(void) const;
+		bool isValid(void) const;
 
 	private slots:
 
-		void aboutClicked(void);
-		void scanClicked(void);
-		void rolesClicked(void);
+		void addRightClicked(void);
+		void addLeftClicked(void);
 
-		void nextClicked(void);
-		void prevClicked(void);
-		void saveClicked(void);
+		void delRightClicked(void);
+		void delLeftClicked(void);
 
-		void editToggled(bool Locked);
+		void updateStatus(void);
 
-		void zoomInClicked(void);
-		void zoomOutClicked(void);
-		void zoomOrgClicked(void);
-		void zoomFitClicked(void);
+	signals:
 
-		void rotateLeftClicked(void);
-		void rotateRightClicked(void);
-
-		void changeAddClicked(void);
-		void changeDelClicked(void);
-
-		void documentChanged(int Index);
-
-		void updateImage(const QString& Path);
-
-		void scanDirectory(const QString& Dir,
-					    int Mode, bool Rec);
-
-		void updateRoles(const QString& Path,
-					  bool Addnew);
+		void onStatusUpdate(int);
 
 };
 
-#endif // MAINWINDOW_HPP
+#endif // CHANGEENTRY_HPP

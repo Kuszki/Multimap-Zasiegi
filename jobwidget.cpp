@@ -54,17 +54,15 @@ JobWidget::~JobWidget(void)
 
 void JobWidget::refreshClicked(void)
 {
-	model->select();
+	const QString Esc = ui->searchEdit->text().replace("'", "\\'");
+
+	model->setFilter(QString("numer LIKE '%%1%' OR kerg LIKE '%%1%'").arg(Esc));
+	ui->tableView->selectionModel()->clearSelection();
+
+	emit onIndexChange(0);
 }
 
 void JobWidget::selectionChanged(const QModelIndex& Current)
 {
-	emit onIndexChange(model->data(model->index(Current.row(), 0)).toInt());
-}
-
-void JobWidget::searchEdited(const QString& String)
-{
-	const QString Esc = QString(String).replace("'", "\\'");
-
-	model->setFilter(QString("numer LIKE '%%1%' OR kerg LIKE '%%1%'").arg(Esc));
+	emit onIndexChange(model->getUid(Current).toInt());
 }

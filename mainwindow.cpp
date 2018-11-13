@@ -25,7 +25,9 @@ MainWindow::MainWindow(QWidget* Parent)
 : QMainWindow(Parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+
 	updateImage(QString());
+	documentChanged(0);
 
 	Db = QSqlDatabase::addDatabase("QMYSQL");
 	Db.setUserName("multimap");
@@ -34,19 +36,40 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setDatabaseName("zasiegi");
 	Db.open();
 
+	cwidget = new ChangeWidget(Db, this);
+	changes = new QDockWidget(tr("Changes"), this);
+	changes->setObjectName("Changes");
+	changes->setWidget(cwidget);
+
 	jwidget = new JobWidget(Db, this);
 	jobs = new QDockWidget(tr("Jobs"), this);
+	jobs->setObjectName("Jobs");
 	jobs->setWidget(jwidget);
 
 	dwidget = new DocWidget(Db, this);
 	docs = new QDockWidget(tr("Documents"), this);
+	docs->setObjectName("Documents");
 	docs->setWidget(dwidget);
 
+	addDockWidget(Qt::LeftDockWidgetArea, changes);
 	addDockWidget(Qt::LeftDockWidgetArea, jobs);
 	addDockWidget(Qt::LeftDockWidgetArea, docs);
 
+	QSettings Settings("Multimap", "Zasiegi");
+
+	Settings.beginGroup("Window");
+	restoreGeometry(Settings.value("geometry").toByteArray());
+	restoreState(Settings.value("state").toByteArray());
+	Settings.endGroup();
+
 	connect(jwidget, &JobWidget::onIndexChange,
 		   dwidget, &DocWidget::setJobIndex);
+
+	connect(dwidget, &DocWidget::onIndexChange,
+		   cwidget, &ChangeWidget::setDocIndex);
+
+	connect(dwidget, &DocWidget::onIndexChange,
+		   this, &MainWindow::documentChanged);
 
 	connect(dwidget, &DocWidget::onPathChange,
 		   this, &MainWindow::updateImage);
@@ -54,6 +77,13 @@ MainWindow::MainWindow(QWidget* Parent)
 
 MainWindow::~MainWindow(void)
 {
+	QSettings Settings("Multimap", "Zasiegi");
+
+	Settings.beginGroup("Window");
+	Settings.setValue("state", saveState());
+	Settings.setValue("geometry", saveGeometry());
+	Settings.endGroup();
+
 	delete ui;
 }
 
@@ -102,28 +132,85 @@ void MainWindow::rolesClicked(void)
 	Dialog->open();
 }
 
+void MainWindow::nextClicked(void)
+{
+
+}
+
+void MainWindow::prevClicked(void)
+{
+
+}
+
+void MainWindow::saveClicked(void)
+{
+
+}
+
+void MainWindow::editToggled(bool Locked)
+{
+
+}
+
 void MainWindow::zoomInClicked(void)
 {
-	ui->label->setPixmap(Image.scaledToHeight(int((Scale += 0.1) * Image.height())));
+	ui->label->setPixmap(Image.scaledToHeight(int((Scale += 0.1) * Image.height()))
+					 .transformed(QTransform().rotate(Rotation)));
 }
 
 void MainWindow::zoomOutClicked(void)
 {
-	ui->label->setPixmap(Image.scaledToHeight(int((Scale -= 0.1) * Image.height())));
+	ui->label->setPixmap(Image.scaledToHeight(int((Scale -= 0.1) * Image.height()))
+					 .transformed(QTransform().rotate(Rotation)));
 }
 
 void MainWindow::zoomOrgClicked(void)
 {
-	ui->label->setPixmap(Image);
+	ui->label->setPixmap(Image.transformed(QTransform().rotate(Rotation)));
+
 	Scale = 1.0;
 }
 
 void MainWindow::zoomFitClicked(void)
 {
-	const auto Scaled = Image.scaled(ui->scrollArea->size(), Qt::KeepAspectRatio);
-	Scale = double(Scaled.height()) / double(Image.height());
+	auto Img = Image.transformed(QTransform().rotate(Rotation))
+			 .scaled(ui->scrollArea->size(), Qt::KeepAspectRatio);
 
-	ui->label->setPixmap(Scaled);
+	Scale = double(Img.height()) / double(Img.height());
+
+	ui->label->setPixmap(Img);
+}
+
+void MainWindow::rotateLeftClicked(void)
+{
+	if ((Rotation -= 90) <= -360) Rotation += 360;
+
+	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
+					 .transformed(QTransform().rotate(Rotation)));
+}
+
+void MainWindow::rotateRightClicked(void)
+{
+	if ((Rotation -= 90) <= -360) Rotation += 360;
+
+	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
+					 .transformed(QTransform().rotate(Rotation)));
+}
+
+void MainWindow::changeAddClicked(void)
+{
+	cwidget->appendChange();
+}
+
+void MainWindow::changeDelClicked(void)
+{
+	cwidget->removeChange();
+}
+
+void MainWindow::documentChanged(int Index)
+{
+	ui->actionAddchange->setEnabled(Index > 0);
+	ui->actionRemovechange->setEnabled(Index > 0);
 }
 
 void MainWindow::updateImage(const QString& Path)
@@ -132,6 +219,8 @@ void MainWindow::updateImage(const QString& Path)
 
 	if (Img)
 	{
+		Rotation = 0;
+
 		ui->label->clear();
 		Image = QPixmap(Path);
 		zoomFitClicked();
@@ -147,6 +236,8 @@ void MainWindow::updateImage(const QString& Path)
 	ui->actionOrg->setEnabled(Img);
 	ui->actionZoomin->setEnabled(Img);
 	ui->actionZoomout->setEnabled(Img);
+	ui->actionRotateleft->setEnabled(Img);
+	ui->actionRotateright->setEnabled(Img);
 }
 
 void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)

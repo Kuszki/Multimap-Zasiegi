@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Index files</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="view-refresh"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="1" colspan="2">

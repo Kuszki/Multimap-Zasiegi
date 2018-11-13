@@ -26,8 +26,6 @@
 #include <QStandardItemModel>
 #include <QWidget>
 
-#include <QtDebug>
-
 #include "sqlmodel.hpp"
 
 namespace Ui

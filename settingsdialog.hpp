@@ -18,91 +18,30 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#ifndef SETTINGSDIALOG_HPP
+#define SETTINGSDIALOG_HPP
 
-#include <QtConcurrent>
-#include <QtWidgets>
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
-
-#include "aboutdialog.hpp"
-#include "indexdialog.hpp"
-#include "roledialog.hpp"
-
-#include "changewidget.hpp"
-#include "jobwidget.hpp"
-#include "docwidget.hpp"
+#include <QDialog>
 
 namespace Ui
 {
-	class MainWindow;
+	class SettingsDialog;
 }
 
-class MainWindow : public QMainWindow
+class SettingsDialog : public QDialog
 {
 
 		Q_OBJECT
 
 	private:
 
-		Ui::MainWindow* ui;
-		QSqlDatabase Db;
-
-		QVariantMap Options;
-
-		ChangeWidget* cwidget;
-		JobWidget* jwidget;
-		DocWidget* dwidget;
-
-		QDockWidget* changes;
-		QDockWidget* jobs;
-		QDockWidget* docs;
-
-		QPixmap Image;
-
-		double Scale = 1.0;
-		int Rotation = 0;
+		Ui::SettingsDialog* ui;
 
 	public:
 
-		explicit MainWindow(QWidget* Parent = nullptr);
-		virtual ~MainWindow(void) override;
-
-	private slots:
-
-		void aboutClicked(void);
-		void scanClicked(void);
-		void rolesClicked(void);
-
-		void nextClicked(void);
-		void prevClicked(void);
-		void saveClicked(void);
-
-		void editToggled(bool Locked);
-
-		void zoomInClicked(void);
-		void zoomOutClicked(void);
-		void zoomOrgClicked(void);
-		void zoomFitClicked(void);
-
-		void rotateLeftClicked(void);
-		void rotateRightClicked(void);
-
-		void changeAddClicked(void);
-		void changeDelClicked(void);
-
-		void documentChanged(int Index);
-
-		void updateImage(const QString& Path);
-
-		void scanDirectory(const QString& Dir,
-					    int Mode, bool Rec);
-
-		void updateRoles(const QString& Path,
-					  bool Addnew);
+		explicit SettingsDialog(QWidget* Parent = nullptr);
+		virtual ~SettingsDialog(void) override;
 
 };
 
-#endif // MAINWINDOW_HPP
+#endif // SETTINGSDIALOG_HPP
