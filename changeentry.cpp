@@ -21,16 +21,23 @@
 #include "changeentry.hpp"
 #include "ui_changeentry.h"
 
-ChangeEntry::ChangeEntry(const QVariantMap& Data, QWidget* Parent) :
-QWidget(Parent), ui(new Ui::ChangeEntry)
+ChangeEntry::ChangeEntry(const QVariantMap& Data, bool Lock, QWidget* Parent) :
+QWidget(Parent), ui(new Ui::ChangeEntry), Locked(Lock), Status(0)
 {
 	ui->setupUi(this);
+
 	setData(Data);
+	setLocked(Lock);
 }
 
 ChangeEntry::~ChangeEntry(void)
 {
 	delete ui;
+}
+
+QVariantMap ChangeEntry::getOrigin(void) const
+{
+	return Origin;
 }
 
 QVariantMap ChangeEntry::getData(void) const
@@ -45,7 +52,8 @@ QVariantMap ChangeEntry::getData(void) const
 		{ "area", ui->areaEdit->text() },
 		{ "sheet", ui->sheetEdit->text() },
 		{ "before", bModel->stringList() },
-		{ "after", aModel->stringList() }
+		{ "after", aModel->stringList() },
+		{ "status", Status }
 	};
 }
 
@@ -66,7 +74,13 @@ void ChangeEntry::setData(const QVariantMap& Data)
 
 bool ChangeEntry::isChanged(void) const
 {
-	return getData() != Origin;
+	auto Now = getData();
+	auto Org = Origin;
+
+	Now.remove("status");
+	Org.remove("status");
+
+	return Now != Org;
 }
 
 bool ChangeEntry::isValid(void) const
@@ -82,14 +96,46 @@ bool ChangeEntry::isValid(void) const
 	);
 }
 
+bool ChangeEntry::isLocked(void) const
+{
+	return Locked;
+}
+
+void ChangeEntry::setLocked(bool Lock)
+{
+	ui->addLeftButton->setEnabled(!Lock);
+	ui->addRightButton->setEnabled(!Lock);
+	ui->delLeftButton->setEnabled(!Lock);
+	ui->delRightButton->setEnabled(!Lock);
+
+	ui->areaEdit->setReadOnly(Lock);
+	ui->sheetEdit->setReadOnly(Lock);
+
+	Locked = Lock;
+}
+
+void ChangeEntry::lock(void)
+{
+	setLocked(true);
+}
+
+void ChangeEntry::unlock(void)
+{
+	setLocked(false);
+}
+
 void ChangeEntry::addRightClicked(void)
 {
 	QStringListModel* aModel = dynamic_cast<QStringListModel*>(ui->afterView->model());
 
 	const QStringList Current = aModel->stringList();
-	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"));
+	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"),
+											   QString::SkipEmptyParts);
 
-	aModel->setStringList((Current + New).toSet().toList());
+	QStringList Now = Current + New;
+	Now.removeDuplicates();
+
+	aModel->setStringList(Now);
 
 	ui->commonEdit->clear();
 }
@@ -99,9 +145,13 @@ void ChangeEntry::addLeftClicked(void)
 	QStringListModel* bModel = dynamic_cast<QStringListModel*>(ui->beforeView->model());
 
 	const QStringList Current = bModel->stringList();
-	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"));
+	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"),
+											   QString::SkipEmptyParts);
 
-	bModel->setStringList((Current + New).toSet().toList());
+	QStringList Now = Current + New;
+	Now.removeDuplicates();
+
+	bModel->setStringList(Now);
 
 	ui->commonEdit->clear();
 }
@@ -126,8 +176,12 @@ void ChangeEntry::updateStatus(void)
 	const bool Ok = isValid();
 	const bool Ch = isChanged();
 
-	if (!Ok) emit onStatusUpdate(-1);
-	else if (New) emit onStatusUpdate(1);
-	else if (Ch) emit onStatusUpdate(2);
-	else emit onStatusUpdate(0);
+	auto d = getData();
+
+	if (!Ok) Status = -1;
+	else if (New) Status = 1;
+	else if (Ch) Status = 2;
+	else Status = 0;
+
+	emit onStatusUpdate(Status);
 }

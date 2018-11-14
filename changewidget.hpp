@@ -43,9 +43,10 @@ class ChangeWidget : public QWidget
 		Ui::ChangeWidget* ui;
 		QSqlDatabase& Database;
 
-		QList<QVariantMap> Unsaved;
+		QMap<int, QVariantList> Unsaved;
 
 		int Currentindex = 0;
+		bool Locked = true;
 
 	public:
 
@@ -56,13 +57,20 @@ class ChangeWidget : public QWidget
 
 		void saveChanges(void);
 
+		bool isLocked(void) const;
+
 	private slots:
 
 		void updateStatus(int Status);
 
 	public slots:
 
-		void setDocIndex(int Index);
+		void setDocIndex(int Index, bool Lock);
+
+		void setLocked(bool Lock);
+
+		void lock(void);
+		void unlock(void);
 
 		void appendChange(void);
 		void removeChange(void);

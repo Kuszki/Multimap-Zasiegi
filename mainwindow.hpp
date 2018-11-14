@@ -62,6 +62,8 @@ class MainWindow : public QMainWindow
 
 		QPixmap Image;
 
+		QSet<int> Locked;
+
 		double Scale = 1.0;
 		int Rotation = 0;
 
@@ -80,7 +82,7 @@ class MainWindow : public QMainWindow
 		void prevClicked(void);
 		void saveClicked(void);
 		void editClicked(void);
-		void lockCkicked(void);
+		void lockClicked(void);
 
 		void zoomInClicked(void);
 		void zoomOutClicked(void);

@@ -38,20 +38,33 @@ class ChangeEntry : public QWidget
 	private:
 
 		Ui::ChangeEntry* ui;
+
 		int UID, DID;
+		bool Locked;
+		int Status;
 
 		QVariantMap Origin;
 
 	public:
 
-		explicit ChangeEntry(const QVariantMap& Data, QWidget* Parent = nullptr);
+		explicit ChangeEntry(const QVariantMap& Data, bool Lock = false, QWidget* Parent = nullptr);
 		virtual ~ChangeEntry(void) override;
+
+		QVariantMap getOrigin(void) const;
 
 		QVariantMap getData(void) const;
 		void setData(const QVariantMap& Data);
 
 		bool isChanged(void) const;
 		bool isValid(void) const;
+		bool isLocked(void) const;
+
+	public slots:
+
+		void setLocked(bool Lock);
+
+		void lock(void);
+		void unlock(void);
 
 	private slots:
 

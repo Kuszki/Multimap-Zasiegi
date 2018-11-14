@@ -26,9 +26,6 @@ MainWindow::MainWindow(QWidget* Parent)
 {
 	ui->setupUi(this);
 
-	updateImage(QString());
-	documentChanged(0);
-
 	Db = QSqlDatabase::addDatabase("QMYSQL");
 	Db.setUserName("multimap");
 	Db.setPassword("multimap");
@@ -55,6 +52,9 @@ MainWindow::MainWindow(QWidget* Parent)
 	addDockWidget(Qt::LeftDockWidgetArea, jobs);
 	addDockWidget(Qt::LeftDockWidgetArea, docs);
 
+	updateImage(QString());
+	documentChanged(0);
+
 	QSettings Settings("Multimap", "Zasiegi");
 
 	Settings.beginGroup("Window");
@@ -64,9 +64,6 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	connect(jwidget, &JobWidget::onIndexChange,
 		   dwidget, &DocWidget::setJobIndex);
-
-	connect(dwidget, &DocWidget::onIndexChange,
-		   cwidget, &ChangeWidget::setDocIndex);
 
 	connect(dwidget, &DocWidget::onIndexChange,
 		   this, &MainWindow::documentChanged);
@@ -152,7 +149,7 @@ void MainWindow::editClicked(void)
 
 }
 
-void MainWindow::lockCkicked(void)
+void MainWindow::lockClicked(void)
 {
 
 }
@@ -214,8 +211,16 @@ void MainWindow::changeDelClicked(void)
 
 void MainWindow::documentChanged(int Index)
 {
-	ui->actionAddchange->setEnabled(Index > 0);
-	ui->actionRemovechange->setEnabled(Index > 0);
+	const bool Lock = true;//Locked.contains(Index);
+
+	ui->actionAddchange->setEnabled(Lock);
+	ui->actionRemovechange->setEnabled(Lock);
+	ui->actionUndochange->setEnabled(Lock);
+
+	ui->actionLock->setEnabled(!Lock && Index);
+	ui->actionSave->setEnabled(Lock);
+
+	cwidget->setDocIndex(Index, !Lock);
 }
 
 void MainWindow::updateImage(const QString& Path)
