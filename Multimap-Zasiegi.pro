@@ -35,7 +35,8 @@ SOURCES		+=	main.cpp \
     roledialog.cpp \
     changewidget.cpp \
     changeentry.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    lockwidget.cpp
 
 HEADERS		+=	mainwindow.hpp \
 				aboutdialog.hpp \
@@ -46,7 +47,8 @@ HEADERS		+=	mainwindow.hpp \
     roledialog.hpp \
     changewidget.hpp \
     changeentry.hpp \
-    settingsdialog.hpp
+    settingsdialog.hpp \
+    lockwidget.hpp
 
 FORMS		+=	mainwindow.ui \
 				aboutdialog.ui \
@@ -56,7 +58,8 @@ FORMS		+=	mainwindow.ui \
     roledialog.ui \
     changewidget.ui \
     changeentry.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    lockwidget.ui
 
 RESOURCES		+=	resources.qrc
 

@@ -18,91 +18,38 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#include "lockwidget.hpp"
+#include "ui_lockwidget.h"
 
-#include <QtConcurrent>
-#include <QtWidgets>
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
-
-#include "aboutdialog.hpp"
-#include "indexdialog.hpp"
-#include "roledialog.hpp"
-
-#include "changewidget.hpp"
-#include "jobwidget.hpp"
-#include "docwidget.hpp"
-
-namespace Ui
+LockWidget::LockWidget(QWidget* Parent)
+: QWidget(Parent), ui(new Ui::LockWidget)
 {
-	class MainWindow;
+	ui->setupUi(this);
+
+	model = new QStandardItemModel(0, 4, this);
+	model->setHorizontalHeaderLabels(
+	{
+		tr("Sheet"), tr("Added"), tr("Removed"), tr("Modyfied")
+	});
+
+	ui->treeView->setModel(model);
+
+	connect(ui->treeView, &QTreeView::doubleClicked,
+		   this, &LockWidget::itemSelected);
 }
 
-class MainWindow : public QMainWindow
+LockWidget::~LockWidget(void)
 {
+	delete ui;
+}
 
-		Q_OBJECT
+void LockWidget::itemSelected(const QModelIndex& Index)
+{
+	const auto Data = model->index(Index.row(), 0, Index.parent());
 
-	private:
-
-		Ui::MainWindow* ui;
-		QSqlDatabase Db;
-
-		QVariantMap Options;
-
-		ChangeWidget* cwidget;
-		JobWidget* jwidget;
-		DocWidget* dwidget;
-
-		QDockWidget* changes;
-		QDockWidget* jobs;
-		QDockWidget* docs;
-
-		QPixmap Image;
-
-		double Scale = 1.0;
-		int Rotation = 0;
-
-	public:
-
-		explicit MainWindow(QWidget* Parent = nullptr);
-		virtual ~MainWindow(void) override;
-
-	private slots:
-
-		void aboutClicked(void);
-		void scanClicked(void);
-		void rolesClicked(void);
-
-		void nextClicked(void);
-		void prevClicked(void);
-		void saveClicked(void);
-		void editClicked(void);
-		void lockCkicked(void);
-
-		void zoomInClicked(void);
-		void zoomOutClicked(void);
-		void zoomOrgClicked(void);
-		void zoomFitClicked(void);
-
-		void rotateLeftClicked(void);
-		void rotateRightClicked(void);
-
-		void changeAddClicked(void);
-		void changeDelClicked(void);
-
-		void documentChanged(int Index);
-
-		void updateImage(const QString& Path);
-
-		void scanDirectory(const QString& Dir,
-					    int Mode, bool Rec);
-
-		void updateRoles(const QString& Path,
-					  bool Addnew);
-
-};
-
-#endif // MAINWINDOW_HPP
+	if (Index.parent().isValid())
+	{
+		emit onDocSelected(model->data(Data, Qt::UserRole).toInt());
+	}
+	else emit onJobSelected(model->data(Data, Qt::UserRole).toInt());
+}

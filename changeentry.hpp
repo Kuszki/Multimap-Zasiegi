@@ -40,7 +40,7 @@ class ChangeEntry : public QWidget
 		Ui::ChangeEntry* ui;
 		int UID, DID;
 
-		const QVariantMap Origin;
+		QVariantMap Origin;
 
 	public:
 

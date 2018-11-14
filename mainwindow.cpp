@@ -147,7 +147,12 @@ void MainWindow::saveClicked(void)
 
 }
 
-void MainWindow::editToggled(bool Locked)
+void MainWindow::editClicked(void)
+{
+
+}
+
+void MainWindow::lockCkicked(void)
 {
 
 }

@@ -22,7 +22,7 @@
 #include "ui_changeentry.h"
 
 ChangeEntry::ChangeEntry(const QVariantMap& Data, QWidget* Parent) :
-QWidget(Parent), ui(new Ui::ChangeEntry), Origin(Data)
+QWidget(Parent), ui(new Ui::ChangeEntry)
 {
 	ui->setupUi(this);
 	setData(Data);
@@ -53,12 +53,15 @@ void ChangeEntry::setData(const QVariantMap& Data)
 {
 	UID = Data.value("uid").toInt();
 	DID = Data.value("did").toInt();
+	Origin = Data;
 
 	ui->areaEdit->setText(Data.value("area").toString());
 	ui->sheetEdit->setText(Data.value("sheet").toString());
 
 	ui->beforeView->setModel(new QStringListModel(Data.value("before").toStringList(), this));
 	ui->afterView->setModel(new QStringListModel(Data.value("after").toStringList(), this));
+
+	updateStatus();
 }
 
 bool ChangeEntry::isChanged(void) const
@@ -123,8 +126,8 @@ void ChangeEntry::updateStatus(void)
 	const bool Ok = isValid();
 	const bool Ch = isChanged();
 
-	if (New && Ok) emit onStatusUpdate(1);
-	else if (Ch && Ok) emit onStatusUpdate(2);
-	else if (!Ok) emit onStatusUpdate(-1);
+	if (!Ok) emit onStatusUpdate(-1);
+	else if (New) emit onStatusUpdate(1);
+	else if (Ch) emit onStatusUpdate(2);
 	else emit onStatusUpdate(0);
 }

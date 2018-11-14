@@ -18,91 +18,41 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef MAINWINDOW_HPP
-#define MAINWINDOW_HPP
+#ifndef LOCKWIDGET_HPP
+#define LOCKWIDGET_HPP
 
-#include <QtConcurrent>
-#include <QtWidgets>
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
-
-#include "aboutdialog.hpp"
-#include "indexdialog.hpp"
-#include "roledialog.hpp"
-
-#include "changewidget.hpp"
-#include "jobwidget.hpp"
-#include "docwidget.hpp"
+#include <QStandardItemModel>
+#include <QWidget>
 
 namespace Ui
 {
-	class MainWindow;
+	class LockWidget;
 }
 
-class MainWindow : public QMainWindow
+class LockWidget : public QWidget
 {
 
 		Q_OBJECT
 
 	private:
 
-		Ui::MainWindow* ui;
-		QSqlDatabase Db;
-
-		QVariantMap Options;
-
-		ChangeWidget* cwidget;
-		JobWidget* jwidget;
-		DocWidget* dwidget;
-
-		QDockWidget* changes;
-		QDockWidget* jobs;
-		QDockWidget* docs;
-
-		QPixmap Image;
-
-		double Scale = 1.0;
-		int Rotation = 0;
+		Ui::LockWidget* ui;
+		QStandardItemModel* model;
 
 	public:
 
-		explicit MainWindow(QWidget* Parent = nullptr);
-		virtual ~MainWindow(void) override;
+		explicit LockWidget(QWidget* Parent = nullptr);
+		virtual ~LockWidget(void) override;
 
 	private slots:
 
-		void aboutClicked(void);
-		void scanClicked(void);
-		void rolesClicked(void);
+		void itemSelected(const QModelIndex& Index);
 
-		void nextClicked(void);
-		void prevClicked(void);
-		void saveClicked(void);
-		void editClicked(void);
-		void lockCkicked(void);
+	signals:
 
-		void zoomInClicked(void);
-		void zoomOutClicked(void);
-		void zoomOrgClicked(void);
-		void zoomFitClicked(void);
-
-		void rotateLeftClicked(void);
-		void rotateRightClicked(void);
-
-		void changeAddClicked(void);
-		void changeDelClicked(void);
-
-		void documentChanged(int Index);
-
-		void updateImage(const QString& Path);
-
-		void scanDirectory(const QString& Dir,
-					    int Mode, bool Rec);
-
-		void updateRoles(const QString& Path,
-					  bool Addnew);
+		void onJobSelected(int);
+		void onDocSelected(int);
 
 };
 
-#endif // MAINWINDOW_HPP
+#endif // LOCKWIDGET_HPP
