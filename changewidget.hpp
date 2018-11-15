@@ -53,9 +53,10 @@ class ChangeWidget : public QWidget
 		explicit ChangeWidget(QSqlDatabase& Db, QWidget* Parent = nullptr);
 		virtual ~ChangeWidget(void) override;
 
-		QList<QVariantMap> getChanges(void) const;
+		QList<QVariantMap> getChanges(int Index) const;
 
-		void saveChanges(void);
+		void discardChanged(int Index);
+		void saveChanges(int Index);
 
 		bool isLocked(void) const;
 
@@ -74,6 +75,15 @@ class ChangeWidget : public QWidget
 
 		void appendChange(void);
 		void removeChange(void);
+
+	signals:
+
+		void onChangesUpdate(int, const QVariantList&);
+
+		// TODO implement me
+		void onChangeUpdate(int, bool);
+		void onChangeRemove(int, bool);
+		void onChangeAppend(int);
 
 };
 

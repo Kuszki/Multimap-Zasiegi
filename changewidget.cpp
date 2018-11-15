@@ -32,70 +32,45 @@ ChangeWidget::~ChangeWidget(void)
 	delete ui;
 }
 
-QList<QVariantMap> ChangeWidget::getChanges(void) const
+QList<QVariantMap> ChangeWidget::getChanges(int Index) const
 {
 	QList<QVariantMap> Changes;
 
-	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
+	for (const auto& Change : Unsaved.value(Index))
 	{
-		ChangeEntry* Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-
-		if (Widget) Changes.append(Widget->getData());
+		Changes.append(Change.toMap());
 	}
 
 	return Changes;
 }
 
-void ChangeWidget::saveChanges(void)
+void ChangeWidget::discardChanged(int Index)
 {
-	QSqlQuery Query(Database);
-	QSet<int> Current;
+	Unsaved.remove(Index);
 
-	Query.prepare("SELECT id FROM zmiany WHERE dokument = ?");
-	Query.addBindValue(Currentindex);
+	if (Index == Currentindex) setDocIndex(Index, true);
 
-	if (Query.exec()) while (Query.next())
+	emit onChangesUpdate(Index, QVariantList());
+}
+
+void ChangeWidget::saveChanges(int Index)
+{
+	QVariantList Current;
+
+	for (const auto& List : Unsaved.value(Index))
 	{
-		Current.insert(Query.value(0).toInt());
+		if (List.toMap().value("status") == -1)
+		{
+			Current.append(List);
+		}
 	}
 
-	Query.prepare("INSTERT INTO zmiany (id, dokument, arkusz, obreb, stare, nowe) "
-			    "VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
-			    "arkusz = ?, obreb = ?, stare = ?, nowe = ?");
+	if (Current.isEmpty()) Unsaved.remove(Index);
+	else Unsaved[Index] = Current;
 
-	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
-	{
-		ChangeEntry* Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-		auto Change = Widget->getData();
+	if (Index == Currentindex) setDocIndex(Index, false);
 
-		Current.remove(Change.value("uid").toInt());
-
-		Query.addBindValue(Change.value("uid"));
-		Query.addBindValue(Change.value("did"));
-		Query.addBindValue(Change.value("sheet"));
-		Query.addBindValue(Change.value("area"));
-		Query.addBindValue(Change.value("before").toStringList().join(';'));
-		Query.addBindValue(Change.value("after").toStringList().join(';'));
-		Query.addBindValue(Change.value("sheet"));
-		Query.addBindValue(Change.value("area"));
-		Query.addBindValue(Change.value("before").toStringList().join(';'));
-		Query.addBindValue(Change.value("after").toStringList().join(';'));
-
-		Query.exec();
-
-		Change["uid"] = Query.lastInsertId();
-
-		ui->tabWidget->setTabIcon(i, QIcon());
-		Widget->setData(Change);
-	}
-
-	Query.prepare("DELETE FROM zmiany WHERE id = ?");
-
-	for (const auto& ID : Current)
-	{
-		Query.addBindValue(ID);
-		Query.exec();
-	}
+	emit onChangesUpdate(Index, Current);
 }
 
 bool ChangeWidget::isLocked(void) const
@@ -129,6 +104,8 @@ void ChangeWidget::updateStatus(int Status)
 
 	if (Current.size())	Unsaved[Currentindex] = Current;
 	else Unsaved.remove(Currentindex);
+
+	emit onChangesUpdate(Currentindex, Current);
 }
 
 void ChangeWidget::setDocIndex(int Index, bool Lock)
@@ -281,4 +258,6 @@ void ChangeWidget::removeChange(void)
 
 	if (Current.size())	Unsaved[Currentindex] = Current;
 	else Unsaved.remove(Currentindex);
+
+	emit onChangesUpdate(Currentindex, Current);
 }

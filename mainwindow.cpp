@@ -33,6 +33,19 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setDatabaseName("zasiegi");
 	Db.open();
 
+	QSqlQuery Query(Db);
+
+	const QString U1 = qgetenv("USERNAME");
+	const QString U2 = qgetenv("USER");
+	const auto PID = QCoreApplication::applicationPid();
+
+	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
+
+	Query.prepare("SELECT id FROM blokady WHERE operator = ?");
+	Query.addBindValue(User);
+
+	if (Query.exec()) while (Query.next()) Locked.insert(Query.value(0).toInt());
+
 	cwidget = new ChangeWidget(Db, this);
 	changes = new QDockWidget(tr("Changes"), this);
 	changes->setObjectName("Changes");
@@ -70,6 +83,9 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	connect(dwidget, &DocWidget::onPathChange,
 		   this, &MainWindow::updateImage);
+
+	connect(this, &MainWindow::onSaveChanges,
+		   cwidget, &ChangeWidget::saveChanges);
 }
 
 MainWindow::~MainWindow(void)
@@ -141,12 +157,76 @@ void MainWindow::prevClicked(void)
 
 void MainWindow::saveClicked(void)
 {
+	QSqlQuery delQuery(Db), updQuery(Db), addQuery(Db), docQuery(Db);
 
+	const QString U1 = qgetenv("USERNAME");
+	const QString U2 = qgetenv("USER");
+	const auto PID = QCoreApplication::applicationPid();
+
+	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
+
+	delQuery.prepare("DELETE FROM zmiany WHERE id = ?");
+
+	updQuery.prepare("UPDATE zmiany SET arkusz = ?, obreb = ?, stare = ?, nowe = ? WHERE id = ?");
+
+	addQuery.prepare("INSERT INTO zmiany (dokument, arkusz, obreb, stare, nowe) VALUES (?, ?, ?, ?, ?)");
+
+	docQuery.prepare("UPDATE dokumenty SET operator = ?, data = CURRENT_TIMESTAMP WHERE id = ?");
+
+	for (const auto& Change : cwidget->getChanges(CurrentDoc)) switch (Change.value("status").toInt())
+	{
+		case 1:
+			addQuery.addBindValue(Change.value("did"));
+			addQuery.addBindValue(Change.value("sheet"));
+			addQuery.addBindValue(Change.value("area"));
+			addQuery.addBindValue(Change.value("before").toStringList().join(';'));
+			addQuery.addBindValue(Change.value("after").toStringList().join(';'));
+
+			addQuery.exec();
+		break;
+		case 2:
+			updQuery.addBindValue(Change.value("sheet"));
+			updQuery.addBindValue(Change.value("area"));
+			updQuery.addBindValue(Change.value("before").toStringList().join(';'));
+			updQuery.addBindValue(Change.value("after").toStringList().join(';'));
+			updQuery.addBindValue(Change.value("uid"));
+
+			updQuery.exec();
+		break;
+		case 3:
+			delQuery.addBindValue(Change.value("uid"));
+
+			delQuery.exec();
+		break;
+	}
+
+	docQuery.addBindValue(User);
+	docQuery.addBindValue(CurrentDoc);
+
+	emit onSaveChanges(CurrentDoc);
 }
 
 void MainWindow::editClicked(void)
 {
+	QSqlQuery Query(Db);
 
+	const QString U1 = qgetenv("USERNAME");
+	const QString U2 = qgetenv("USER");
+	const auto PID = QCoreApplication::applicationPid();
+
+	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
+
+	Query.prepare("INSERT INTO blokady (id, operator) "
+			    "VALUES (?, ?)");
+
+	Query.addBindValue(CurrentDoc);
+	Query.addBindValue(User);
+
+	if (Query.exec())
+	{
+		Locked.insert(CurrentDoc);
+		documentChanged(CurrentDoc);
+	}
 }
 
 void MainWindow::lockClicked(void)
@@ -211,7 +291,7 @@ void MainWindow::changeDelClicked(void)
 
 void MainWindow::documentChanged(int Index)
 {
-	const bool Lock = true;//Locked.contains(Index);
+	const bool Lock = Locked.contains(Index);
 
 	ui->actionAddchange->setEnabled(Lock);
 	ui->actionRemovechange->setEnabled(Lock);
@@ -221,6 +301,7 @@ void MainWindow::documentChanged(int Index)
 	ui->actionSave->setEnabled(Lock);
 
 	cwidget->setDocIndex(Index, !Lock);
+	CurrentDoc = Index;
 }
 
 void MainWindow::updateImage(const QString& Path)

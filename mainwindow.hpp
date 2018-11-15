@@ -64,6 +64,7 @@ class MainWindow : public QMainWindow
 
 		QSet<int> Locked;
 
+		int CurrentDoc = 0;
 		double Scale = 1.0;
 		int Rotation = 0;
 
@@ -104,6 +105,10 @@ class MainWindow : public QMainWindow
 
 		void updateRoles(const QString& Path,
 					  bool Addnew);
+
+	signals:
+
+		void onSaveChanges(int);
 
 };
 
