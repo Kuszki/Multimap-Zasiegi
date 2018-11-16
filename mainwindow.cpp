@@ -660,15 +660,18 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 {
 	QSqlQuery Query("SELECT id, nazwa FROM rodzajedok", Db);
 
+	QList<QPair<int, QString>> Documents;
+	QList<QPair<int, int>> Updates;
+
 	QHash<QString, QString> Data;
 	QHash<QString, int> Roles;
 	QSet<QString> Newroles;
 
-	while (Query.next())
-	{
-		Roles.insert(Query.value(1).toString(),
-				   Query.value(0).toInt());
-	}
+	QMutex Locker;
+
+	while (Query.next()) Roles.insert(
+				Query.value(1).toString(),
+				Query.value(0).toInt());
 
 	QFile Input(Path);
 	QTextStream Stream(&Input);
@@ -679,7 +682,7 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 		const QStringList Row = Stream.readLine().split('\t');
 		if (Row.size() != 2) continue;
 
-		Data.insert('%' + Row.value(0).replace("'", "\\'"), Row[1]);
+		Data.insert(Row[0], Row[1]);
 
 		if (!Roles.contains(Row[1]))
 		{
@@ -699,12 +702,38 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 		Roles.insert(Role, Query.lastInsertId().toInt());
 	}
 
-	Query.prepare("UPDATE dokumenty SET rodzaj = ? WHERE sciezka LIKE ?");
+	Query.prepare("SELECT id, sciezka FROM dokumenty");
 
-	for (auto i = Data.constBegin(); i != Data.constEnd(); ++i) if (Roles.contains(i.value()))
+	if (Query.exec()) while (Query.next()) Documents.append(
 	{
-		Query.addBindValue(Roles.value(i.value()));
-		Query.addBindValue(i.key());
+		Query.value(0).toInt(),
+		Query.value(1).toString()
+	});
+
+	QtConcurrent::map(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
+	{
+		for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
+		{
+			if (Row.second.endsWith(i.key()))
+			{
+				const int Role = Roles.value(i.value(), 0);
+
+				if (Role)
+				{
+					Locker.lock();
+					Updates.append({ Row.first, Role });
+					Locker.unlock();
+				}
+			}
+		}
+	});
+
+	Query.prepare("UPDATE dokumenty SET rodzaj = ? WHERE id = ?");
+
+	for (const auto& Row : Updates)
+	{
+		Query.addBindValue(Row.second);
+		Query.addBindValue(Row.first);
 		Query.exec();
 
 		QApplication::processEvents();
