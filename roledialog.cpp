@@ -44,7 +44,7 @@ void RoleDialog::accept(void)
 
 void RoleDialog::openClicked(void)
 {
-	const QString Path = QFileDialog::getExistingDirectory(this, tr("Scan directory"));
+	const QString Path = QFileDialog::getOpenFileName(this, tr("Load data"));
 
 	if (!Path.isEmpty()) ui->pathEdit->setText(Path);
 }
