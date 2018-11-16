@@ -82,3 +82,7 @@ Zakładka `Rezerwacje` umożliwia ustalenie liczby rezerwowanych za pomocą akcj
 ### Zmiana widoczności kolumn w tabelach
 
 Zakładki `Dokumenty` oraz `Operaty` umożliwiają ustalenie, które kolumny mają być widoczne podczas przeglądania dokumentów. Brak wskazanych kolumn spowoduje wyświetlanie wszystkich kolumn.
+
+## Kontynuacja pracy po zakończeniu programu
+
+Po zakończeniu programu wszystkie zarezerwowane dokumenty pozostają przypisane do użytkownika. Istnieje zatem możliwość kontynuacji pracy po ponownym uruchomieniu programu. Wszystkie niezapisane zmiany zostają jednak porzucone w momencie zamknięcia programu.
