@@ -727,6 +727,8 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 
 				return;
 			}
+
+			QApplication::processEvents();
 		}
 	});
 
