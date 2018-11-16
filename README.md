@@ -86,3 +86,7 @@ Zakładki `Dokumenty` oraz `Operaty` umożliwiają ustalenie, które kolumny maj
 ## Kontynuacja pracy po zakończeniu programu
 
 Po zakończeniu programu wszystkie zarezerwowane dokumenty pozostają przypisane do użytkownika. Istnieje zatem możliwość kontynuacji pracy po ponownym uruchomieniu programu. Wszystkie niezapisane zmiany zostają jednak porzucone w momencie zamknięcia programu.
+
+## Personalizacja interfejsu programu
+
+Wszystkie dostępne grupy narzędzi mogą być dowolnie przemieszczane oraz wyłączane. Organizacja interfejsu zostanie przywrócona po ponownym uruchomieniu programu.
