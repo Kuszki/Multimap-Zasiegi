@@ -119,11 +119,13 @@
     <property name="title">
      <string>Document</string>
     </property>
+    <addaction name="actionLocknext"/>
     <addaction name="actionNext"/>
     <addaction name="actionPrevious"/>
     <addaction name="separator"/>
     <addaction name="actionLock"/>
     <addaction name="actionSave"/>
+    <addaction name="actionUnlock"/>
     <addaction name="separator"/>
     <addaction name="actionAddchange"/>
     <addaction name="actionRemovechange"/>
