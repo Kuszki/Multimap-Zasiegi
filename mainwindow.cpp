@@ -557,6 +557,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 			{
 				Docs[Match.captured()].append(Path);
 			}
+
+			QApplication::processEvents();
 		}
 	}
 	else if (Mode == 1)
@@ -579,6 +581,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 					Docs[Match.captured()].append(Iterator.next());
 				}
 			}
+
+			QApplication::processEvents();
 		}
 	}
 	else if (Mode == 0)
@@ -612,6 +616,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 					}
 				}
 			}
+
+			QApplication::processEvents();
 		}
 	}
 
@@ -625,6 +631,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 		Query.exec();
 
 		Jobs.insert(Key, Query.lastInsertId().toInt());
+
+		QApplication::processEvents();
 	}
 
 	Query.prepare("INSERT INTO dokumenty (nazwa, sciezka, operat) VALUES (?, ?, ?) "
@@ -643,6 +651,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 			Query.addBindValue(ID);
 			Query.exec();
 		}
+
+		QApplication::processEvents();
 	}
 }
 
@@ -675,6 +685,8 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 		{
 			Newroles.insert(Row[1]);
 		}
+
+		QApplication::processEvents();
 	}
 
 	Query.prepare("INSERT INTO rodzajedok (nazwa) VALUES (?)");
@@ -694,5 +706,7 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 		Query.addBindValue(Roles.value(i.value()));
 		Query.addBindValue(i.key());
 		Query.exec();
+
+		QApplication::processEvents();
 	}
 }
