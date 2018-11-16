@@ -43,7 +43,7 @@ class ChangeWidget : public QWidget
 		Ui::ChangeWidget* ui;
 		QSqlDatabase& Database;
 
-		QMap<int, QVariantList> Unsaved;
+		QMap<int, QList<QVariantMap>> Unsaved;
 
 		int Currentindex = 0;
 		bool Locked = true;
@@ -54,6 +54,9 @@ class ChangeWidget : public QWidget
 		virtual ~ChangeWidget(void) override;
 
 		QList<QVariantMap> getChanges(int Index) const;
+		QList<QVariantMap> getChanges(void) const;
+
+		QIcon getIcon(int Status) const;
 
 		void discardChanged(int Index);
 		void saveChanges(int Index);
@@ -62,7 +65,7 @@ class ChangeWidget : public QWidget
 
 	private slots:
 
-		void updateStatus(int Status);
+		void updateStatus(void);
 
 	public slots:
 
@@ -80,7 +83,7 @@ class ChangeWidget : public QWidget
 
 	signals:
 
-		void onChangesUpdate(int, const QVariantList&);
+		void onChangesUpdate(int, int, int, int);
 
 };
 

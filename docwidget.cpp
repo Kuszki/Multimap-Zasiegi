@@ -105,9 +105,15 @@ void DocWidget::setDocIndex(int Index)
 	emit onPathChange(model->data(model->index(I.row(), 6)).toString());
 }
 
-void DocWidget::updateData(void)
+void DocWidget::updateData(int Index)
 {
+	const auto Flags = QItemSelectionModel::SelectCurrent |
+				    QItemSelectionModel::Rows;
+
 	model->select();
+
+	const auto I = model->findByUid(Index);
+	ui->tableView->selectionModel()->select(I, Flags);
 }
 
 void DocWidget::selectionChanged(const QModelIndex& Current)

@@ -51,8 +51,9 @@ class ChangeEntry : public QWidget
 		virtual ~ChangeEntry(void) override;
 
 		QVariantMap getOrigin(void) const;
-
 		QVariantMap getData(void) const;
+
+		void setOrigin(const QVariantMap& Data);
 		void setData(const QVariantMap& Data);
 
 		bool isChanged(void) const;

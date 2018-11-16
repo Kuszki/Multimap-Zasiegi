@@ -14,7 +14,8 @@
    <string>Settings</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences-system"/>
+   <iconset theme="preferences-system">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -63,8 +64,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>154</height>
+            <width>364</width>
+            <height>166</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="typesLayout">
@@ -104,8 +105,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>195</height>
+            <width>364</width>
+            <height>200</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="docLayout"/>
@@ -116,7 +117,7 @@
      </widget>
      <widget class="QWidget" name="jobTab">
       <attribute name="title">
-       <string>Strona</string>
+       <string>Jobs</string>
       </attribute>
       <layout class="QGridLayout" name="jobScroolLayout">
        <item row="0" column="0">
@@ -132,8 +133,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>195</height>
+            <width>364</width>
+            <height>200</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="jobLayout"/>

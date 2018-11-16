@@ -20,6 +20,9 @@
   <property name="documentMode">
    <bool>true</bool>
   </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
@@ -41,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>788</width>
-         <height>517</height>
+         <width>782</width>
+         <height>519</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="scroolLayout">
@@ -80,12 +83,12 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuApplication">
     <property name="title">
-     <string>Appl&amp;ication</string>
+     <string>Application</string>
     </property>
     <addaction name="actionScan"/>
     <addaction name="actionRoles"/>
@@ -102,7 +105,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>&amp;View</string>
+     <string>View</string>
     </property>
     <addaction name="actionZoomin"/>
     <addaction name="actionZoomout"/>
@@ -114,7 +117,7 @@
    </widget>
    <widget class="QMenu" name="menuDocument">
     <property name="title">
-     <string>Do&amp;cument</string>
+     <string>Document</string>
     </property>
     <addaction name="actionNext"/>
     <addaction name="actionPrevious"/>
@@ -199,7 +202,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Scan directory</string>
+    <string>Scan directory</string>
    </property>
   </action>
   <action name="actionExit">
@@ -208,7 +211,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Exit</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -217,7 +220,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;About</string>
+    <string>About</string>
    </property>
    <property name="shortcut">
     <string>F1</string>
@@ -229,7 +232,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Zoom in</string>
+    <string>Zoom in</string>
    </property>
    <property name="shortcut">
     <string>+</string>
@@ -241,7 +244,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Zoo&amp;m out</string>
+    <string>Zoom out</string>
    </property>
    <property name="shortcut">
     <string>-</string>
@@ -253,7 +256,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Fit to screen</string>
+    <string>Fit to screen</string>
    </property>
   </action>
   <action name="actionOrg">
@@ -262,7 +265,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Original size</string>
+    <string>Original size</string>
    </property>
   </action>
   <action name="actionRoles">
@@ -271,7 +274,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Update roles</string>
+    <string>Update roles</string>
    </property>
   </action>
   <action name="actionNext">
@@ -280,7 +283,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Next document</string>
+    <string>Next document</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
@@ -292,7 +295,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Previous document</string>
+    <string>Previous document</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Left</string>
@@ -304,7 +307,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Lock</string>
+    <string>Lock</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -316,7 +319,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Save</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -328,7 +331,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Preferences</string>
+    <string>Preferences</string>
    </property>
   </action>
   <action name="actionRotateleft">
@@ -337,7 +340,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Rotate left</string>
+    <string>Rotate left</string>
    </property>
   </action>
   <action name="actionRotateright">
@@ -346,7 +349,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Ro&amp;tate right</string>
+    <string>Rotate right</string>
    </property>
   </action>
   <action name="actionAddchange">
@@ -355,7 +358,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Add change</string>
+    <string>Add change</string>
    </property>
   </action>
   <action name="actionRemovechange">
@@ -364,7 +367,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Remove change</string>
+    <string>Remove change</string>
    </property>
   </action>
   <action name="actionUndochange">
@@ -373,7 +376,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Undo change</string>
+    <string>Undo change</string>
    </property>
   </action>
   <action name="actionLocknext">

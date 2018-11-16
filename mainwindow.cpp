@@ -126,6 +126,9 @@ MainWindow::MainWindow(QWidget* Parent)
 		   lwidget, &LockWidget::recalcChanges);
 
 	connect(this, &MainWindow::onSaveChanges,
+		   dwidget, &DocWidget::updateData);
+
+	connect(this, &MainWindow::onSaveChanges,
 		   cwidget, &ChangeWidget::saveChanges);
 }
 
@@ -297,8 +300,6 @@ void MainWindow::saveClicked(void)
 	docQuery.addBindValue(CurrentDoc);
 
 	docQuery.exec();
-
-	dwidget->updateData();
 
 	emit onSaveChanges(CurrentDoc);
 }

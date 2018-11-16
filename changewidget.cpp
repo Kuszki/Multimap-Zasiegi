@@ -34,32 +34,64 @@ ChangeWidget::~ChangeWidget(void)
 
 QList<QVariantMap> ChangeWidget::getChanges(int Index) const
 {
+	if (Index == Currentindex) return getChanges();
+	else return Unsaved.value(Index);
+}
+
+QList<QVariantMap> ChangeWidget::getChanges(void) const
+{
 	QList<QVariantMap> Changes;
 
-	for (const auto& Change : Unsaved.value(Index))
+	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
-		Changes.append(Change.toMap());
+		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
+		const auto Data = W->getData();
+
+		if (Data.value("status").toInt()) Changes.append(Data);
 	}
 
 	return Changes;
+}
+
+QIcon ChangeWidget::getIcon(int Status) const
+{
+	switch (Status)
+	{
+		case -1: return QIcon::fromTheme("error");
+
+		case 1: return QIcon::fromTheme("list-add");
+		case 2: return QIcon::fromTheme("tools-check-spelling");
+		case 3: return QIcon::fromTheme("edit-delete");
+
+		default: return QIcon();
+	}
 }
 
 void ChangeWidget::discardChanged(int Index)
 {
 	Unsaved.remove(Index);
 
-	if (Index == Currentindex) setDocIndex(Index, true);
+	if (Index == Currentindex)
+	{
+		while (ui->tabWidget->count())
+		{
+			ui->tabWidget->widget(0)->deleteLater();
+			ui->tabWidget->removeTab(0);
+		}
 
-	emit onChangesUpdate(Index, QVariantList());
+		setDocIndex(Index, true);
+	}
+
+	emit onChangesUpdate(Index, 0, 0, 0);
 }
 
 void ChangeWidget::saveChanges(int Index)
 {
-	QVariantList Current;
+	QList<QVariantMap> Current;
 
-	for (const auto& List : Unsaved.value(Index))
+	for (const auto& List : getChanges(Index))
 	{
-		if (List.toMap().value("status") == -1)
+		if (List.value("status").toInt() == -1)
 		{
 			Current.append(List);
 		}
@@ -68,9 +100,18 @@ void ChangeWidget::saveChanges(int Index)
 	if (Current.isEmpty()) Unsaved.remove(Index);
 	else Unsaved[Index] = Current;
 
-	if (Index == Currentindex) setDocIndex(Index, false);
+	if (Index == Currentindex)
+	{
+		while (ui->tabWidget->count())
+		{
+			ui->tabWidget->widget(0)->deleteLater();
+			ui->tabWidget->removeTab(0);
+		}
 
-	emit onChangesUpdate(Index, Current);
+		setDocIndex(Index, false);
+	}
+
+	emit onChangesUpdate(Index, 0, 0, 0);
 }
 
 bool ChangeWidget::isLocked(void) const
@@ -78,47 +119,34 @@ bool ChangeWidget::isLocked(void) const
 	return Locked;
 }
 
-void ChangeWidget::updateStatus(int Status)
+void ChangeWidget::updateStatus(void)
 {
-	QVariantList Current;
-
-	const auto Icon = Status == 2 ?
-					   QIcon::fromTheme("tools-check-spelling") :
-					   Status == 1 ?
-						   QIcon::fromTheme("list-add") :
-						   Status == 0 ?
-							   QIcon() :
-							   QIcon::fromTheme("error");
+	int Add(0), Del(0), Mod(0);
 
 	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
 		auto Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-		const auto Data = Widget->getData();
+		const int Status = Widget->getData().value("status").toInt();
 
-		if (Widget == sender()) ui->tabWidget->setTabIcon(i, Icon);
-		if (Status != 0) Current.append(Data);
+		ui->tabWidget->setTabIcon(i, getIcon(Status));
+
+		switch (Widget->getData().value("status").toInt())
+		{
+			case 1: ++Add; break;
+			case 2: ++Mod; break;
+			case 3: ++Del; break;
+		}
 	}
 
-	if (Current.size())	Unsaved[Currentindex] = Current;
-	else Unsaved.remove(Currentindex);
-
-	emit onChangesUpdate(Currentindex, Current);
+	emit onChangesUpdate(Currentindex, Add, Del, Mod);
 }
 
 void ChangeWidget::setDocIndex(int Index, bool Lock)
 {
-	QSqlQuery Query(Database);
+	QList<QVariantMap> Current = getChanges();
 
-	Currentindex = Index;
-	Locked = Lock;
-
-	unsigned ID = 0;
-
-	Query.prepare("SELECT id, arkusz, obreb, stare, nowe "
-			    "FROM zmiany WHERE dokument = ? "
-			    "ORDER BY id ASC");
-
-	Query.addBindValue(Index);
+	if (Current.isEmpty()) Unsaved.remove(Currentindex);
+	else Unsaved[Currentindex] = Current;
 
 	while (ui->tabWidget->count())
 	{
@@ -126,66 +154,61 @@ void ChangeWidget::setDocIndex(int Index, bool Lock)
 		ui->tabWidget->removeTab(0);
 	}
 
+	Currentindex = Index;
+	Locked = Lock;
+
+	if (!Currentindex) return;
+	else Current = Unsaved.value(Index);
+	unsigned ID = 0;
+
+	QSqlQuery Query(Database);
+	Query.prepare("SELECT id, arkusz, obreb, stare, nowe "
+			    "FROM zmiany WHERE dokument = ? "
+			    "ORDER BY id ASC");
+	Query.addBindValue(Index);
+
 	if (Query.exec()) while (Query.next())
 	{
-		const auto Changes = Unsaved.value(Index);
-		const auto UID = Query.value(0);
-		int Exists = -1;
-
-		for (int i = 0, N = Changes.size(); i < N; ++i)
+		const QVariantMap Origin =
 		{
-			if (Changes[i].toMap().value("uid") == UID) Exists = i;
-		}
-
-		QVariantMap Data = Exists == -1 ?
-		QVariantMap(
-		{
-			{ "uid", UID },
+			{ "uid", Query.value(0) },
 			{ "did", Index },
 			{ "sheet", Query.value(1) },
 			{ "area", Query.value(2) },
 			{ "before", Query.value(3).toString().split(';') },
 			{ "after", Query.value(4).toString().split(';') },
 			{ "status", 0 }
-		}) : Changes[Exists].toMap();
+		};
 
-		const auto Status = Data.value("status").toInt();
+		ChangeEntry* Widget = new ChangeEntry(Origin, Lock, this);
+		ui->tabWidget->addTab(Widget, QString("%1").arg(++ID));
 
-		if (Status != 3)
-		{
-			const auto Icon = Status == 2 ?
-							   QIcon::fromTheme("tools-check-spelling") :
-							   Status == 0 ?
-								   QIcon() :
-								   QIcon::fromTheme("error");
-
-			ChangeEntry* Widget = new ChangeEntry(Data, Lock, this);
-
-			ui->tabWidget->addTab(Widget, Icon, QString("%1").arg(++ID));
-
-			connect(Widget, &ChangeEntry::onStatusUpdate,
-				   this, &ChangeWidget::updateStatus);
-		}
+		connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);
 	}
 
-	for (const auto& Change : Unsaved.value(Index))
+	for (const auto& Change : Current)
 	{
-		const auto Data = Change.toMap();
+		int Found = -1;
 
-		if (Data.value("uid").toInt() == 0)
+		if (Change.value("uid").toInt())
+			for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
+			{
+				auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
+				if (W->getData().value("uid") == Change.value("uid")) Found = i;
+			}
+
+		if (Found == -1)
 		{
-			const auto Status = Data.value("status").toInt();
+			ChangeEntry* Widget = new ChangeEntry(Change, Lock, this);
+			ui->tabWidget->addTab(Widget, getIcon(Change.value("status").toInt()), QString("%1").arg(++ID));
 
-			const auto Icon = Status == 1 ?
-							   QIcon::fromTheme("list-add") :
-							   QIcon::fromTheme("error");
-
-			ChangeEntry* Widget = new ChangeEntry(Data, Lock, this);
-
-			ui->tabWidget->addTab(Widget, Icon, QString("%1").arg(++ID));
-
-			connect(Widget, &ChangeEntry::onStatusUpdate,
-				   this, &ChangeWidget::updateStatus);
+			connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);
+		}
+		else
+		{
+			ChangeEntry* Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(Found));
+			ui->tabWidget->setTabIcon(Found, getIcon(Change.value("status").toInt()));
+			Widget->setData(Change);
 		}
 	}
 }
@@ -195,8 +218,7 @@ void ChangeWidget::setLocked(bool Lock)
 	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
 		ChangeEntry* Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-
-		if (Widget) Widget->setLocked(Lock);
+		Widget->setLocked(Lock || Widget->getData().value("status").toInt() == 3);
 	}
 
 	Locked = Lock;
@@ -214,13 +236,16 @@ void ChangeWidget::unlock(void)
 
 void ChangeWidget::appendChange(void)
 {
-	ChangeEntry* Widget = new ChangeEntry({ { "did", Currentindex } }, false, this);
+	const QVariantMap Change =
+	{
+		{ "did", Currentindex },
+		{ "status", 1 }
+	};
 
-	ui->tabWidget->addTab(Widget, QIcon::fromTheme("list-add"),
-					  QString("%1").arg(ui->tabWidget->count() + 1));
+	ChangeEntry* Widget = new ChangeEntry(Change, false, this);
+	ui->tabWidget->addTab(Widget, getIcon(1), QString("%1").arg(ui->tabWidget->count() + 1));
 
-	connect(Widget, &ChangeEntry::onStatusUpdate,
-		   this, &ChangeWidget::updateStatus);
+	connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);
 }
 
 void ChangeWidget::removeChange(void)
@@ -236,13 +261,7 @@ void ChangeWidget::removeChange(void)
 	if (Data.value("uid").toInt())
 	{
 		Data["status"] = 3;
-
-		Widget->blockSignals(true);
 		Widget->setData(Data);
-		Widget->lock();
-		Widget->blockSignals(false);
-
-		ui->tabWidget->setTabIcon(Index, QIcon::fromTheme("edit-delete"));
 	}
 	else
 	{
@@ -250,19 +269,7 @@ void ChangeWidget::removeChange(void)
 		Widget->deleteLater();
 	}
 
-	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
-	{
-		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-		const auto D = W->getData();
-		const int Status = D.value("status").toInt();
-
-		if (Status != 0) Current.append(D);
-	}
-
-	if (Current.size())	Unsaved[Currentindex] = Current;
-	else Unsaved.remove(Currentindex);
-
-	emit onChangesUpdate(Currentindex, Current);
+	updateStatus();
 }
 
 void ChangeWidget::undoChange(void)
@@ -278,13 +285,8 @@ void ChangeWidget::undoChange(void)
 	if (Data.value("uid").toInt())
 	{
 		Data["status"] = 0;
-
-		Widget->blockSignals(true);
 		Widget->setData(Data);
 		Widget->unlock();
-		Widget->blockSignals(false);
-
-		ui->tabWidget->setTabIcon(Index, QIcon());
 	}
 	else
 	{
@@ -292,17 +294,5 @@ void ChangeWidget::undoChange(void)
 		Widget->deleteLater();
 	}
 
-	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
-	{
-		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-		const auto D = W->getData();
-		const int Status = D.value("status").toInt();
-
-		if (Status != 0) Current.append(D);
-	}
-
-	if (Current.size())	Unsaved[Currentindex] = Current;
-	else Unsaved.remove(Currentindex);
-
-	emit onChangesUpdate(Currentindex, Current);
+	updateStatus();
 }

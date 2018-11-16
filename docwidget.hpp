@@ -61,7 +61,7 @@ class DocWidget : public QWidget
 		void setJobIndex(int Index);
 		void setDocIndex(int Index);
 
-		void updateData(void);
+		void updateData(int Index);
 
 	private slots:
 

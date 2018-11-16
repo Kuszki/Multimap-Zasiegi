@@ -109,9 +109,8 @@ void LockWidget::removeDocument(int Index)
 		model->removeRow(Parent.row());
 }
 
-void LockWidget::recalcChanges(int Index, const QVariantList& List)
+void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod)
 {
-	int Add(0), Del(0), Mod(0);
 	QModelIndex Parent;
 	int Row = -1;
 
@@ -135,14 +134,6 @@ void LockWidget::recalcChanges(int Index, const QVariantList& List)
 	}
 
 	if (!Parent.isValid() || Row == -1) return;
-
-	for (const auto& Data : List)
-		switch (Data.toMap().value("status").toInt())
-		{
-			case 1: ++Add; break;
-			case 2: ++Mod; break;
-			case 3: ++Del; break;
-		}
 
 	model->setData(model->index(Row, 1, Parent), Add);
 	model->setData(model->index(Row, 2, Parent), Del);

@@ -51,7 +51,7 @@ class LockWidget : public QWidget
 
 		void removeDocument(int Index);
 
-		void recalcChanges(int Index, const QVariantList& List);
+		void recalcChanges(int Index, int Add, int Del, int Mod);
 
 	private slots:
 

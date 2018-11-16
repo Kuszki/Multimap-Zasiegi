@@ -26,6 +26,7 @@ QWidget(Parent), ui(new Ui::ChangeEntry), Locked(Lock), Status(0)
 {
 	ui->setupUi(this);
 
+	setOrigin(Data);
 	setData(Data);
 	setLocked(Lock);
 }
@@ -59,9 +60,9 @@ QVariantMap ChangeEntry::getData(void) const
 
 void ChangeEntry::setData(const QVariantMap& Data)
 {
+	Status = Data.value("status", 0).toInt();
 	UID = Data.value("uid").toInt();
 	DID = Data.value("did").toInt();
-	Origin = Data;
 
 	ui->areaEdit->setText(Data.value("area").toString());
 	ui->sheetEdit->setText(Data.value("sheet").toString());
@@ -69,7 +70,12 @@ void ChangeEntry::setData(const QVariantMap& Data)
 	ui->beforeView->setModel(new QStringListModel(Data.value("before").toStringList(), this));
 	ui->afterView->setModel(new QStringListModel(Data.value("after").toStringList(), this));
 
-	updateStatus();
+	if (Data.value("status").toInt() == 3) lock();
+}
+
+void ChangeEntry::setOrigin(const QVariantMap& Data)
+{
+	Origin = Data;
 }
 
 bool ChangeEntry::isChanged(void) const
@@ -173,8 +179,9 @@ void ChangeEntry::delLeftClicked(void)
 void ChangeEntry::updateStatus(void)
 {
 	if (Locked) return;
+	const int Old = Status;
 
-	const bool New = Origin.value("uid").isNull();
+	const bool New = !Origin.value("uid").toInt();
 	const bool Ok = isValid();
 	const bool Ch = isChanged();
 
@@ -185,5 +192,5 @@ void ChangeEntry::updateStatus(void)
 	else if (Ch) Status = 2;
 	else Status = 0;
 
-	emit onStatusUpdate(Status);
+	if (Old != Status) emit onStatusUpdate(Status);
 }
