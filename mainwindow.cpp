@@ -710,7 +710,7 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 		Query.value(1).toString()
 	});
 
-	QtConcurrent::map(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
+	QtConcurrent::blockingMap(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
 	{
 		for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
 		{
