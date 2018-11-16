@@ -207,7 +207,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset theme="exit">
+    <iconset theme="application-exit">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -279,7 +279,7 @@
   </action>
   <action name="actionNext">
    <property name="icon">
-    <iconset theme="next">
+    <iconset theme="go-next">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -291,7 +291,7 @@
   </action>
   <action name="actionPrevious">
    <property name="icon">
-    <iconset theme="previous">
+    <iconset theme="go-previous">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -315,7 +315,7 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="filesave">
+    <iconset theme="document-save">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
