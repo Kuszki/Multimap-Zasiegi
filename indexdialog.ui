@@ -14,7 +14,8 @@
    <string>Index files</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="view-refresh"/>
+   <iconset theme="view-refresh">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="1" colspan="2">
@@ -89,6 +90,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>pathEdit</tabstop>
+  <tabstop>openButton</tabstop>
+  <tabstop>pathCombo</tabstop>
+  <tabstop>recursiveCheck</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

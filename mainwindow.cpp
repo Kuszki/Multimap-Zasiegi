@@ -33,23 +33,15 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setDatabaseName("zasiegi");
 	Db.open();
 
-	QSqlQuery Query(Db);
-
-	const QString U1 = qgetenv("USERNAME");
-	const QString U2 = qgetenv("USER");
-	const auto PID = QCoreApplication::applicationPid();
-
-	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
-
-	Query.prepare("SELECT id FROM blokady WHERE operator = ?");
-	Query.addBindValue(User);
-
-	if (Query.exec()) while (Query.next()) Locked.insert(Query.value(0).toInt());
-
 	cwidget = new ChangeWidget(Db, this);
 	changes = new QDockWidget(tr("Changes"), this);
 	changes->setObjectName("Changes");
 	changes->setWidget(cwidget);
+
+	lwidget = new LockWidget(this);
+	locks = new QDockWidget(tr("Locked"), this);
+	locks->setObjectName("Locked");
+	locks->setWidget(lwidget);
 
 	jwidget = new JobWidget(Db, this);
 	jobs = new QDockWidget(tr("Jobs"), this);
@@ -62,6 +54,7 @@ MainWindow::MainWindow(QWidget* Parent)
 	docs->setWidget(dwidget);
 
 	addDockWidget(Qt::LeftDockWidgetArea, changes);
+	addDockWidget(Qt::LeftDockWidgetArea, locks);
 	addDockWidget(Qt::LeftDockWidgetArea, jobs);
 	addDockWidget(Qt::LeftDockWidgetArea, docs);
 
@@ -75,6 +68,48 @@ MainWindow::MainWindow(QWidget* Parent)
 	restoreState(Settings.value("state").toByteArray());
 	Settings.endGroup();
 
+	Settings.beginGroup("Reservations");
+	Options.insert("Count", Settings.value("Count", 1).toInt());
+	Options.insert("Types", Settings.value("Types").toList());
+	Settings.endGroup();
+
+	Settings.beginGroup("Headers");
+	Options.insert("Jobs", Settings.value("Jobs").toList());
+	Options.insert("Docs", Settings.value("Docs").toList());
+	Settings.endGroup();
+
+	QSqlQuery Query(Db);
+
+	Query.prepare("SELECT d.nazwa, d.id, o.numer, o.id "
+			    "FROM dokumenty d "
+			    "INNER JOIN operaty o "
+			    "ON d.operat = o.id "
+			    "INNER JOIN blokady b "
+			    "ON d.id = b.id "
+			    "WHERE b.operator = ?");
+	Query.addBindValue(getCurrentUser());
+
+	if (Query.exec()) while (Query.next())
+	{
+		Locked.insert(Query.value(1).toInt());
+		Queue.append(
+		{
+			Query.value(1).toInt(),
+			Query.value(3).toInt()
+		});
+
+		lwidget->appendDocument(Query.value(0).toString(),
+						    Query.value(1).toInt(),
+						    Query.value(2).toString(),
+						    Query.value(3).toInt());
+	}
+
+	ui->actionNext->setEnabled(Queue.size());
+	ui->actionPrevious->setEnabled(Queue.size());
+
+	dwidget->setVisibleHeaders(Options.value("Docs").toList());
+	jwidget->setVisibleHeaders(Options.value("Jobs").toList());
+
 	connect(jwidget, &JobWidget::onIndexChange,
 		   dwidget, &DocWidget::setJobIndex);
 
@@ -83,6 +118,12 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	connect(dwidget, &DocWidget::onPathChange,
 		   this, &MainWindow::updateImage);
+
+	connect(lwidget, &LockWidget::onDocSelected,
+		   this, &MainWindow::focusDocument);
+
+	connect(cwidget, &ChangeWidget::onChangesUpdate,
+		   lwidget, &LockWidget::recalcChanges);
 
 	connect(this, &MainWindow::onSaveChanges,
 		   cwidget, &ChangeWidget::saveChanges);
@@ -97,7 +138,27 @@ MainWindow::~MainWindow(void)
 	Settings.setValue("geometry", saveGeometry());
 	Settings.endGroup();
 
+	Settings.beginGroup("Reservations");
+	Settings.setValue("Count", Options.value("Count").toInt());
+	Settings.setValue("Types", Options.value("Types").toList());
+	Settings.endGroup();
+
+	Settings.beginGroup("Headers");
+	Settings.setValue("Jobs", Options.value("Jobs").toList());
+	Settings.setValue("Docs", Options.value("Docs").toList());
+	Settings.endGroup();
+
+
 	delete ui;
+}
+
+QString MainWindow::getCurrentUser(void) const
+{
+	const QString U1 = qgetenv("USERNAME");
+	const QString U2 = qgetenv("USER");
+	const auto PID = QCoreApplication::applicationPid();
+
+	return U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
 }
 
 void MainWindow::aboutClicked(void)
@@ -145,25 +206,57 @@ void MainWindow::rolesClicked(void)
 	Dialog->open();
 }
 
+void MainWindow::settingsClicked(void)
+{
+	SettingsDialog* Dialog = new SettingsDialog(Db, Options, this);
+
+	connect(Dialog, &SettingsDialog::accepted,
+		   Dialog, &SettingsDialog::deleteLater);
+
+	connect(Dialog, &SettingsDialog::rejected,
+		   Dialog, &SettingsDialog::deleteLater);
+
+	connect(Dialog, &SettingsDialog::onSaveSettings,
+		   this, &MainWindow::saveSettings);
+
+	Dialog->open();
+}
+
 void MainWindow::nextClicked(void)
 {
+	auto Index = Queue.takeFirst();
 
+	if (CurrentDoc == Index.first && Queue.size())
+	{
+		Index = Queue.takeFirst();
+	}
+
+	const auto Job = dwidget->jobIndex();
+
+	if (CurrentDoc) Queue.push_back({ CurrentDoc, Job });
+
+	focusDocument(Index.first, Index.second);
 }
 
 void MainWindow::prevClicked(void)
 {
+	auto Index = Queue.takeLast();
 
+	if (CurrentDoc == Index.first && Queue.size())
+	{
+		Index = Queue.takeLast();
+	}
+
+	const auto Job = dwidget->jobIndex();
+
+	if (CurrentDoc) Queue.push_front({ CurrentDoc, Job });
+
+	focusDocument(Index.first, Index.second);
 }
 
 void MainWindow::saveClicked(void)
 {
 	QSqlQuery delQuery(Db), updQuery(Db), addQuery(Db), docQuery(Db);
-
-	const QString U1 = qgetenv("USERNAME");
-	const QString U2 = qgetenv("USER");
-	const auto PID = QCoreApplication::applicationPid();
-
-	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
 
 	delQuery.prepare("DELETE FROM zmiany WHERE id = ?");
 
@@ -200,8 +293,12 @@ void MainWindow::saveClicked(void)
 		break;
 	}
 
-	docQuery.addBindValue(User);
+	docQuery.addBindValue(getCurrentUser());
 	docQuery.addBindValue(CurrentDoc);
+
+	docQuery.exec();
+
+	dwidget->updateData();
 
 	emit onSaveChanges(CurrentDoc);
 }
@@ -210,20 +307,33 @@ void MainWindow::editClicked(void)
 {
 	QSqlQuery Query(Db);
 
-	const QString U1 = qgetenv("USERNAME");
-	const QString U2 = qgetenv("USER");
-	const auto PID = QCoreApplication::applicationPid();
-
-	const QString User = U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
-
 	Query.prepare("INSERT INTO blokady (id, operator) "
 			    "VALUES (?, ?)");
 
 	Query.addBindValue(CurrentDoc);
-	Query.addBindValue(User);
+	Query.addBindValue(getCurrentUser());
 
 	if (Query.exec())
 	{
+		Query.prepare("SELECT d.nazwa, d.id, o.numer, o.id "
+				    "FROM dokumenty d "
+				    "INNER JOIN operaty o "
+				    "ON d.operat = o.id "
+				    "WHERE d.id = ?");
+
+		Query.addBindValue(CurrentDoc);
+
+		if (Query.exec() && Query.next())
+		{
+			Queue.append(qMakePair(Query.value(1).toInt(),
+							   Query.value(3).toInt()));
+
+			lwidget->appendDocument(Query.value(0).toString(),
+							    Query.value(1).toInt(),
+							    Query.value(2).toString(),
+							    Query.value(3).toInt());
+		}
+
 		Locked.insert(CurrentDoc);
 		documentChanged(CurrentDoc);
 	}
@@ -231,7 +341,70 @@ void MainWindow::editClicked(void)
 
 void MainWindow::lockClicked(void)
 {
+	const QString Types = Options.value("Types").toStringList().join(',');
+	const int Count = Options.value("Count", 1).toInt();
+	const QString User = getCurrentUser();
 
+	QVector<QString> dNames, jNames;
+	QVector<int> dIDS, jIDS;
+	int Size(0);
+
+	QSqlQuery Query(QString("SELECT d.nazwa, d.id, o.numer, o.id FROM dokumenty d "
+					    "INNER JOIN operaty o ON d.operat = o.id "
+					    "WHERE d.rodzaj IN (%2) AND d.data IS NULL "
+					    "AND d.id NOT IN (SELECT b.id FROM blokady b) "
+					    "LIMIT %1")
+				 .arg(Count).arg(Types), Db);
+
+	while (Query.next())
+	{
+		dNames.append(Query.value(0).toString());
+		jNames.append(Query.value(2).toString());
+		dIDS.append(Query.value(1).toInt());
+		jIDS.append(Query.value(3).toInt());
+
+		++Size;
+	}
+
+	Query.prepare("INSERT INTO blokady (id, operator) "
+			    "VALUES (?, ?)");
+
+	for (int i = 0; i < Size; ++i)
+	{
+		Query.addBindValue(dIDS[i]);
+		Query.addBindValue(User);
+
+		if (Query.exec())
+		{
+			lwidget->appendDocument(dNames[i], dIDS[i],
+							    jNames[i], jIDS[i]);
+
+			Queue.append({ dIDS[i], jIDS[i] });
+			Locked.insert(dIDS[i]);
+		}
+	}
+}
+
+void MainWindow::unlockClicked(void)
+{
+	QSqlQuery Query(Db);
+
+	Query.prepare("DELETE FROM blokady WHERE id = ?");
+	Query.addBindValue(CurrentDoc);
+	Query.exec();
+
+	Locked.remove(CurrentDoc);
+	cwidget->discardChanged(CurrentDoc);
+
+	ui->actionAddchange->setEnabled(false);
+	ui->actionRemovechange->setEnabled(false);
+	ui->actionUndochange->setEnabled(false);
+
+	ui->actionLock->setEnabled(true);
+	ui->actionSave->setEnabled(false);
+	ui->actionUnlock->setEnabled(false);
+
+	lwidget->removeDocument(CurrentDoc);
 }
 
 void MainWindow::zoomInClicked(void)
@@ -289,6 +462,11 @@ void MainWindow::changeDelClicked(void)
 	cwidget->removeChange();
 }
 
+void MainWindow::changeUndoClicked(void)
+{
+	cwidget->undoChange();
+}
+
 void MainWindow::documentChanged(int Index)
 {
 	const bool Lock = Locked.contains(Index);
@@ -299,9 +477,16 @@ void MainWindow::documentChanged(int Index)
 
 	ui->actionLock->setEnabled(!Lock && Index);
 	ui->actionSave->setEnabled(Lock);
+	ui->actionUnlock->setEnabled(Lock);
 
 	cwidget->setDocIndex(Index, !Lock);
 	CurrentDoc = Index;
+}
+
+void MainWindow::focusDocument(int Document, int Job)
+{
+	dwidget->setJobIndex(Job);
+	dwidget->setDocIndex(Document);
 }
 
 void MainWindow::updateImage(const QString& Path)
@@ -329,6 +514,14 @@ void MainWindow::updateImage(const QString& Path)
 	ui->actionZoomout->setEnabled(Img);
 	ui->actionRotateleft->setEnabled(Img);
 	ui->actionRotateright->setEnabled(Img);
+}
+
+void MainWindow::saveSettings(const QVariantMap& Settings)
+{
+	Options = Settings;
+
+	dwidget->setVisibleHeaders(Options.value("Docs").toList());
+	jwidget->setVisibleHeaders(Options.value("Jobs").toList());
 }
 
 void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)

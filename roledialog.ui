@@ -7,14 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>77</height>
+    <height>94</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Update roles</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="document-send"/>
+   <iconset theme="document-send">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
@@ -70,6 +71,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>pathEdit</tabstop>
+  <tabstop>openButton</tabstop>
+  <tabstop>appendCheck</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -50,6 +50,10 @@ class JobWidget : public QWidget
 		explicit JobWidget(QSqlDatabase& Db, QWidget* Parent = nullptr);
 		virtual ~JobWidget(void) override;
 
+	public slots:
+
+		void setVisibleHeaders(const QVariantList& List);
+
 	private slots:
 
 		void refreshClicked(void);

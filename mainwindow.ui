@@ -17,6 +17,12 @@
    <iconset theme="system-search">
     <normaloff>.</normaloff>.</iconset>
   </property>
+  <property name="documentMode">
+   <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -35,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>782</width>
-         <height>523</height>
+         <width>788</width>
+         <height>517</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="scroolLayout">
@@ -74,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuApplication">
@@ -167,6 +173,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLock"/>
+   <addaction name="actionUnlock"/>
    <addaction name="actionSave"/>
    <addaction name="actionPrevious"/>
    <addaction name="actionNext"/>
@@ -276,7 +283,7 @@
     <string>&amp;Next document</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Left</string>
+    <string>Ctrl+Right</string>
    </property>
   </action>
   <action name="actionPrevious">
@@ -288,7 +295,7 @@
     <string>&amp;Previous document</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Right</string>
+    <string>Ctrl+Left</string>
    </property>
   </action>
   <action name="actionLock">
@@ -379,6 +386,15 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="actionUnlock">
+   <property name="icon">
+    <iconset theme="edit-clear">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Unlock</string>
    </property>
   </action>
  </widget>
@@ -657,6 +673,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionUndochange</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>changeUndoClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionUnlock</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>unlockClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPreferences</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>settingsClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>aboutClicked()</slot>
@@ -675,5 +739,8 @@
   <slot>changeAddClicked()</slot>
   <slot>changeDelClicked()</slot>
   <slot>lockClicked()</slot>
+  <slot>changeUndoClicked()</slot>
+  <slot>unlockClicked()</slot>
+  <slot>settingsClicked()</slot>
  </slots>
 </ui>

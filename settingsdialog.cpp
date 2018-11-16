@@ -21,13 +21,107 @@
 #include "settingsdialog.hpp"
 #include "ui_settingsdialog.h"
 
-SettingsDialog::SettingsDialog(QWidget* Parent)
+SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op, QWidget* Parent)
 : QDialog(Parent), ui(new Ui::SettingsDialog)
 {
+	QSqlQuery Query("SELECT id, nazwa FROM rodzajedok ORDER BY nazwa", Db);
+
+	static const QHash<QString, int> jobFields =
+	{
+		{ tr("P Number"), 1 },
+		{ tr("KERG Number"), 2 },
+		{ tr("Community"), 3 },
+		{ tr("Precinct"), 4 }
+	};
+
+	static const QHash<QString, int> docFields =
+	{
+		{ tr("Name"), 1 },
+		{ tr("Job"), 2 },
+		{ tr("Type"), 3 },
+		{ tr("Worker"), 4 },
+		{ tr("Finished"), 5 },
+		{ tr("Path"), 6 }
+	};
+
 	ui->setupUi(this);
+
+	ui->typesLayout->setAlignment(Qt::AlignTop);
+	ui->docLayout->setAlignment(Qt::AlignTop);
+	ui->jobLayout->setAlignment(Qt::AlignTop);
+
+	ui->countSpin->setValue(Op.value("Count", 1).toInt());
+
+	while (Query.next())
+	{
+		QCheckBox* W = new QCheckBox(this);
+		W->setText(Query.value(1).toString());
+		W->setProperty("id", Query.value(0));
+		W->setChecked(Op.value("Types").toList().contains(Query.value(0)));
+
+		ui->typesLayout->addWidget(W);
+	}
+
+	for (auto i = jobFields.constBegin(); i != jobFields.constEnd(); ++i)
+	{
+		QCheckBox* W = new QCheckBox(this);
+		W->setText(i.key());
+		W->setProperty("id", i.value());
+		W->setChecked(Op.value("Jobs").toList().contains(i.value()));
+
+		ui->jobLayout->addWidget(W);
+	}
+
+	for (auto i = docFields.constBegin(); i != docFields.constEnd(); ++i)
+	{
+		QCheckBox* W = new QCheckBox(this);
+		W->setText(i.key());
+		W->setProperty("id", i.value());
+		W->setChecked(Op.value("Docs").toList().contains(i.value()));
+
+		ui->docLayout->addWidget(W);
+	}
 }
 
 SettingsDialog::~SettingsDialog(void)
 {
 	delete ui;
+}
+
+QVariantMap SettingsDialog::getValues(void) const
+{
+	QVariantList Types, Jobs, Docs;
+
+	for (int i = 0; i < ui->typesLayout->count(); ++i)
+	{
+		const auto W = dynamic_cast<QCheckBox*>(ui->typesLayout->itemAt(i)->widget());
+		if (W->isChecked()) Types.append(W->property("id"));
+	}
+
+	for (int i = 0; i < ui->docLayout->count(); ++i)
+	{
+		const auto W = dynamic_cast<QCheckBox*>(ui->docLayout->itemAt(i)->widget());
+		if (W->isChecked()) Docs.append(W->property("id"));
+	}
+
+	for (int i = 0; i < ui->jobLayout->count(); ++i)
+	{
+		const auto W = dynamic_cast<QCheckBox*>(ui->jobLayout->itemAt(i)->widget());
+		if (W->isChecked()) Jobs.append(W->property("id"));
+	}
+
+	return
+	{
+		{ "Count", ui->countSpin->value() },
+		{ "Types", Types },
+		{ "Jobs", Jobs },
+		{ "Docs", Docs }
+	};
+}
+
+void SettingsDialog::accept(void)
+{
+	QDialog::accept();
+
+	emit onSaveSettings(getValues());
 }

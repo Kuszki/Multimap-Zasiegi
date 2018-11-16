@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset theme="preferences-system"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -22,15 +25,122 @@
      <property name="documentMode">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="resTab">
       <attribute name="title">
-       <string>Common settings</string>
+       <string>Reservations</string>
       </attribute>
+      <layout class="QGridLayout" name="resLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="countLabel">
+         <property name="text">
+          <string>Documents count</string>
+         </property>
+         <property name="buddy">
+          <cstring>countSpin</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="countSpin">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QScrollArea" name="typesScrool">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="typesWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>376</width>
+            <height>154</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="typesLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="docTab">
       <attribute name="title">
-       <string>Document types</string>
+       <string>Documents</string>
       </attribute>
+      <layout class="QGridLayout" name="docScroolLayout">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="docScrool">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="docWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>376</width>
+            <height>195</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="docLayout"/>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="jobTab">
+      <attribute name="title">
+       <string>Strona</string>
+      </attribute>
+      <layout class="QGridLayout" name="jobScroolLayout">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="jobScrool">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="jobWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>376</width>
+            <height>195</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="jobLayout"/>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
@@ -46,6 +156,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>countSpin</tabstop>
+  <tabstop>typesScrool</tabstop>
+  <tabstop>docScrool</tabstop>
+  <tabstop>jobScrool</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

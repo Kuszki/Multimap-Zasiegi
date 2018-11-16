@@ -93,13 +93,10 @@ void ChangeWidget::updateStatus(int Status)
 	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
 		auto Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
+		const auto Data = Widget->getData();
 
-		if (Widget == sender())
-		{
-			ui->tabWidget->setTabIcon(i, Icon);
-		}
-
-		Current.append(Widget->getData());
+		if (Widget == sender()) ui->tabWidget->setTabIcon(i, Icon);
+		if (Status != 0) Current.append(Data);
 	}
 
 	if (Current.size())	Unsaved[Currentindex] = Current;
@@ -229,31 +226,79 @@ void ChangeWidget::appendChange(void)
 void ChangeWidget::removeChange(void)
 {
 	const int Index = ui->tabWidget->currentIndex();
+	auto Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(Index));
 
+	if (!Widget || Index == -1) return;
+
+	QVariantMap Data = Widget->getOrigin();
 	QVariantList Current;
-	QVariantMap Data;
-
-	if (Index != -1)
-	{
-		Data = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(Index))->getOrigin();
-
-		ui->tabWidget->widget(Index)->deleteLater();
-		ui->tabWidget->removeTab(Index);
-
-		Data["status"] = 3;
-	}
-	else return;
-
-	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
-	{
-		auto Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
-
-		Current.append(Widget->getData());
-	}
 
 	if (Data.value("uid").toInt())
 	{
-		Current.append(Data);
+		Data["status"] = 3;
+
+		Widget->blockSignals(true);
+		Widget->setData(Data);
+		Widget->lock();
+		Widget->blockSignals(false);
+
+		ui->tabWidget->setTabIcon(Index, QIcon::fromTheme("edit-delete"));
+	}
+	else
+	{
+		ui->tabWidget->removeTab(Index);
+		Widget->deleteLater();
+	}
+
+	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
+	{
+		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
+		const auto D = W->getData();
+		const int Status = D.value("status").toInt();
+
+		if (Status != 0) Current.append(D);
+	}
+
+	if (Current.size())	Unsaved[Currentindex] = Current;
+	else Unsaved.remove(Currentindex);
+
+	emit onChangesUpdate(Currentindex, Current);
+}
+
+void ChangeWidget::undoChange(void)
+{
+	const int Index = ui->tabWidget->currentIndex();
+	auto Widget = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(Index));
+
+	if (!Widget || Index == -1) return;
+
+	QVariantMap Data = Widget->getOrigin();
+	QVariantList Current;
+
+	if (Data.value("uid").toInt())
+	{
+		Data["status"] = 0;
+
+		Widget->blockSignals(true);
+		Widget->setData(Data);
+		Widget->unlock();
+		Widget->blockSignals(false);
+
+		ui->tabWidget->setTabIcon(Index, QIcon());
+	}
+	else
+	{
+		ui->tabWidget->removeTab(Index);
+		Widget->deleteLater();
+	}
+
+	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
+	{
+		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
+		const auto D = W->getData();
+		const int Status = D.value("status").toInt();
+
+		if (Status != 0) Current.append(D);
 	}
 
 	if (Current.size())	Unsaved[Currentindex] = Current;

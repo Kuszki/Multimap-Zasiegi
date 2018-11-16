@@ -68,13 +68,46 @@ QString DocWidget::currentImage(void) const
 	return model->data(model->index(Current.row(), 6)).toString();
 }
 
+int DocWidget::jobIndex(void) const
+{
+	return Currjob;
+}
+
+void DocWidget::setVisibleHeaders(const QVariantList& List)
+{
+	for (int i = 0; i < model->columnCount(); ++i)
+	{
+		ui->tableView->setColumnHidden(i, !List.isEmpty() && !List.contains(i));
+	}
+}
+
 void DocWidget::setJobIndex(int Index)
 {
 	model->setFilter(QString("operat = %1").arg(Index));
 	ui->tableView->selectionModel()->clearSelection();
 
+	Currjob = Index;
+
 	emit onIndexChange(0);
 	emit onPathChange(QString());
+}
+
+void DocWidget::setDocIndex(int Index)
+{
+	const auto Flags = QItemSelectionModel::SelectCurrent |
+				    QItemSelectionModel::Rows;
+
+	const auto I = model->findByUid(Index);
+
+	ui->tableView->selectionModel()->select(I, Flags);
+
+	emit onIndexChange(model->data(model->index(I.row(), 0)).toInt());
+	emit onPathChange(model->data(model->index(I.row(), 6)).toString());
+}
+
+void DocWidget::updateData(void)
+{
+	model->select();
 }
 
 void DocWidget::selectionChanged(const QModelIndex& Current)

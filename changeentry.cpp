@@ -172,6 +172,8 @@ void ChangeEntry::delLeftClicked(void)
 
 void ChangeEntry::updateStatus(void)
 {
+	if (Locked) return;
+
 	const bool New = Origin.value("uid").isNull();
 	const bool Ok = isValid();
 	const bool Ch = isChanged();

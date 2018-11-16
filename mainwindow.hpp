@@ -27,11 +27,13 @@
 #include <QtGui>
 #include <QtSql>
 
+#include "settingsdialog.hpp"
 #include "aboutdialog.hpp"
 #include "indexdialog.hpp"
 #include "roledialog.hpp"
 
 #include "changewidget.hpp"
+#include "lockwidget.hpp"
 #include "jobwidget.hpp"
 #include "docwidget.hpp"
 
@@ -53,18 +55,22 @@ class MainWindow : public QMainWindow
 		QVariantMap Options;
 
 		ChangeWidget* cwidget;
+		LockWidget* lwidget;
 		JobWidget* jwidget;
 		DocWidget* dwidget;
 
 		QDockWidget* changes;
+		QDockWidget* locks;
 		QDockWidget* jobs;
 		QDockWidget* docs;
 
 		QPixmap Image;
 
+		QList<QPair<int, int>> Queue;
 		QSet<int> Locked;
 
 		int CurrentDoc = 0;
+
 		double Scale = 1.0;
 		int Rotation = 0;
 
@@ -73,17 +79,23 @@ class MainWindow : public QMainWindow
 		explicit MainWindow(QWidget* Parent = nullptr);
 		virtual ~MainWindow(void) override;
 
+	private:
+
+		QString getCurrentUser(void) const;
+
 	private slots:
 
 		void aboutClicked(void);
 		void scanClicked(void);
 		void rolesClicked(void);
+		void settingsClicked(void);
 
 		void nextClicked(void);
 		void prevClicked(void);
 		void saveClicked(void);
 		void editClicked(void);
 		void lockClicked(void);
+		void unlockClicked(void);
 
 		void zoomInClicked(void);
 		void zoomOutClicked(void);
@@ -95,10 +107,15 @@ class MainWindow : public QMainWindow
 
 		void changeAddClicked(void);
 		void changeDelClicked(void);
+		void changeUndoClicked(void);
 
 		void documentChanged(int Index);
 
+		void focusDocument(int Document, int Job);
+
 		void updateImage(const QString& Path);
+
+		void saveSettings(const QVariantMap& Settings);
 
 		void scanDirectory(const QString& Dir,
 					    int Mode, bool Rec);

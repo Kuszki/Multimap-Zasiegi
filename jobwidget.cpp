@@ -52,6 +52,14 @@ JobWidget::~JobWidget(void)
 	delete ui;
 }
 
+void JobWidget::setVisibleHeaders(const QVariantList& List)
+{
+	for (int i = 0; i < model->columnCount(); ++i)
+	{
+		ui->tableView->setColumnHidden(i, !List.isEmpty() && !List.contains(i));
+	}
+}
+
 void JobWidget::refreshClicked(void)
 {
 	const QString Esc = ui->searchEdit->text().replace("'", "\\'");

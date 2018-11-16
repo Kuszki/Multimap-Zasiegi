@@ -43,6 +43,7 @@ class DocWidget : public QWidget
 		Ui::DocWidget* ui;
 
 		SqlModel* model;
+		int Currjob = 0;
 
 	public:
 
@@ -51,9 +52,16 @@ class DocWidget : public QWidget
 
 		QString currentImage(void) const;
 
+		int jobIndex(void) const;
+
 	public slots:
 
+		void setVisibleHeaders(const QVariantList& List);
+
 		void setJobIndex(int Index);
+		void setDocIndex(int Index);
+
+		void updateData(void);
 
 	private slots:
 

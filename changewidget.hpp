@@ -76,14 +76,11 @@ class ChangeWidget : public QWidget
 		void appendChange(void);
 		void removeChange(void);
 
+		void undoChange(void);
+
 	signals:
 
 		void onChangesUpdate(int, const QVariantList&);
-
-		// TODO implement me
-		void onChangeUpdate(int, bool);
-		void onChangeRemove(int, bool);
-		void onChangeAppend(int);
 
 };
 

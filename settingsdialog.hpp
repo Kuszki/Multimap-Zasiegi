@@ -21,6 +21,9 @@
 #ifndef SETTINGSDIALOG_HPP
 #define SETTINGSDIALOG_HPP
 
+#include <QSqlDatabase>
+#include <QCheckBox>
+#include <QSqlQuery>
 #include <QDialog>
 
 namespace Ui
@@ -39,8 +42,19 @@ class SettingsDialog : public QDialog
 
 	public:
 
-		explicit SettingsDialog(QWidget* Parent = nullptr);
+		explicit SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op,
+						    QWidget* Parent = nullptr);
 		virtual ~SettingsDialog(void) override;
+
+		QVariantMap getValues(void) const;
+
+	public slots:
+
+		virtual void accept(void) override;
+
+	signals:
+
+		void onSaveSettings(const QVariantMap&);
 
 };
 

@@ -28,38 +28,38 @@ CONFIG		+=	c++14
 SOURCES		+=	main.cpp \
 				mainwindow.cpp \
 				aboutdialog.cpp \
-    jobwidget.cpp \
-    docwidget.cpp \
-    indexdialog.cpp \
-    sqlmodel.cpp \
-    roledialog.cpp \
-    changewidget.cpp \
-    changeentry.cpp \
-    settingsdialog.cpp \
-    lockwidget.cpp
+				jobwidget.cpp \
+				docwidget.cpp \
+				indexdialog.cpp \
+				sqlmodel.cpp \
+				roledialog.cpp \
+				changewidget.cpp \
+				changeentry.cpp \
+				settingsdialog.cpp \
+				lockwidget.cpp
 
 HEADERS		+=	mainwindow.hpp \
 				aboutdialog.hpp \
-    jobwidget.hpp \
-    docwidget.hpp \
-    indexdialog.hpp \
-    sqlmodel.hpp \
-    roledialog.hpp \
-    changewidget.hpp \
-    changeentry.hpp \
-    settingsdialog.hpp \
-    lockwidget.hpp
+				jobwidget.hpp \
+				docwidget.hpp \
+				indexdialog.hpp \
+				sqlmodel.hpp \
+				roledialog.hpp \
+				changewidget.hpp \
+				changeentry.hpp \
+				settingsdialog.hpp \
+				lockwidget.hpp
 
 FORMS		+=	mainwindow.ui \
 				aboutdialog.ui \
-    jobwidget.ui \
-    docwidget.ui \
-    indexdialog.ui \
-    roledialog.ui \
-    changewidget.ui \
-    changeentry.ui \
-    settingsdialog.ui \
-    lockwidget.ui
+				jobwidget.ui \
+				docwidget.ui \
+				indexdialog.ui \
+				roledialog.ui \
+				changewidget.ui \
+				changeentry.ui \
+				settingsdialog.ui \
+				lockwidget.ui
 
 RESOURCES		+=	resources.qrc
 

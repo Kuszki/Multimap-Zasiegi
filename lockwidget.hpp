@@ -44,14 +44,22 @@ class LockWidget : public QWidget
 		explicit LockWidget(QWidget* Parent = nullptr);
 		virtual ~LockWidget(void) override;
 
+	public slots:
+
+		void appendDocument(const QString& File, int dID,
+						const QString& Job, int jID);
+
+		void removeDocument(int Index);
+
+		void recalcChanges(int Index, const QVariantList& List);
+
 	private slots:
 
 		void itemSelected(const QModelIndex& Index);
 
 	signals:
 
-		void onJobSelected(int);
-		void onDocSelected(int);
+		void onDocSelected(int, int);
 
 };
 
