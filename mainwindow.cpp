@@ -724,6 +724,8 @@ void MainWindow::updateRoles(const QString& Path, bool Addnew)
 					Updates.append({ Row.first, Role });
 					Locker.unlock();
 				}
+
+				return;
 			}
 		}
 	});
