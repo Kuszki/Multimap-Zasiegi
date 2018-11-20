@@ -468,6 +468,7 @@ void MainWindow::prevClicked(void)
 void MainWindow::saveClicked(void)
 {
 	QSqlQuery delQuery(Db), updQuery(Db), addQuery(Db), docQuery(Db);
+	int Err(0);
 
 	delQuery.prepare("DELETE FROM zmiany WHERE id = ?");
 
@@ -504,12 +505,15 @@ void MainWindow::saveClicked(void)
 
 			delQuery.exec();
 		break;
+		case -1: ++Err; break;
 	}
 
 	docQuery.addBindValue(getCurrentUser());
 	docQuery.addBindValue(CurrentDoc);
 
 	docQuery.exec();
+
+	if (Err) QMessageBox::warning(this, tr("Warning"), tr("There are %n unsaved changes(s) due incomplete data.", nullptr, Err));
 
 	emit onSaveChanges(CurrentDoc);
 }
@@ -622,6 +626,16 @@ void MainWindow::lockClicked(void)
 
 void MainWindow::unlockClicked(void)
 {
+	const int Chg = cwidget->getChanges().size();
+
+	if (Chg) switch (QMessageBox::question(this, tr("Unsaved changes policy"),
+								    tr("There are %n unsaved changes(s).", nullptr, Chg),
+								    QMessageBox::Save | QMessageBox::Ignore | QMessageBox::Abort))
+	{
+		case QMessageBox::Save: saveClicked(); break;
+		case QMessageBox::Abort: return; default:;
+	}
+
 	QSqlQuery Query(Db);
 
 	Query.prepare("DELETE FROM blokady WHERE id = ?");

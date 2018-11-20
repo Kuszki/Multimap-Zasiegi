@@ -29,14 +29,13 @@ JobWidget::JobWidget(QSqlDatabase& Db, QWidget* Parent)
 	model = new SqlModel(this, Db);
 	model->setTable("operaty");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
-	model->setEditable({ 2, 3 });
+	model->setEditable({ 2 });
 
 	model->setHeaderData(0, Qt::Horizontal, tr("ID"));
 	model->setHeaderData(1, Qt::Horizontal, tr("P Number"));
-	model->setHeaderData(2, Qt::Horizontal, tr("KERG Number"));
-	model->setHeaderData(3, Qt::Horizontal, tr("Type"));
+	model->setHeaderData(2, Qt::Horizontal, tr("Type"));
 
-	model->setRelation(3, QSqlRelation("rodzajeopr", "id", "nazwa"));
+	model->setRelation(2, QSqlRelation("rodzajeopr", "id", "nazwa"));
 
 	model->select();
 
@@ -48,6 +47,10 @@ JobWidget::JobWidget(QSqlDatabase& Db, QWidget* Parent)
 	connect(ui->tableView->selectionModel(),
 		   &QItemSelectionModel::currentRowChanged,
 		   this, &JobWidget::selectionChanged);
+
+	connect(ui->tableView->horizontalHeader(),
+		   &QHeaderView::sortIndicatorChanged,
+		   model, &SqlModel::sort);
 }
 
 JobWidget::~JobWidget(void)
@@ -67,7 +70,7 @@ void JobWidget::refreshClicked(void)
 {
 	const QString Esc = ui->searchEdit->text().replace("'", "\\'");
 
-	model->setFilter(QString("numer LIKE '%%1%' OR kerg LIKE '%%1%'").arg(Esc));
+	model->setFilter(QString("numer LIKE '%%1%'").arg(Esc));
 	ui->tableView->selectionModel()->clearSelection();
 
 	emit onIndexChange(0);

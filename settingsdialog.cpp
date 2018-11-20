@@ -29,8 +29,7 @@ SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op, QWidget*
 	static const QHash<QString, int> jobFields =
 	{
 		{ tr("P Number"), 1 },
-		{ tr("KERG Number"), 2 },
-		{ tr("Type"), 3 },
+		{ tr("Type"), 2 },
 	};
 
 	static const QHash<QString, int> docFields =

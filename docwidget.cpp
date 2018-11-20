@@ -55,6 +55,10 @@ DocWidget::DocWidget(QSqlDatabase& Db, QWidget* Parent)
 	connect(ui->tableView->selectionModel(),
 		   &QItemSelectionModel::currentRowChanged,
 		   this, &DocWidget::selectionChanged);
+
+	connect(ui->tableView->horizontalHeader(),
+		   &QHeaderView::sortIndicatorChanged,
+		   model, &SqlModel::sort);
 }
 
 DocWidget::~DocWidget(void)
