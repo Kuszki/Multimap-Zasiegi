@@ -507,12 +507,12 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     <message>
         <location filename="mainwindow.cpp" line="516"/>
         <source>Saving changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapisywanie zmian</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="631"/>
         <source>Unlocking document</source>
-        <translation type="unfinished"></translation>
+        <translation>Odblokowanie dokumentu</translation>
     </message>
     <message>
         <source>Warning</source>
