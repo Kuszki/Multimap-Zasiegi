@@ -513,7 +513,7 @@ void MainWindow::saveClicked(void)
 
 	docQuery.exec();
 
-	if (Err) QMessageBox::warning(this, tr("Warning"), tr("There are %n unsaved changes(s) due incomplete data.", nullptr, Err));
+	if (Err) QMessageBox::warning(this, tr("Saving changes"), tr("There are %n unsaved changes(s) due incomplete data.", nullptr, Err));
 
 	emit onSaveChanges(CurrentDoc);
 }
@@ -628,7 +628,7 @@ void MainWindow::unlockClicked(void)
 {
 	const int Chg = cwidget->getChanges().size();
 
-	if (Chg) switch (QMessageBox::question(this, tr("Unsaved changes policy"),
+	if (Chg) switch (QMessageBox::question(this, tr("Unlocking document"),
 								    tr("There are %n unsaved changes(s).", nullptr, Chg),
 								    QMessageBox::Save | QMessageBox::Ignore | QMessageBox::Abort))
 	{

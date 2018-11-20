@@ -506,8 +506,17 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.cpp" line="516"/>
+        <source>Saving changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="631"/>
+        <source>Unlocking document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Warning</source>
-        <translation>Niezapisane zmiany</translation>
+        <translation type="vanished">Niezapisane zmiany</translation>
     </message>
     <message numerus="yes">
         <location filename="mainwindow.cpp" line="516"/>
@@ -519,9 +528,8 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="631"/>
         <source>Unsaved changes policy</source>
-        <translation>Lokalne zmiany</translation>
+        <translation type="vanished">Lokalne zmiany</translation>
     </message>
     <message numerus="yes">
         <location filename="mainwindow.cpp" line="632"/>
