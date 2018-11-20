@@ -90,6 +90,7 @@
     <property name="title">
      <string>Application</string>
     </property>
+    <addaction name="actionImportdata"/>
     <addaction name="actionScan"/>
     <addaction name="actionRoles"/>
     <addaction name="separator"/>
@@ -114,6 +115,8 @@
     <addaction name="separator"/>
     <addaction name="actionRotateleft"/>
     <addaction name="actionRotateright"/>
+    <addaction name="separator"/>
+    <addaction name="actionSaverotation"/>
    </widget>
    <widget class="QMenu" name="menuDocument">
     <property name="title">
@@ -146,6 +149,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSaverotation"/>
    <addaction name="actionZoomin"/>
    <addaction name="actionZoomout"/>
    <addaction name="actionFit"/>
@@ -400,6 +404,23 @@
    </property>
    <property name="text">
     <string>Unlock</string>
+   </property>
+  </action>
+  <action name="actionSaverotation">
+   <property name="icon">
+    <iconset theme="document-properties">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Save rotation</string>
+   </property>
+  </action>
+  <action name="actionImportdata">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
+   <property name="text">
+    <string>Import data</string>
    </property>
   </action>
  </widget>
@@ -726,6 +747,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSaverotation</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveRotClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionImportdata</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>importClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>aboutClicked()</slot>
@@ -747,5 +800,7 @@
   <slot>changeUndoClicked()</slot>
   <slot>unlockClicked()</slot>
   <slot>settingsClicked()</slot>
+  <slot>saveRotClicked()</slot>
+  <slot>importClicked()</slot>
  </slots>
 </ui>

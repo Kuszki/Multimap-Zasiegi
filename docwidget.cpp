@@ -64,13 +64,17 @@ DocWidget::~DocWidget(void)
 
 QString DocWidget::currentImage(void) const
 {
-	const auto Current = ui->tableView->selectionModel()->currentIndex();
-	return model->data(model->index(Current.row(), 6)).toString();
+	return Currpath;
 }
 
 int DocWidget::jobIndex(void) const
 {
 	return Currjob;
+}
+
+int DocWidget::docIndex(void) const
+{
+	return Currdoc;
 }
 
 void DocWidget::setVisibleHeaders(const QVariantList& List)
@@ -87,6 +91,8 @@ void DocWidget::setJobIndex(int Index)
 	ui->tableView->selectionModel()->clearSelection();
 
 	Currjob = Index;
+	Currdoc = 0;
+	Currpath = QString();
 
 	emit onIndexChange(0);
 	emit onPathChange(QString());
@@ -101,8 +107,11 @@ void DocWidget::setDocIndex(int Index)
 
 	ui->tableView->selectionModel()->select(I, Flags);
 
-	emit onIndexChange(model->data(model->index(I.row(), 0)).toInt());
-	emit onPathChange(model->data(model->index(I.row(), 6)).toString());
+	Currdoc = model->data(model->index(I.row(), 0)).toInt();
+	Currpath = model->data(model->index(I.row(), 6)).toString();
+
+	emit onIndexChange(Currdoc);
+	emit onPathChange(Currpath);
 }
 
 void DocWidget::updateData(int Index)
@@ -118,6 +127,9 @@ void DocWidget::updateData(int Index)
 
 void DocWidget::selectionChanged(const QModelIndex& Current)
 {
-	emit onIndexChange(model->data(model->index(Current.row(), 0)).toInt());
-	emit onPathChange(model->data(model->index(Current.row(), 6)).toString());
+	Currdoc = model->data(model->index(Current.row(), 0)).toInt();
+	Currpath = model->data(model->index(Current.row(), 6)).toString();
+
+	emit onIndexChange(Currdoc);
+	emit onPathChange(Currpath);
 }

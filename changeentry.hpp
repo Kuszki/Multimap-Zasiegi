@@ -22,7 +22,9 @@
 #define CHANGEENTRY_HPP
 
 #include <QStringListModel>
+#include <QSqlDatabase>
 #include <QVariantMap>
+#include <QSqlQuery>
 #include <QWidget>
 
 namespace Ui
@@ -47,7 +49,7 @@ class ChangeEntry : public QWidget
 
 	public:
 
-		explicit ChangeEntry(const QVariantMap& Data, bool Lock = false, QWidget* Parent = nullptr);
+		explicit ChangeEntry(const QVariantMap& Data, QSqlDatabase& Db, bool Lock = false, QWidget* Parent = nullptr);
 		virtual ~ChangeEntry(void) override;
 
 		QVariantMap getOrigin(void) const;

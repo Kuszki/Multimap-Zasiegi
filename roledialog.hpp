@@ -56,7 +56,7 @@ class RoleDialog : public QDialog
 
 	signals:
 
-		void onRefresh(const QString&, bool);
+		void onRefresh(int, const QString&, bool);
 
 };
 

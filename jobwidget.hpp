@@ -21,6 +21,7 @@
 #ifndef JOBWIDGET_HPP
 #define JOBWIDGET_HPP
 
+#include <QSqlRelationalDelegate>
 #include <QStandardItemModel>
 #include <QSqlTableModel>
 #include <QWidget>

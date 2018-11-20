@@ -18,64 +18,60 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DOCWIDGET_HPP
-#define DOCWIDGET_HPP
+#ifndef IMPORTDIALOG_HPP
+#define IMPORTDIALOG_HPP
 
-#include <QSqlRelationalTableModel>
-#include <QSqlRelationalDelegate>
 #include <QStandardItemModel>
-#include <QWidget>
-
-#include "sqlmodel.hpp"
+#include <QDialogButtonBox>
+#include <QTextStream>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QDialog>
+#include <QFile>
+#include <QSet>
 
 namespace Ui
 {
-	class DocWidget;
+	class ImportDialog;
 }
 
-class DocWidget : public QWidget
+class ImportDialog : public QDialog
 {
 
 		Q_OBJECT
 
 	private:
 
-		Ui::DocWidget* ui;
+		Ui::ImportDialog* ui;
 
-		QString Currpath;
-		SqlModel* model;
+		QVariantMap Jobs;
+		QVariantMap Docs;
 
-		int Currjob = 0;
-		int Currdoc = 0;
+		QStandardItemModel* jmodel;
+		QStandardItemModel* dmodel;
 
 	public:
 
-		explicit DocWidget(QSqlDatabase& Db, QWidget* Parent = nullptr);
-		virtual ~DocWidget(void) override;
+		explicit ImportDialog(QWidget* Parent = nullptr);
+		virtual ~ImportDialog(void) override;
 
-		QString currentImage(void) const;
+	private:
 
-		int jobIndex(void) const;
-		int docIndex(void) const;
+		void updateData(const QString& Path);
 
 	public slots:
 
-		void setVisibleHeaders(const QVariantList& List);
-
-		void setJobIndex(int Index);
-		void setDocIndex(int Index);
-
-		void updateData(int Index);
+		virtual void accept(void) override;
 
 	private slots:
 
-		void selectionChanged(const QModelIndex& Current);
+		void openClicked(void);
+		void pathChanged(const QString& Path);
 
 	signals:
 
-		void onPathChange(const QString&);
-		void onIndexChange(int);
+		void onLoadRequest(const QVariantMap&, const QVariantMap&);
 
 };
 
-#endif // DOCWIDGET_HPP
+#endif // IMPORTDIALOG_HPP

@@ -29,18 +29,21 @@ JobWidget::JobWidget(QSqlDatabase& Db, QWidget* Parent)
 	model = new SqlModel(this, Db);
 	model->setTable("operaty");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
-	model->setEditable({ 2, 3, 4 });
+	model->setEditable({ 2, 3 });
 
 	model->setHeaderData(0, Qt::Horizontal, tr("ID"));
 	model->setHeaderData(1, Qt::Horizontal, tr("P Number"));
 	model->setHeaderData(2, Qt::Horizontal, tr("KERG Number"));
-	model->setHeaderData(3, Qt::Horizontal, tr("Community"));
-	model->setHeaderData(4, Qt::Horizontal, tr("Precinct"));
+	model->setHeaderData(3, Qt::Horizontal, tr("Type"));
+
+	model->setRelation(3, QSqlRelation("rodzajeopr", "id", "nazwa"));
 
 	model->select();
 
 	ui->tableView->setModel(model);
 	ui->tableView->hideColumn(0);
+
+	ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
 
 	connect(ui->tableView->selectionModel(),
 		   &QItemSelectionModel::currentRowChanged,

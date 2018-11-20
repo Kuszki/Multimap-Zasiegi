@@ -69,7 +69,7 @@ class ChangeWidget : public QWidget
 
 	public slots:
 
-		void setDocIndex(int Index, bool Lock);
+		void setDocIndex(int Index, bool Lock, bool Clear = true);
 
 		void setLocked(bool Lock);
 
@@ -83,7 +83,7 @@ class ChangeWidget : public QWidget
 
 	signals:
 
-		void onChangesUpdate(int, int, int, int);
+		void onChangesUpdate(int, int, int, int, int);
 
 };
 

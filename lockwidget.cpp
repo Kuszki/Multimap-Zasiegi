@@ -26,13 +26,19 @@ LockWidget::LockWidget(QWidget* Parent)
 {
 	ui->setupUi(this);
 
-	model = new QStandardItemModel(0, 4, this);
-	model->setHorizontalHeaderLabels(
-	{
-		tr("Document"), tr("Added"), tr("Removed"), tr("Modified")
-	});
+	model = new QStandardItemModel(0, 5, this);
+	model->setHorizontalHeaderLabels({ tr("Document"), "", "", "", "" });
+
+	model->horizontalHeaderItem(1)->setIcon(QIcon::fromTheme("list-add"));
+	model->horizontalHeaderItem(2)->setIcon(QIcon::fromTheme("list-remove"));
+	model->horizontalHeaderItem(3)->setIcon(QIcon::fromTheme("tools-check-spelling"));
+	model->horizontalHeaderItem(4)->setIcon(QIcon::fromTheme("dialog-error"));
 
 	ui->treeView->setModel(model);
+	ui->treeView->setColumnWidth(1, 50);
+	ui->treeView->setColumnWidth(2, 50);
+	ui->treeView->setColumnWidth(3, 50);
+	ui->treeView->setColumnWidth(4, 50);
 
 	connect(ui->treeView, &QTreeView::doubleClicked,
 		   this, &LockWidget::itemSelected);
@@ -52,7 +58,7 @@ void LockWidget::appendDocument(const QString& File, int dID, const QString& Job
 	Doc->setData(dID, Qt::UserRole);
 	Row.append(Doc);
 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		auto I = new QStandardItem("0");
 		I->setData(dID, Qt::UserRole);
@@ -109,7 +115,7 @@ void LockWidget::removeDocument(int Index)
 		model->removeRow(Parent.row());
 }
 
-void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod)
+void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod, int Err)
 {
 	QModelIndex Parent;
 	int Row = -1;
@@ -138,6 +144,7 @@ void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod)
 	model->setData(model->index(Row, 1, Parent), Add);
 	model->setData(model->index(Row, 2, Parent), Del);
 	model->setData(model->index(Row, 3, Parent), Mod);
+	model->setData(model->index(Row, 4, Parent), Err);
 }
 
 void LockWidget::itemSelected(const QModelIndex& Index)

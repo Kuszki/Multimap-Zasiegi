@@ -164,6 +164,178 @@ QString MainWindow::getCurrentUser(void) const
 	return U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
 }
 
+void MainWindow::updateDocRoles(const QString& Path, bool Addnew)
+{
+	QSqlQuery Query("SELECT id, nazwa FROM rodzajedok", Db);
+
+	QList<QPair<int, QString>> Documents;
+	QList<QPair<int, int>> Updates;
+
+	QHash<QString, QString> Data;
+	QHash<QString, int> Roles;
+	QSet<QString> Newroles;
+
+	QMutex Locker;
+
+	while (Query.next()) Roles.insert(
+				Query.value(1).toString(),
+				Query.value(0).toInt());
+
+	QFile Input(Path);
+	QTextStream Stream(&Input);
+	Input.open(QFile::Text | QFile::ReadOnly);
+
+	while (!Stream.atEnd())
+	{
+		const QStringList Row = Stream.readLine().split('\t');
+		if (Row.size() != 2) continue;
+
+		Data.insert(Row[0], Row[1]);
+
+		if (!Roles.contains(Row[1]))
+		{
+			Newroles.insert(Row[1]);
+		}
+
+		QApplication::processEvents();
+	}
+
+	Query.prepare("INSERT INTO rodzajedok (nazwa) VALUES (?)");
+
+	if (Addnew) for (const auto& Role : Newroles)
+	{
+		Query.addBindValue(Role);
+		Query.exec();
+
+		Roles.insert(Role, Query.lastInsertId().toInt());
+	}
+
+	Query.prepare("SELECT id, sciezka FROM dokumenty");
+
+	if (Query.exec()) while (Query.next()) Documents.append(
+	{
+		Query.value(0).toInt(),
+		Query.value(1).toString()
+	});
+
+	QtConcurrent::blockingMap(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
+	{
+		for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
+		{
+			if (Row.second.endsWith(i.key()))
+			{
+				const int Role = Roles.value(i.value(), 0);
+
+				if (Role)
+				{
+					Locker.lock();
+					Updates.append({ Row.first, Role });
+					Locker.unlock();
+				}
+
+				return;
+			}
+		}
+	});
+
+	Query.prepare("UPDATE dokumenty SET rodzaj = ? WHERE id = ?");
+
+	for (const auto& Row : Updates)
+	{
+		Query.addBindValue(Row.second);
+		Query.addBindValue(Row.first);
+		Query.exec();
+
+		QApplication::processEvents();
+	}
+}
+
+void MainWindow::updateJobRoles(const QString& Path, bool Addnew)
+{
+	QSqlQuery Query("SELECT id, nazwa FROM rodzajeopr", Db);
+
+	QList<QPair<int, QString>> Documents;
+	QList<QPair<int, int>> Updates;
+
+	QHash<QString, QString> Data;
+	QHash<QString, int> Roles;
+	QSet<QString> Newroles;
+
+	QMutex Locker;
+
+	while (Query.next()) Roles.insert(
+				Query.value(1).toString(),
+				Query.value(0).toInt());
+
+	QFile Input(Path);
+	QTextStream Stream(&Input);
+	Input.open(QFile::Text | QFile::ReadOnly);
+
+	while (!Stream.atEnd())
+	{
+		const QStringList Row = Stream.readLine().split('\t');
+		if (Row.size() != 2) continue;
+
+		Data.insert(Row[0], Row[1]);
+
+		if (!Roles.contains(Row[1]))
+		{
+			Newroles.insert(Row[1]);
+		}
+
+		QApplication::processEvents();
+	}
+
+	Query.prepare("INSERT INTO rodzajeopr (nazwa) VALUES (?)");
+
+	if (Addnew) for (const auto& Role : Newroles)
+	{
+		Query.addBindValue(Role);
+		Query.exec();
+
+		Roles.insert(Role, Query.lastInsertId().toInt());
+	}
+
+	Query.prepare("SELECT id, numer FROM operaty");
+
+	if (Query.exec()) while (Query.next()) Documents.append(
+	{
+		Query.value(0).toInt(),
+		Query.value(1).toString()
+	});
+
+	QtConcurrent::blockingMap(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
+	{
+		for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
+		{
+			if (Row.second.endsWith(i.key()))
+			{
+				const int Role = Roles.value(i.value(), 0);
+
+				if (Role)
+				{
+					Locker.lock();
+					Updates.append({ Row.first, Role });
+					Locker.unlock();
+				}
+
+				return;
+			}
+		}
+	});
+
+	Query.prepare("UPDATE operaty SET rodzaj = ? WHERE id = ?");
+
+	for (const auto& Row : Updates)
+	{
+		Query.addBindValue(Row.second);
+		Query.addBindValue(Row.first);
+		Query.exec();
+
+		QApplication::processEvents();
+	}
+}
+
 void MainWindow::aboutClicked(void)
 {
 	AboutDialog* Dialog = new AboutDialog(this);
@@ -173,6 +345,22 @@ void MainWindow::aboutClicked(void)
 
 	connect(Dialog, &AboutDialog::rejected,
 		   Dialog, &AboutDialog::deleteLater);
+
+	Dialog->open();
+}
+
+void MainWindow::importClicked(void)
+{
+	ImportDialog* Dialog = new ImportDialog(this);
+
+	connect(Dialog, &ImportDialog::accepted,
+		   Dialog, &ImportDialog::deleteLater);
+
+	connect(Dialog, &ImportDialog::rejected,
+		   Dialog, &ImportDialog::deleteLater);
+
+	connect(Dialog, &ImportDialog::onLoadRequest,
+		   this, &MainWindow::importData);
 
 	Dialog->open();
 }
@@ -231,12 +419,11 @@ void MainWindow::nextClicked(void)
 
 	if (CurrentDoc == Index.first && Queue.size())
 	{
+		Queue.push_back(Index);
 		Index = Queue.takeFirst();
 	}
 
-	const auto Job = dwidget->jobIndex();
-
-	if (CurrentDoc) Queue.push_back({ CurrentDoc, Job });
+	Queue.push_back(Index);
 
 	focusDocument(Index.first, Index.second);
 }
@@ -247,12 +434,11 @@ void MainWindow::prevClicked(void)
 
 	if (CurrentDoc == Index.first && Queue.size())
 	{
+		Queue.push_front(Index);
 		Index = Queue.takeLast();
 	}
 
-	const auto Job = dwidget->jobIndex();
-
-	if (CurrentDoc) Queue.push_front({ CurrentDoc, Job });
+	Queue.push_front(Index);
 
 	focusDocument(Index.first, Index.second);
 }
@@ -263,9 +449,9 @@ void MainWindow::saveClicked(void)
 
 	delQuery.prepare("DELETE FROM zmiany WHERE id = ?");
 
-	updQuery.prepare("UPDATE zmiany SET arkusz = ?, obreb = ?, stare = ?, nowe = ? WHERE id = ?");
+	updQuery.prepare("UPDATE zmiany SET arkusz = ?, obreb = ?, stare = ?, nowe = ?, uwagi = ? WHERE id = ?");
 
-	addQuery.prepare("INSERT INTO zmiany (dokument, arkusz, obreb, stare, nowe) VALUES (?, ?, ?, ?, ?)");
+	addQuery.prepare("INSERT INTO zmiany (dokument, arkusz, obreb, stare, nowe, uwagi) VALUES (?, ?, ?, ?, ?, ?)");
 
 	docQuery.prepare("UPDATE dokumenty SET operator = ?, data = CURRENT_TIMESTAMP WHERE id = ?");
 
@@ -277,6 +463,7 @@ void MainWindow::saveClicked(void)
 			addQuery.addBindValue(Change.value("area"));
 			addQuery.addBindValue(Change.value("before").toStringList().join(';'));
 			addQuery.addBindValue(Change.value("after").toStringList().join(';'));
+			addQuery.addBindValue(Change.value("comment").toString());
 
 			addQuery.exec();
 		break;
@@ -285,6 +472,7 @@ void MainWindow::saveClicked(void)
 			updQuery.addBindValue(Change.value("area"));
 			updQuery.addBindValue(Change.value("before").toStringList().join(';'));
 			updQuery.addBindValue(Change.value("after").toStringList().join(';'));
+			updQuery.addBindValue(Change.value("comment").toString());
 			updQuery.addBindValue(Change.value("uid"));
 
 			updQuery.exec();
@@ -338,6 +526,9 @@ void MainWindow::editClicked(void)
 		Locked.insert(CurrentDoc);
 		documentChanged(CurrentDoc);
 	}
+
+	ui->actionNext->setEnabled(Queue.size());
+	ui->actionPrevious->setEnabled(Queue.size());
 }
 
 void MainWindow::lockClicked(void)
@@ -347,43 +538,64 @@ void MainWindow::lockClicked(void)
 	const QString User = getCurrentUser();
 
 	QVector<QString> dNames, jNames;
-	QVector<int> dIDS, jIDS;
-	int Size(0);
+	QMap<int, QList<int>> IDS;
 
-	QSqlQuery Query(QString("SELECT d.nazwa, d.id, o.numer, o.id FROM dokumenty d "
-					    "INNER JOIN operaty o ON d.operat = o.id "
-					    "WHERE d.rodzaj IN (%2) AND d.data IS NULL "
-					    "AND d.id NOT IN (SELECT b.id FROM blokady b) "
-					    "LIMIT %1")
-				 .arg(Count).arg(Types), Db);
+	QSqlQuery Query("LOCK TABLES blokady WRITE, operaty AS o READ, dokumenty AS d READ, rodzajedok AS r READ", Db);
 
-	while (Query.next())
+	Query.prepare(QString("SELECT DISTINCT o.id FROM operaty o "
+					  "INNER JOIN dokumenty d ON d.operat = o.id "
+					  "INNER JOIN rodzajedok r ON d.rodzaj = r.id "
+					  "WHERE d.rodzaj IN (%1) AND d.data IS NULL "
+					  "AND d.id NOT IN (SELECT id FROM blokady) "
+					  "LIMIT %2")
+			    .arg(Types).arg(Count));
+
+	if (Query.exec()) while (Query.next())
 	{
-		dNames.append(Query.value(0).toString());
-		jNames.append(Query.value(2).toString());
-		dIDS.append(Query.value(1).toInt());
-		jIDS.append(Query.value(3).toInt());
-
-		++Size;
+		IDS.insert(Query.value(0).toInt(), QList<int>());
 	}
 
-	Query.prepare("INSERT INTO blokady (id, operator) "
-			    "VALUES (?, ?)");
+	Query.prepare(QString("SELECT d.nazwa, d.id, o.numer, o.id FROM dokumenty d "
+					  "INNER JOIN operaty o ON d.operat = o.id "
+					  "INNER JOIN rodzajedok r ON d.rodzaj = r.id "
+					  "WHERE o.id = ? AND d.rodzaj IN (%1) AND d.data IS NULL "
+					  "AND d.id NOT IN (SELECT id FROM blokady)")
+			    .arg(Types));
 
-	for (int i = 0; i < Size; ++i)
+	for (auto i = IDS.begin(); i != IDS.end(); ++i)
 	{
-		Query.addBindValue(dIDS[i]);
-		Query.addBindValue(User);
+		Query.addBindValue(i.key());
 
-		if (Query.exec())
+		if (Query.exec()) while (Query.next())
 		{
-			lwidget->appendDocument(dNames[i], dIDS[i],
-							    jNames[i], jIDS[i]);
+			const QString dName = Query.value(0).toString();
+			const QString oName = Query.value(2).toString();
 
-			Queue.append({ dIDS[i], jIDS[i] });
-			Locked.insert(dIDS[i]);
+			const int dID = Query.value(1).toInt();
+			const int oID = Query.value(3).toInt();
+
+			lwidget->appendDocument(dName, dID, oName, oID);
+			Queue.append({ dID, oID });
+			Locked.insert(dID);
+
+			i.value().append(dID);
 		}
 	}
+
+	Query.prepare("INSERT INTO blokady (id, operator) VALUES (?, ?)");
+
+	for (const auto& List : IDS) for (const auto& ID : List)
+	{
+		Query.addBindValue(ID);
+		Query.addBindValue(User);
+
+		Query.exec();
+	}
+
+	Query.exec("UNLOCK TABLES");
+
+	ui->actionNext->setEnabled(Queue.size());
+	ui->actionPrevious->setEnabled(Queue.size());
 }
 
 void MainWindow::unlockClicked(void)
@@ -393,6 +605,14 @@ void MainWindow::unlockClicked(void)
 	Query.prepare("DELETE FROM blokady WHERE id = ?");
 	Query.addBindValue(CurrentDoc);
 	Query.exec();
+
+	for (int i = 0; i < Queue.size(); ++i)
+	{
+		if (Queue[i].first == CurrentDoc)
+		{
+			Queue.removeAt(i--);
+		}
+	}
 
 	Locked.remove(CurrentDoc);
 	cwidget->discardChanged(CurrentDoc);
@@ -404,6 +624,9 @@ void MainWindow::unlockClicked(void)
 	ui->actionLock->setEnabled(true);
 	ui->actionSave->setEnabled(false);
 	ui->actionUnlock->setEnabled(false);
+
+	ui->actionNext->setEnabled(Queue.size());
+	ui->actionPrevious->setEnabled(Queue.size());
 
 	lwidget->removeDocument(CurrentDoc);
 }
@@ -432,14 +655,14 @@ void MainWindow::zoomFitClicked(void)
 	auto Img = Image.transformed(QTransform().rotate(Rotation))
 			 .scaled(ui->scrollArea->size(), Qt::KeepAspectRatio);
 
-	Scale = double(Img.height()) / double(Img.height());
+	Scale = double(Img.height()) / double(Image.height());
 
 	ui->label->setPixmap(Img);
 }
 
 void MainWindow::rotateLeftClicked(void)
 {
-	if ((Rotation -= 90) <= -360) Rotation += 360;
+	if ((Rotation -= 90) <= -360) Rotation = 0;
 
 	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
 					 .transformed(QTransform().rotate(Rotation)));
@@ -447,10 +670,15 @@ void MainWindow::rotateLeftClicked(void)
 
 void MainWindow::rotateRightClicked(void)
 {
-	if ((Rotation -= 90) <= -360) Rotation += 360;
+	if ((Rotation += 90) >= 360) Rotation = 0;
 
 	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
 					 .transformed(QTransform().rotate(Rotation)));
+}
+
+void MainWindow::saveRotClicked(void)
+{
+	auto Img = Image.transformed(QTransform().rotate(Rotation));
 }
 
 void MainWindow::changeAddClicked(void)
@@ -479,6 +707,14 @@ void MainWindow::documentChanged(int Index)
 	ui->actionLock->setEnabled(!Lock && Index);
 	ui->actionSave->setEnabled(Lock);
 	ui->actionUnlock->setEnabled(Lock);
+
+	ui->actionRotateleft->setEnabled(Index);
+	ui->actionRotateright->setEnabled(Index);
+	ui->actionFit->setEnabled(Index);
+	ui->actionOrg->setEnabled(Index);
+	ui->actionZoomin->setEnabled(Index);
+	ui->actionZoomout->setEnabled(Index);
+	ui->actionSaverotation->setEnabled(Index);
 
 	cwidget->setDocIndex(Index, !Lock);
 	CurrentDoc = Index;
@@ -635,8 +871,7 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 		QApplication::processEvents();
 	}
 
-	Query.prepare("INSERT INTO dokumenty (nazwa, sciezka, operat) VALUES (?, ?, ?) "
-			    "ON DUPLICATE KEY UPDATE nazwa = ?, operat = ?");
+	Query.prepare("INSERT INTO dokumenty (nazwa, sciezka, operat) VALUES (?, ?, ?)");
 
 	for (auto i = Docs.constBegin(); i != Docs.constEnd(); ++i)
 	{
@@ -647,8 +882,6 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 			Query.addBindValue(QFileInfo(Path).fileName());
 			Query.addBindValue(Path);
 			Query.addBindValue(ID);
-			Query.addBindValue(QFileInfo(Path).fileName());
-			Query.addBindValue(ID);
 			Query.exec();
 		}
 
@@ -656,88 +889,79 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 	}
 }
 
-void MainWindow::updateRoles(const QString& Path, bool Addnew)
+void MainWindow::updateRoles(int Objecttype, const QString& Path, bool Addnew)
 {
-	QSqlQuery Query("SELECT id, nazwa FROM rodzajedok", Db);
+	if (Objecttype == 0) updateDocRoles(Path, Addnew);
+	else if (Objecttype == 1) updateJobRoles(Path, Addnew);
+}
 
-	QList<QPair<int, QString>> Documents;
-	QList<QPair<int, int>> Updates;
+void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
+{
+	QHash<QString, int> jRoles;
+	QHash<QString, int> dRoles;
+	QHash<QString, int> jUids;
 
-	QHash<QString, QString> Data;
-	QHash<QString, int> Roles;
-	QSet<QString> Newroles;
+	QSqlQuery Query(Db);
 
-	QMutex Locker;
+	Query.prepare("SELECT id, nazwa FROM rodzajeopr");
 
-	while (Query.next()) Roles.insert(
-				Query.value(1).toString(),
-				Query.value(0).toInt());
+	if (Query.exec()) while (Query.next()) jRoles.insert(Query.value(1).toString(),
+											   Query.value(0).toInt());
 
-	QFile Input(Path);
-	QTextStream Stream(&Input);
-	Input.open(QFile::Text | QFile::ReadOnly);
+	Query.prepare("INSERT INTO rodzajeopr (nazwa) VALUES (?)");
 
-	while (!Stream.atEnd())
+	for (const auto& Job : Jobs) if (!jRoles.contains(Job.toString()))
 	{
-		const QStringList Row = Stream.readLine().split('\t');
-		if (Row.size() != 2) continue;
+		Query.addBindValue(Job);
 
-		Data.insert(Row[0], Row[1]);
-
-		if (!Roles.contains(Row[1]))
-		{
-			Newroles.insert(Row[1]);
-		}
-
-		QApplication::processEvents();
+		if (Query.exec()) jRoles.insert(Job.toString(),
+								  Query.lastInsertId().toInt());
 	}
+
+	Query.prepare("SELECT id, nazwa FROM rodzajedok");
+
+	if (Query.exec()) while (Query.next()) dRoles.insert(Query.value(1).toString(),
+											   Query.value(0).toInt());
 
 	Query.prepare("INSERT INTO rodzajedok (nazwa) VALUES (?)");
 
-	if (Addnew) for (const auto& Role : Newroles)
+	for (const auto& Doc : Docs) if (!dRoles.contains(Doc.toStringList().value(1)))
 	{
-		Query.addBindValue(Role);
-		Query.exec();
+		Query.addBindValue(Doc.toStringList().value(1));
 
-		Roles.insert(Role, Query.lastInsertId().toInt());
+		if (Query.exec()) dRoles.insert(Doc.toStringList().value(1),
+								  Query.lastInsertId().toInt());
 	}
 
-	Query.prepare("SELECT id, sciezka FROM dokumenty");
+	Query.prepare("SELECT id, numer FROM operaty");
 
-	if (Query.exec()) while (Query.next()) Documents.append(
+	if (Query.exec()) while (Query.next()) jUids.insert(Query.value(1).toString(),
+											  Query.value(0).toInt());
+
+	Query.prepare("INSERT INTO operaty (numer, rodzaj) VALUES (?, ?)");
+
+	for (auto i = Jobs.constBegin(); i != Jobs.constEnd(); ++i) if (!jUids.contains(i.key()))
 	{
-		Query.value(0).toInt(),
-		Query.value(1).toString()
-	});
+		Query.addBindValue(i.key());
+		Query.addBindValue(jRoles.value(i.value().toString()));
 
-	QtConcurrent::blockingMap(Documents, [&Data, &Roles, &Updates, &Locker] (QPair<int, QString>& Row) -> void
+		if (Query.exec()) jUids.insert(i.key(),
+								 Query.lastInsertId().toInt());
+	}
+
+	Query.prepare("INSERT INTO dokumenty (nazwa, sciezka, rodzaj, operat) VALUES (?, ?, ?, ?)");
+
+	for (auto i = Docs.constBegin(); i != Docs.constEnd(); ++i)
 	{
-		for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
-		{
-			if (Row.second.endsWith(i.key()))
-			{
-				const int Role = Roles.value(i.value(), 0);
+		if (!QFile::exists(i.key())) continue;
 
-				if (Role)
-				{
-					Locker.lock();
-					Updates.append({ Row.first, Role });
-					Locker.unlock();
-				}
+		const QStringList Data = i.value().toStringList();
 
-				return;
-			}
-		}
-	});
+		Query.addBindValue(QFileInfo(i.key()).fileName());
+		Query.addBindValue(QFileInfo(i.key()).absoluteFilePath());
+		Query.addBindValue(dRoles.value(Data.value(1)));
+		Query.addBindValue(jUids.value(Data.value(0)));
 
-	Query.prepare("UPDATE dokumenty SET rodzaj = ? WHERE id = ?");
-
-	for (const auto& Row : Updates)
-	{
-		Query.addBindValue(Row.second);
-		Query.addBindValue(Row.first);
 		Query.exec();
-
-		QApplication::processEvents();
 	}
 }

@@ -30,8 +30,7 @@ SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op, QWidget*
 	{
 		{ tr("P Number"), 1 },
 		{ tr("KERG Number"), 2 },
-		{ tr("Community"), 3 },
-		{ tr("Precinct"), 4 }
+		{ tr("Type"), 3 },
 	};
 
 	static const QHash<QString, int> docFields =

@@ -28,6 +28,7 @@
 #include <QtSql>
 
 #include "settingsdialog.hpp"
+#include "importdialog.hpp"
 #include "aboutdialog.hpp"
 #include "indexdialog.hpp"
 #include "roledialog.hpp"
@@ -83,9 +84,13 @@ class MainWindow : public QMainWindow
 
 		QString getCurrentUser(void) const;
 
+		void updateDocRoles(const QString& Path, bool Addnew);
+		void updateJobRoles(const QString& Path, bool Addnew);
+
 	private slots:
 
 		void aboutClicked(void);
+		void importClicked(void);
 		void scanClicked(void);
 		void rolesClicked(void);
 		void settingsClicked(void);
@@ -104,6 +109,7 @@ class MainWindow : public QMainWindow
 
 		void rotateLeftClicked(void);
 		void rotateRightClicked(void);
+		void saveRotClicked(void);
 
 		void changeAddClicked(void);
 		void changeDelClicked(void);
@@ -120,8 +126,12 @@ class MainWindow : public QMainWindow
 		void scanDirectory(const QString& Dir,
 					    int Mode, bool Rec);
 
-		void updateRoles(const QString& Path,
+		void updateRoles(int Objecttype,
+					  const QString& Path,
 					  bool Addnew);
+
+		void importData(const QVariantMap& Jobs,
+					 const QVariantMap& Docs);
 
 	signals:
 

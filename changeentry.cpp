@@ -21,10 +21,25 @@
 #include "changeentry.hpp"
 #include "ui_changeentry.h"
 
-ChangeEntry::ChangeEntry(const QVariantMap& Data, bool Lock, QWidget* Parent) :
+ChangeEntry::ChangeEntry(const QVariantMap& Data, QSqlDatabase& Db, bool Lock, QWidget* Parent) :
 QWidget(Parent), ui(new Ui::ChangeEntry), Locked(Lock), Status(0)
 {
 	ui->setupUi(this);
+
+	QSqlQuery Query("SELECT o.id, o.nazwa, g.nazwa "
+				 "FROM obreby o "
+				 "INNER JOIN gminy g "
+				 "ON o.gmina = g.id "
+				 "ORDER BY g.nazwa, o.numer", Db);
+
+	//ui->areaCombo->blockSignals(true);
+
+	while (Query.next()) ui->areaCombo->addItem(QString("%1 : %2")
+									    .arg(Query.value(2).toString())
+									    .arg(Query.value(1).toString()),
+									    Query.value(0));
+
+	//ui->areaCombo->blockSignals(false);
 
 	setOrigin(Data);
 	setData(Data);
@@ -50,10 +65,11 @@ QVariantMap ChangeEntry::getData(void) const
 	{
 		{ "uid", UID == 0 ? QVariant() : UID },
 		{ "did", DID },
-		{ "area", ui->areaEdit->text() },
+		{ "area", ui->areaCombo->currentData() },
 		{ "sheet", ui->sheetEdit->text() },
 		{ "before", bModel->stringList() },
 		{ "after", aModel->stringList() },
+		{ "comment", ui->commentEdit->toPlainText() },
 		{ "status", Status }
 	};
 }
@@ -64,11 +80,18 @@ void ChangeEntry::setData(const QVariantMap& Data)
 	UID = Data.value("uid").toInt();
 	DID = Data.value("did").toInt();
 
-	ui->areaEdit->setText(Data.value("area").toString());
+	ui->commentEdit->blockSignals(true);
+	ui->areaCombo->blockSignals(true);
+
+	ui->areaCombo->setCurrentIndex(ui->areaCombo->findData(Data.value("area")));
 	ui->sheetEdit->setText(Data.value("sheet").toString());
+	ui->commentEdit->setPlainText(Data.value("comment").toString());
 
 	ui->beforeView->setModel(new QStringListModel(Data.value("before").toStringList(), this));
 	ui->afterView->setModel(new QStringListModel(Data.value("after").toStringList(), this));
+
+	ui->commentEdit->blockSignals(false);
+	ui->areaCombo->blockSignals(false);
 
 	if (Data.value("status").toInt() == 3) lock();
 }
@@ -95,7 +118,7 @@ bool ChangeEntry::isValid(void) const
 
 	return
 	(
-		!Data.value("area").toString().isEmpty() &&
+		Data.value("area").toInt() > 0 &&
 		!Data.value("sheet").toString().isEmpty() &&
 		!Data.value("before").toStringList().isEmpty() &&
 		!Data.value("after").toStringList().isEmpty()
@@ -114,8 +137,9 @@ void ChangeEntry::setLocked(bool Lock)
 	ui->delLeftButton->setEnabled(!Lock);
 	ui->delRightButton->setEnabled(!Lock);
 
-	ui->areaEdit->setReadOnly(Lock);
-	ui->sheetEdit->setReadOnly(Lock);
+	ui->commentEdit->setEnabled(!Lock);
+	ui->areaCombo->setEnabled(!Lock);
+	ui->sheetEdit->setEnabled(!Lock);
 
 	Locked = Lock;
 }

@@ -61,34 +61,39 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
 <context>
     <name>ChangeEntry</name>
     <message>
-        <location filename="changeentry.ui" line="19"/>
+        <location filename="changeentry.ui" line="70"/>
         <source>Sheet</source>
         <translation>Arkusz</translation>
     </message>
     <message>
-        <location filename="changeentry.ui" line="32"/>
+        <location filename="changeentry.ui" line="83"/>
         <source>Area</source>
         <translation>Obręb</translation>
     </message>
     <message>
-        <location filename="changeentry.ui" line="47"/>
+        <location filename="changeentry.ui" line="135"/>
+        <source>Comments</source>
+        <translation>Uwagi</translation>
+    </message>
+    <message>
+        <location filename="changeentry.ui" line="122"/>
         <source>Before</source>
         <translation>Działki przed</translation>
     </message>
     <message>
-        <location filename="changeentry.ui" line="60"/>
+        <location filename="changeentry.ui" line="95"/>
         <source>After</source>
         <translation>Działki po</translation>
     </message>
     <message>
-        <location filename="changeentry.ui" line="89"/>
-        <location filename="changeentry.ui" line="125"/>
+        <location filename="changeentry.ui" line="19"/>
+        <location filename="changeentry.ui" line="55"/>
         <source>Add</source>
         <translation>Dodaj</translation>
     </message>
     <message>
-        <location filename="changeentry.ui" line="100"/>
-        <location filename="changeentry.ui" line="114"/>
+        <location filename="changeentry.ui" line="30"/>
+        <location filename="changeentry.ui" line="44"/>
         <source>Remove</source>
         <translation>Usuń</translation>
     </message>
@@ -129,6 +134,39 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <location filename="docwidget.cpp" line="41"/>
         <source>Path</source>
         <translation>Ścieżka</translation>
+    </message>
+</context>
+<context>
+    <name>ImportDialog</name>
+    <message>
+        <location filename="importdialog.ui" line="14"/>
+        <source>Import data</source>
+        <translation>Importuj dane</translation>
+    </message>
+    <message>
+        <location filename="importdialog.ui" line="26"/>
+        <source>Select path</source>
+        <translation>Wskaż plik z danymi</translation>
+    </message>
+    <message>
+        <location filename="importdialog.ui" line="33"/>
+        <source>Open</source>
+        <translation>Otwórz</translation>
+    </message>
+    <message>
+        <location filename="importdialog.cpp" line="30"/>
+        <source>Select jobs types filter</source>
+        <translation>Filtruj rodzaje operatów</translation>
+    </message>
+    <message>
+        <location filename="importdialog.cpp" line="37"/>
+        <source>Select documents types filter</source>
+        <translation>Filtruj rodzaje dokumentów</translation>
+    </message>
+    <message>
+        <location filename="importdialog.cpp" line="153"/>
+        <source>Load data</source>
+        <translation>Wczytaj dane</translation>
     </message>
 </context>
 <context>
@@ -203,36 +241,36 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="jobwidget.cpp" line="37"/>
-        <source>Community</source>
-        <translation>Gmina</translation>
+        <source>Type</source>
+        <translation>Rodzaj</translation>
     </message>
     <message>
-        <location filename="jobwidget.cpp" line="38"/>
+        <source>Community</source>
+        <translation type="vanished">Gmina</translation>
+    </message>
+    <message>
         <source>Precinct</source>
-        <translation>Obręb</translation>
+        <translation type="vanished">Obręb</translation>
     </message>
 </context>
 <context>
     <name>LockWidget</name>
     <message>
-        <location filename="lockwidget.cpp" line="32"/>
+        <location filename="lockwidget.cpp" line="30"/>
         <source>Document</source>
         <translation>Dokument</translation>
     </message>
     <message>
-        <location filename="lockwidget.cpp" line="32"/>
         <source>Added</source>
-        <translation>Dodano</translation>
+        <translation type="vanished">Dodano</translation>
     </message>
     <message>
-        <location filename="lockwidget.cpp" line="32"/>
         <source>Removed</source>
-        <translation>Usunięto</translation>
+        <translation type="vanished">Usunięto</translation>
     </message>
     <message>
-        <location filename="lockwidget.cpp" line="32"/>
         <source>Modified</source>
-        <translation>Zmieniono</translation>
+        <translation type="vanished">Zmieniono</translation>
     </message>
 </context>
 <context>
@@ -244,7 +282,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.ui" line="67"/>
-        <location filename="mainwindow.cpp" line="509"/>
+        <location filename="mainwindow.cpp" line="745"/>
         <source>Select document</source>
         <translation>Wybierz dokument</translation>
     </message>
@@ -255,192 +293,202 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Program</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="102"/>
-        <location filename="mainwindow.ui" line="158"/>
+        <location filename="mainwindow.ui" line="103"/>
+        <location filename="mainwindow.ui" line="162"/>
         <source>Help</source>
         <translation>Pomoc</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="108"/>
-        <location filename="mainwindow.ui" line="141"/>
+        <location filename="mainwindow.ui" line="109"/>
+        <location filename="mainwindow.ui" line="144"/>
         <source>View</source>
         <oldsource>&amp;View</oldsource>
         <translation>Widok</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="120"/>
+        <location filename="mainwindow.ui" line="123"/>
         <source>Document</source>
         <oldsource>Do&amp;cument</oldsource>
         <translation>Dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="172"/>
+        <location filename="mainwindow.ui" line="176"/>
         <source>Actions</source>
         <translation>Akcje</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="189"/>
+        <location filename="mainwindow.ui" line="193"/>
         <location filename="mainwindow.cpp" line="37"/>
         <source>Changes</source>
         <translation>Zmiany</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="207"/>
+        <location filename="mainwindow.ui" line="211"/>
         <source>Scan directory</source>
         <oldsource>&amp;Scan directory</oldsource>
         <translation>Skanuj katalog</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="216"/>
+        <location filename="mainwindow.ui" line="220"/>
         <source>Exit</source>
         <oldsource>&amp;Exit</oldsource>
         <translation>Zakończ</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="225"/>
+        <location filename="mainwindow.ui" line="229"/>
         <source>About</source>
         <oldsource>&amp;About</oldsource>
         <translation>O programie</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
+        <location filename="mainwindow.ui" line="232"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="237"/>
+        <location filename="mainwindow.ui" line="241"/>
         <source>Zoom in</source>
         <oldsource>&amp;Zoom in</oldsource>
         <translation>Przybliż</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="240"/>
+        <location filename="mainwindow.ui" line="244"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="249"/>
+        <location filename="mainwindow.ui" line="253"/>
         <source>Zoom out</source>
         <oldsource>Zoo&amp;m out</oldsource>
         <translation>Oddal</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="252"/>
+        <location filename="mainwindow.ui" line="256"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="261"/>
+        <location filename="mainwindow.ui" line="265"/>
         <source>Fit to screen</source>
         <oldsource>&amp;Fit to screen</oldsource>
         <translation>Dopasuj do okna</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="270"/>
+        <location filename="mainwindow.ui" line="274"/>
         <source>Original size</source>
         <oldsource>&amp;Original size</oldsource>
         <translation>Rozmiar oryginalny</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="279"/>
+        <location filename="mainwindow.ui" line="283"/>
         <source>Update roles</source>
         <oldsource>&amp;Update roles</oldsource>
         <translation>Aktualizuj dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="288"/>
+        <location filename="mainwindow.ui" line="292"/>
         <source>Next document</source>
         <oldsource>&amp;Next document</oldsource>
         <translation>Następny dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="291"/>
+        <location filename="mainwindow.ui" line="295"/>
         <source>Ctrl+Right</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="300"/>
+        <location filename="mainwindow.ui" line="304"/>
         <source>Previous document</source>
         <oldsource>&amp;Previous document</oldsource>
         <translation>Poprzedni dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="303"/>
+        <location filename="mainwindow.ui" line="307"/>
         <source>Ctrl+Left</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="312"/>
+        <location filename="mainwindow.ui" line="316"/>
         <source>Lock</source>
         <oldsource>&amp;Lock</oldsource>
         <translation>Zablokuj dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="315"/>
+        <location filename="mainwindow.ui" line="319"/>
         <source>Ctrl+E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="324"/>
+        <location filename="mainwindow.ui" line="328"/>
         <source>Save</source>
         <oldsource>&amp;Save</oldsource>
         <translation>Zapisz</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="327"/>
+        <location filename="mainwindow.ui" line="331"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="336"/>
+        <location filename="mainwindow.ui" line="340"/>
         <source>Preferences</source>
         <oldsource>&amp;Preferences</oldsource>
         <translation>Preferencje</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="345"/>
+        <location filename="mainwindow.ui" line="349"/>
         <source>Rotate left</source>
         <oldsource>&amp;Rotate left</oldsource>
         <translation>Obróć w lewo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="354"/>
+        <location filename="mainwindow.ui" line="358"/>
         <source>Rotate right</source>
         <oldsource>Ro&amp;tate right</oldsource>
         <translation>Obróć w prawo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="363"/>
+        <location filename="mainwindow.ui" line="367"/>
         <source>Add change</source>
         <oldsource>&amp;Add change</oldsource>
         <translation>Dodaj grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="372"/>
+        <location filename="mainwindow.ui" line="376"/>
         <source>Remove change</source>
         <oldsource>&amp;Remove change</oldsource>
         <translation>Usuń grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="381"/>
+        <location filename="mainwindow.ui" line="385"/>
         <source>Undo change</source>
         <oldsource>&amp;Undo change</oldsource>
         <translation>Cofnij zmiany grupy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="390"/>
+        <location filename="mainwindow.ui" line="394"/>
         <source>Lock next job</source>
-        <translation>Zablokuj kolejne dokumenty</translation>
+        <translation>Zablokuj kolejne operaty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="393"/>
+        <location filename="mainwindow.ui" line="397"/>
         <source>Ctrl+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="402"/>
+        <location filename="mainwindow.ui" line="406"/>
         <source>Unlock</source>
         <translation>Odblokuj dokument</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="415"/>
+        <source>Save rotation</source>
+        <translation>Zapisz obrót</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="423"/>
+        <source>Import data</source>
+        <translation>Importuj dane</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="42"/>
@@ -463,7 +511,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     <message>
         <location filename="roledialog.ui" line="14"/>
         <source>Update roles</source>
-        <translation>Aktualizuj dokumenty</translation>
+        <translation>Aktualizuj rodzaje obiektów</translation>
     </message>
     <message>
         <location filename="roledialog.ui" line="24"/>
@@ -481,11 +529,21 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Otwórz</translation>
     </message>
     <message>
+        <location filename="roledialog.ui" line="63"/>
+        <source>Update document roles</source>
+        <translation>Aktualizuj rodzaje dokumentów</translation>
+    </message>
+    <message>
+        <location filename="roledialog.ui" line="68"/>
+        <source>Update job roles</source>
+        <translation>Aktualizuj rodzaje operatów</translation>
+    </message>
+    <message>
         <source>Scan directory</source>
         <translation type="vanished">Wskaż plik z atrybutami</translation>
     </message>
     <message>
-        <location filename="roledialog.cpp" line="47"/>
+        <location filename="roledialog.cpp" line="48"/>
         <source>Load data</source>
         <translation>Wczytaj dane</translation>
     </message>
@@ -504,8 +562,9 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="settingsdialog.ui" line="37"/>
-        <source>Documents count</source>
-        <translation>Liczba dokumentów</translation>
+        <source>Locked jobs count</source>
+        <oldsource>Documents count</oldsource>
+        <translation>Liczba blokowanych operatów</translation>
     </message>
     <message>
         <location filename="settingsdialog.ui" line="92"/>
@@ -528,42 +587,41 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Numer KERG</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="33"/>
         <source>Community</source>
-        <translation>Gmina</translation>
+        <translation type="vanished">Gmina</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="34"/>
         <source>Precinct</source>
-        <translation>Obręb</translation>
+        <translation type="vanished">Obręb</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="39"/>
+        <location filename="settingsdialog.cpp" line="38"/>
         <source>Name</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="40"/>
+        <location filename="settingsdialog.cpp" line="39"/>
         <source>Job</source>
         <translation>Operat</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="41"/>
+        <location filename="settingsdialog.cpp" line="33"/>
+        <location filename="settingsdialog.cpp" line="40"/>
         <source>Type</source>
         <translation>Rodzaj</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="42"/>
+        <location filename="settingsdialog.cpp" line="41"/>
         <source>Worker</source>
         <translation>Operator</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="43"/>
+        <location filename="settingsdialog.cpp" line="42"/>
         <source>Finished</source>
         <translation>Ukończony</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="44"/>
+        <location filename="settingsdialog.cpp" line="43"/>
         <source>Path</source>
         <translation>Ścieżka</translation>
     </message>

@@ -38,7 +38,8 @@ void RoleDialog::accept(void)
 {
 	QDialog::accept();
 
-	emit onRefresh(ui->pathEdit->text(),
+	emit onRefresh(ui->typeCombo->currentIndex(),
+				ui->pathEdit->text(),
 				ui->appendCheck->isChecked());
 }
 

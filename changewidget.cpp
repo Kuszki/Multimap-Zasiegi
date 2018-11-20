@@ -57,11 +57,11 @@ QIcon ChangeWidget::getIcon(int Status) const
 {
 	switch (Status)
 	{
-		case -1: return QIcon::fromTheme("error");
+		case -1: return QIcon::fromTheme("dialog-error");
 
 		case 1: return QIcon::fromTheme("list-add");
 		case 2: return QIcon::fromTheme("tools-check-spelling");
-		case 3: return QIcon::fromTheme("edit-delete");
+		case 3: return QIcon::fromTheme("list-remove");
 
 		default: return QIcon();
 	}
@@ -82,7 +82,7 @@ void ChangeWidget::discardChanged(int Index)
 		setDocIndex(Index, true);
 	}
 
-	emit onChangesUpdate(Index, 0, 0, 0);
+	emit onChangesUpdate(Index, 0, 0, 0, 0);
 }
 
 void ChangeWidget::saveChanges(int Index)
@@ -108,10 +108,10 @@ void ChangeWidget::saveChanges(int Index)
 			ui->tabWidget->removeTab(0);
 		}
 
-		setDocIndex(Index, false);
+		setDocIndex(Index, false, false);
 	}
 
-	emit onChangesUpdate(Index, 0, 0, 0);
+	emit onChangesUpdate(Index, 0, 0, 0, Current.size());
 }
 
 bool ChangeWidget::isLocked(void) const
@@ -121,7 +121,7 @@ bool ChangeWidget::isLocked(void) const
 
 void ChangeWidget::updateStatus(void)
 {
-	int Add(0), Del(0), Mod(0);
+	int Add(0), Del(0), Mod(0), Err(0);
 
 	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
@@ -132,18 +132,19 @@ void ChangeWidget::updateStatus(void)
 
 		switch (Widget->getData().value("status").toInt())
 		{
+			case -1: ++Err; break;
 			case 1: ++Add; break;
 			case 2: ++Mod; break;
 			case 3: ++Del; break;
 		}
 	}
 
-	emit onChangesUpdate(Currentindex, Add, Del, Mod);
+	emit onChangesUpdate(Currentindex, Add, Del, Mod, Err);
 }
 
-void ChangeWidget::setDocIndex(int Index, bool Lock)
+void ChangeWidget::setDocIndex(int Index, bool Lock, bool Clear)
 {
-	QList<QVariantMap> Current = getChanges();
+	QList<QVariantMap> Current = Clear ? getChanges() : Unsaved.value(Index);
 
 	if (Current.isEmpty()) Unsaved.remove(Currentindex);
 	else Unsaved[Currentindex] = Current;
@@ -162,7 +163,7 @@ void ChangeWidget::setDocIndex(int Index, bool Lock)
 	unsigned ID = 0;
 
 	QSqlQuery Query(Database);
-	Query.prepare("SELECT id, arkusz, obreb, stare, nowe "
+	Query.prepare("SELECT id, arkusz, obreb, stare, nowe, uwagi "
 			    "FROM zmiany WHERE dokument = ? "
 			    "ORDER BY id ASC");
 	Query.addBindValue(Index);
@@ -177,10 +178,11 @@ void ChangeWidget::setDocIndex(int Index, bool Lock)
 			{ "area", Query.value(2) },
 			{ "before", Query.value(3).toString().split(';') },
 			{ "after", Query.value(4).toString().split(';') },
+			{ "comment", Query.value(5).toString() },
 			{ "status", 0 }
 		};
 
-		ChangeEntry* Widget = new ChangeEntry(Origin, Lock, this);
+		ChangeEntry* Widget = new ChangeEntry(Origin, Database, Lock, this);
 		ui->tabWidget->addTab(Widget, QString("%1").arg(++ID));
 
 		connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);
@@ -199,7 +201,7 @@ void ChangeWidget::setDocIndex(int Index, bool Lock)
 
 		if (Found == -1)
 		{
-			ChangeEntry* Widget = new ChangeEntry(Change, Lock, this);
+			ChangeEntry* Widget = new ChangeEntry(Change, Database, Lock, this);
 			ui->tabWidget->addTab(Widget, getIcon(Change.value("status").toInt()), QString("%1").arg(++ID));
 
 			connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);
@@ -242,7 +244,7 @@ void ChangeWidget::appendChange(void)
 		{ "status", 1 }
 	};
 
-	ChangeEntry* Widget = new ChangeEntry(Change, false, this);
+	ChangeEntry* Widget = new ChangeEntry(Change, Database, false, this);
 	ui->tabWidget->addTab(Widget, getIcon(1), QString("%1").arg(ui->tabWidget->count() + 1));
 
 	connect(Widget, &ChangeEntry::onStatusUpdate, this, &ChangeWidget::updateStatus);

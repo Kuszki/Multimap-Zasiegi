@@ -36,7 +36,8 @@ SOURCES		+=	main.cpp \
 				changewidget.cpp \
 				changeentry.cpp \
 				settingsdialog.cpp \
-				lockwidget.cpp
+				lockwidget.cpp \
+				importdialog.cpp
 
 HEADERS		+=	mainwindow.hpp \
 				aboutdialog.hpp \
@@ -48,7 +49,8 @@ HEADERS		+=	mainwindow.hpp \
 				changewidget.hpp \
 				changeentry.hpp \
 				settingsdialog.hpp \
-				lockwidget.hpp
+				lockwidget.hpp \
+				importdialog.hpp
 
 FORMS		+=	mainwindow.ui \
 				aboutdialog.ui \
@@ -59,7 +61,8 @@ FORMS		+=	mainwindow.ui \
 				changewidget.ui \
 				changeentry.ui \
 				settingsdialog.ui \
-				lockwidget.ui
+				lockwidget.ui \
+				importdialog.ui
 
 RESOURCES		+=	resources.qrc
 

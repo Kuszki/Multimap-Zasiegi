@@ -7,81 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>310</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="sheetLabel">
-       <property name="text">
-        <string>Sheet</string>
-       </property>
-       <property name="buddy">
-        <cstring>sheetEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="sheetEdit"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="areaLabel">
-       <property name="text">
-        <string>Area</string>
-       </property>
-       <property name="buddy">
-        <cstring>areaEdit</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="areaEdit"/>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="beforeLabel">
-     <property name="text">
-      <string>Before</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="buddy">
-      <cstring>beforeView</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="afterLabel">
-     <property name="text">
-      <string>After</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="buddy">
-      <cstring>afterView</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QListView" name="beforeView">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QListView" name="afterView">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item row="5" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QToolButton" name="addLeftButton">
@@ -132,11 +62,84 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="attribLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="sheetLabel">
+       <property name="text">
+        <string>Sheet</string>
+       </property>
+       <property name="buddy">
+        <cstring>sheetEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="sheetEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="areaLabel">
+       <property name="text">
+        <string>Area</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="areaCombo"/>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="afterLabel">
+     <property name="text">
+      <string>After</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>afterView</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QListView" name="beforeView">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QListView" name="afterView">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="beforeLabel">
+     <property name="text">
+      <string>Before</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>beforeView</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QPlainTextEdit" name="commentEdit">
+     <property name="placeholderText">
+      <string>Comments</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>sheetEdit</tabstop>
-  <tabstop>areaEdit</tabstop>
   <tabstop>beforeView</tabstop>
   <tabstop>afterView</tabstop>
   <tabstop>addLeftButton</tabstop>
@@ -213,7 +216,7 @@
   </connection>
   <connection>
    <sender>sheetEdit</sender>
-   <signal>editingFinished()</signal>
+   <signal>textEdited(QString)</signal>
    <receiver>ChangeEntry</receiver>
    <slot>updateStatus()</slot>
    <hints>
@@ -224,22 +227,6 @@
     <hint type="destinationlabel">
      <x>637</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>areaEdit</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ChangeEntry</receiver>
-   <slot>updateStatus()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>360</x>
-     <y>45</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>549</x>
-     <y>47</y>
     </hint>
    </hints>
   </connection>
@@ -304,6 +291,38 @@
     <hint type="destinationlabel">
      <x>403</x>
      <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>areaCombo</sender>
+   <signal>activated(int)</signal>
+   <receiver>ChangeEntry</receiver>
+   <slot>updateStatus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>618</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>commentEdit</sender>
+   <signal>textChanged()</signal>
+   <receiver>ChangeEntry</receiver>
+   <slot>updateStatus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>343</x>
+     <y>222</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>613</x>
+     <y>256</y>
     </hint>
    </hints>
   </connection>
