@@ -87,6 +87,10 @@ class MainWindow : public QMainWindow
 		void updateDocRoles(const QString& Path, bool Addnew);
 		void updateJobRoles(const QString& Path, bool Addnew);
 
+	protected:
+
+		virtual void wheelEvent(QWheelEvent* Event) override;
+
 	private slots:
 
 		void aboutClicked(void);

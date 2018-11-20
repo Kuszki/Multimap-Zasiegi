@@ -49,6 +49,8 @@ ImportDialog::~ImportDialog(void)
 
 void ImportDialog::updateData(const QString& Path)
 {
+	setEnabled(false);
+
 	QFile Input(Path);
 	QTextStream Stream(&Input);
 	Input.open(QFile::Text | QFile::ReadOnly);
@@ -100,6 +102,8 @@ void ImportDialog::updateData(const QString& Path)
 
 		jmodel->appendRow(Item);
 	}
+
+	setEnabled(true);
 }
 
 void ImportDialog::accept(void)

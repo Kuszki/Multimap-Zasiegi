@@ -185,6 +185,8 @@ void MainWindow::updateDocRoles(const QString& Path, bool Addnew)
 	QTextStream Stream(&Input);
 	Input.open(QFile::Text | QFile::ReadOnly);
 
+	setEnabled(false);
+
 	while (!Stream.atEnd())
 	{
 		const QStringList Row = Stream.readLine().split('\t');
@@ -248,6 +250,8 @@ void MainWindow::updateDocRoles(const QString& Path, bool Addnew)
 
 		QApplication::processEvents();
 	}
+
+	setEnabled(true);
 }
 
 void MainWindow::updateJobRoles(const QString& Path, bool Addnew)
@@ -270,6 +274,8 @@ void MainWindow::updateJobRoles(const QString& Path, bool Addnew)
 	QFile Input(Path);
 	QTextStream Stream(&Input);
 	Input.open(QFile::Text | QFile::ReadOnly);
+
+	setEnabled(false);
 
 	while (!Stream.atEnd())
 	{
@@ -333,6 +339,22 @@ void MainWindow::updateJobRoles(const QString& Path, bool Addnew)
 		Query.exec();
 
 		QApplication::processEvents();
+	}
+
+	setEnabled(true);
+}
+
+void MainWindow::wheelEvent(QWheelEvent* Event)
+{
+	QMainWindow::wheelEvent(Event);
+
+	if (CurrentDoc && QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+	{
+		if (ui->label->geometry().contains(Event->pos()))
+		{
+			if (Event->angleDelta().y() > 0) zoomInClicked();
+			else if (Event->angleDelta().y() < 0) zoomOutClicked();
+		}
 	}
 }
 
@@ -903,6 +925,8 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 
 	QSqlQuery Query(Db);
 
+	setEnabled(false);
+
 	Query.prepare("SELECT id, nazwa FROM rodzajeopr");
 
 	if (Query.exec()) while (Query.next()) jRoles.insert(Query.value(1).toString(),
@@ -916,6 +940,8 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 
 		if (Query.exec()) jRoles.insert(Job.toString(),
 								  Query.lastInsertId().toInt());
+
+		QApplication::processEvents();
 	}
 
 	Query.prepare("SELECT id, nazwa FROM rodzajedok");
@@ -931,6 +957,8 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 
 		if (Query.exec()) dRoles.insert(Doc.toStringList().value(1),
 								  Query.lastInsertId().toInt());
+
+		QApplication::processEvents();
 	}
 
 	Query.prepare("SELECT id, numer FROM operaty");
@@ -947,6 +975,8 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 
 		if (Query.exec()) jUids.insert(i.key(),
 								 Query.lastInsertId().toInt());
+
+		QApplication::processEvents();
 	}
 
 	Query.prepare("INSERT INTO dokumenty (nazwa, sciezka, rodzaj, operat) VALUES (?, ?, ?, ?)");
@@ -963,5 +993,9 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 		Query.addBindValue(jUids.value(Data.value(0)));
 
 		Query.exec();
+
+		QApplication::processEvents();
 	}
+
+	setEnabled(true);
 }
