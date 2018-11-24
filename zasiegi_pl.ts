@@ -137,6 +137,57 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
 </context>
 <context>
+    <name>HistoryWidget</name>
+    <message>
+        <location filename="historywidget.ui" line="19"/>
+        <source>Total sheets done:</source>
+        <translation>Opracowane dokumenty:</translation>
+    </message>
+    <message>
+        <location filename="historywidget.ui" line="33"/>
+        <source>Average per day:</source>
+        <translation>Średnio dziennie:</translation>
+    </message>
+    <message>
+        <location filename="historywidget.ui" line="50"/>
+        <source>Group by job</source>
+        <translation>Grupuj po operacie</translation>
+    </message>
+    <message>
+        <location filename="historywidget.ui" line="55"/>
+        <source>Group by day</source>
+        <translation>Grupuj po dacie</translation>
+    </message>
+    <message>
+        <location filename="historywidget.ui" line="63"/>
+        <source>Refresh</source>
+        <translation>Odśwież</translation>
+    </message>
+    <message>
+        <location filename="historywidget.cpp" line="48"/>
+        <source>Date</source>
+        <translation>Data</translation>
+    </message>
+    <message>
+        <location filename="historywidget.cpp" line="48"/>
+        <location filename="historywidget.cpp" line="100"/>
+        <source>Job</source>
+        <translation>Operat</translation>
+    </message>
+    <message>
+        <location filename="historywidget.cpp" line="48"/>
+        <location filename="historywidget.cpp" line="100"/>
+        <source>Documents</source>
+        <translation>Dokumenty</translation>
+    </message>
+    <message>
+        <location filename="historywidget.cpp" line="48"/>
+        <location filename="historywidget.cpp" line="100"/>
+        <source>Changes</source>
+        <translation>Zmiany</translation>
+    </message>
+</context>
+<context>
     <name>ImportDialog</name>
     <message>
         <location filename="importdialog.ui" line="14"/>
@@ -281,7 +332,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.ui" line="67"/>
-        <location filename="mainwindow.cpp" line="781"/>
+        <location filename="mainwindow.cpp" line="778"/>
         <source>Select document</source>
         <translation>Wybierz dokument</translation>
     </message>
@@ -317,7 +368,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.ui" line="193"/>
-        <location filename="mainwindow.cpp" line="37"/>
+        <location filename="mainwindow.cpp" line="42"/>
         <source>Changes</source>
         <translation>Zmiany</translation>
     </message>
@@ -490,27 +541,32 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Importuj dane</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="42"/>
+        <location filename="mainwindow.cpp" line="37"/>
+        <source>History</source>
+        <translation>Historia</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="47"/>
         <source>Locked</source>
         <translation>Zablokowane</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="47"/>
+        <location filename="mainwindow.cpp" line="52"/>
         <source>Jobs</source>
         <translation>Operaty</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="52"/>
+        <location filename="mainwindow.cpp" line="57"/>
         <source>Documents</source>
         <translation>Dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="516"/>
+        <location filename="mainwindow.cpp" line="513"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="631"/>
+        <location filename="mainwindow.cpp" line="628"/>
         <source>Unlocking document</source>
         <translation>Odblokowanie dokumentu</translation>
     </message>
@@ -519,7 +575,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Niezapisane zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="516"/>
+        <location filename="mainwindow.cpp" line="513"/>
         <source>There are %n unsaved changes(s) due incomplete data.</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana, posiadająca niekompletne dane.</numerusform>
@@ -532,7 +588,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Lokalne zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="632"/>
+        <location filename="mainwindow.cpp" line="629"/>
         <source>There are %n unsaved changes(s).</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana.</numerusform>

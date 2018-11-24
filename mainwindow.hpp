@@ -33,10 +33,13 @@
 #include "indexdialog.hpp"
 #include "roledialog.hpp"
 
+#include "historywidget.hpp"
 #include "changewidget.hpp"
 #include "lockwidget.hpp"
 #include "jobwidget.hpp"
 #include "docwidget.hpp"
+
+#include "appcommon.hpp"
 
 namespace Ui
 {
@@ -55,11 +58,13 @@ class MainWindow : public QMainWindow
 
 		QVariantMap Options;
 
+		HistoryWidget* hwidget;
 		ChangeWidget* cwidget;
 		LockWidget* lwidget;
 		JobWidget* jwidget;
 		DocWidget* dwidget;
 
+		QDockWidget* history;
 		QDockWidget* changes;
 		QDockWidget* locks;
 		QDockWidget* jobs;
@@ -81,8 +86,6 @@ class MainWindow : public QMainWindow
 		virtual ~MainWindow(void) override;
 
 	private:
-
-		QString getCurrentUser(void) const;
 
 		void updateDocRoles(const QString& Path, bool Addnew);
 		void updateJobRoles(const QString& Path, bool Addnew);

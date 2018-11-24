@@ -33,6 +33,11 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setDatabaseName("zasiegi");
 	Db.open();
 
+	hwidget = new HistoryWidget(Db, this);
+	history = new QDockWidget(tr("History"), this);
+	history->setObjectName("History");
+	history->setWidget(hwidget);
+
 	cwidget = new ChangeWidget(Db, this);
 	changes = new QDockWidget(tr("Changes"), this);
 	changes->setObjectName("Changes");
@@ -53,6 +58,7 @@ MainWindow::MainWindow(QWidget* Parent)
 	docs->setObjectName("Documents");
 	docs->setWidget(dwidget);
 
+	addDockWidget(Qt::LeftDockWidgetArea, history);
 	addDockWidget(Qt::LeftDockWidgetArea, changes);
 	addDockWidget(Qt::LeftDockWidgetArea, locks);
 	addDockWidget(Qt::LeftDockWidgetArea, jobs);
@@ -87,7 +93,7 @@ MainWindow::MainWindow(QWidget* Parent)
 			    "INNER JOIN blokady b "
 			    "ON d.id = b.id "
 			    "WHERE b.operator = ?");
-	Query.addBindValue(getCurrentUser());
+	Query.addBindValue(AppCommon::getCurrentUser());
 
 	if (Query.exec()) while (Query.next())
 	{
@@ -153,15 +159,6 @@ MainWindow::~MainWindow(void)
 
 
 	delete ui;
-}
-
-QString MainWindow::getCurrentUser(void) const
-{
-	const QString U1 = qgetenv("USERNAME");
-	const QString U2 = qgetenv("USER");
-	const auto PID = QCoreApplication::applicationPid();
-
-	return U1.isEmpty() ? (U2.isEmpty() ? QString::number(PID) : U2) : U1;
 }
 
 void MainWindow::updateDocRoles(const QString& Path, bool Addnew)
@@ -508,7 +505,7 @@ void MainWindow::saveClicked(void)
 		case -1: ++Err; break;
 	}
 
-	docQuery.addBindValue(getCurrentUser());
+	docQuery.addBindValue(AppCommon::getCurrentUser());
 	docQuery.addBindValue(CurrentDoc);
 
 	docQuery.exec();
@@ -526,7 +523,7 @@ void MainWindow::editClicked(void)
 			    "VALUES (?, ?)");
 
 	Query.addBindValue(CurrentDoc);
-	Query.addBindValue(getCurrentUser());
+	Query.addBindValue(AppCommon::getCurrentUser());
 
 	if (Query.exec())
 	{
@@ -561,7 +558,7 @@ void MainWindow::lockClicked(void)
 {
 	const QString Types = Options.value("Types").toStringList().join(',');
 	const int Count = Options.value("Count", 1).toInt();
-	const QString User = getCurrentUser();
+	const QString User = AppCommon::getCurrentUser();
 
 	QVector<QString> dNames, jNames;
 	QMap<int, QList<int>> IDS;
