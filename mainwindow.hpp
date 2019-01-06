@@ -100,6 +100,7 @@ class MainWindow : public QMainWindow
 		void importClicked(void);
 		void scanClicked(void);
 		void rolesClicked(void);
+		void exportClicked(void);
 		void settingsClicked(void);
 
 		void nextClicked(void);

@@ -416,6 +416,15 @@ void MainWindow::rolesClicked(void)
 	Dialog->open();
 }
 
+void MainWindow::exportClicked(void)
+{
+	const QString Path = QFileDialog::getExistingDirectory(this, tr("Select directory"));
+
+	if (Path.isEmpty()) return;
+
+	QSqlQuery Query(Db);
+}
+
 void MainWindow::settingsClicked(void)
 {
 	SettingsDialog* Dialog = new SettingsDialog(Db, Options, this);
