@@ -51,7 +51,7 @@ void HistoryWidget::loadByDate(void)
 	QMap<QDate, QStandardItem*> Map;
 	int Count(0);
 
-	Query.prepare("SELECT DATE(d.data), o.numer, COUNT(d.id), COUNT(z.id) FROM dokumenty d "
+	Query.prepare("SELECT DATE(d.data), o.numer, COUNT(DISTINCT d.id), COUNT(z.id) FROM dokumenty d "
 			    "INNER JOIN operaty o ON d.operat = o.id "
 			    "INNER JOIN zmiany z ON z.dokument = d.id "
 			    "WHERE d.data IS NOT NULL and d.operator = ? "
@@ -103,7 +103,7 @@ void HistoryWidget::loadByJob(void)
 	QMap<QString, QStandardItem*> Map;
 	int Count(0); QSet<QDate> Set;
 
-	Query.prepare("SELECT DATE(d.data), o.numer, COUNT(d.id), COUNT(z.id) FROM dokumenty d "
+	Query.prepare("SELECT DATE(d.data), o.numer, COUNT(DISTINCT d.id), COUNT(z.id) FROM dokumenty d "
 			    "INNER JOIN operaty o ON d.operat = o.id "
 			    "INNER JOIN zmiany z ON z.dokument = d.id "
 			    "WHERE d.data IS NOT NULL and d.operator = ? "
