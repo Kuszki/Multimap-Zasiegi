@@ -67,7 +67,7 @@ FORMS		+=	mainwindow.ui \
 				settingsdialog.ui \
 				lockwidget.ui \
 				importdialog.ui \
-    historywidget.ui
+				historywidget.ui
 
 RESOURCES		+=	resources.qrc
 

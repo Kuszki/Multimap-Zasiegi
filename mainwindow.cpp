@@ -347,11 +347,8 @@ void MainWindow::wheelEvent(QWheelEvent* Event)
 
 	if (CurrentDoc && QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
 	{
-		if (ui->label->geometry().contains(Event->pos()))
-		{
-			if (Event->angleDelta().y() > 0) zoomInClicked();
-			else if (Event->angleDelta().y() < 0) zoomOutClicked();
-		}
+		if (Event->angleDelta().y() > 0) zoomInClicked();
+		else if (Event->angleDelta().y() < 0) zoomOutClicked();
 	}
 }
 
