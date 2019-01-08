@@ -30,16 +30,12 @@ QWidget(Parent), ui(new Ui::ChangeEntry), Locked(Lock), Status(0)
 				 "FROM obreby o "
 				 "INNER JOIN gminy g "
 				 "ON o.gmina = g.id "
-				 "ORDER BY g.nazwa, o.numer", Db);
-
-	//ui->areaCombo->blockSignals(true);
+				 "ORDER BY o.nazwa, g.nazwa", Db);
 
 	while (Query.next()) ui->areaCombo->addItem(QString("%1 : %2")
-									    .arg(Query.value(2).toString())
-									    .arg(Query.value(1).toString()),
+									    .arg(Query.value(1).toString())
+									    .arg(Query.value(2).toString()),
 									    Query.value(0));
-
-	//ui->areaCombo->blockSignals(false);
 
 	setOrigin(Data);
 	setData(Data);
