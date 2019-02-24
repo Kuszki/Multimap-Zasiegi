@@ -26,12 +26,20 @@ MainWindow::MainWindow(QWidget* Parent)
 {
 	ui->setupUi(this);
 
+	QSettings Settings("Multimap", "Zasiegi");
+
+	Settings.beginGroup("Database");
+	Options.insert("Count", Settings.value("Count", 1).toInt());
+	Options.insert("Types", Settings.value("Types").toList());
+
 	Db = QSqlDatabase::addDatabase("QMYSQL");
-	Db.setUserName("multimap");
-	Db.setPassword("multimap");
-	Db.setHostName("localhost");
-	Db.setDatabaseName("zasiegi");
+	Db.setUserName(Settings.value("user", "multimap").toString());
+	Db.setPassword(Settings.value("password", "multimap").toString());
+	Db.setHostName(Settings.value("server", "localhost").toString());
+	Db.setDatabaseName(Settings.value("database", "zasiegi").toString());
 	Db.open();
+
+	Settings.endGroup();
 
 	hwidget = new HistoryWidget(Db, this);
 	history = new QDockWidget(tr("History"), this);
@@ -67,21 +75,19 @@ MainWindow::MainWindow(QWidget* Parent)
 	updateImage(QString());
 	documentChanged(0);
 
-	QSettings Settings("Multimap", "Zasiegi");
-
 	Settings.beginGroup("Window");
 	restoreGeometry(Settings.value("geometry").toByteArray());
 	restoreState(Settings.value("state").toByteArray());
 	Settings.endGroup();
 
 	Settings.beginGroup("Reservations");
-	Options.insert("Count", Settings.value("Count", 1).toInt());
-	Options.insert("Types", Settings.value("Types").toList());
+	Options.insert("Count", Settings.value("count", 1).toInt());
+	Options.insert("Types", Settings.value("types").toList());
 	Settings.endGroup();
 
 	Settings.beginGroup("Headers");
-	Options.insert("Jobs", Settings.value("Jobs").toList());
-	Options.insert("Docs", Settings.value("Docs").toList());
+	Options.insert("Jobs", Settings.value("jobs").toList());
+	Options.insert("Docs", Settings.value("docs").toList());
 	Settings.endGroup();
 
 	QSqlQuery Query(Db);
@@ -148,13 +154,13 @@ MainWindow::~MainWindow(void)
 	Settings.endGroup();
 
 	Settings.beginGroup("Reservations");
-	Settings.setValue("Count", Options.value("Count").toInt());
-	Settings.setValue("Types", Options.value("Types").toList());
+	Settings.setValue("count", Options.value("Count").toInt());
+	Settings.setValue("types", Options.value("Types").toList());
 	Settings.endGroup();
 
 	Settings.beginGroup("Headers");
-	Settings.setValue("Jobs", Options.value("Jobs").toList());
-	Settings.setValue("Docs", Options.value("Docs").toList());
+	Settings.setValue("jobs", Options.value("Jobs").toList());
+	Settings.setValue("docs", Options.value("Docs").toList());
 	Settings.endGroup();
 
 
