@@ -29,16 +29,12 @@ MainWindow::MainWindow(QWidget* Parent)
 	QSettings Settings("Multimap", "Zasiegi");
 
 	Settings.beginGroup("Database");
-	Options.insert("Count", Settings.value("Count", 1).toInt());
-	Options.insert("Types", Settings.value("Types").toList());
-
 	Db = QSqlDatabase::addDatabase("QMYSQL");
 	Db.setUserName(Settings.value("user", "multimap").toString());
 	Db.setPassword(Settings.value("password", "multimap").toString());
 	Db.setHostName(Settings.value("server", "localhost").toString());
 	Db.setDatabaseName(Settings.value("database", "zasiegi").toString());
 	Db.open();
-
 	Settings.endGroup();
 
 	hwidget = new HistoryWidget(Db, this);
