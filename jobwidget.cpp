@@ -29,13 +29,13 @@ JobWidget::JobWidget(QSqlDatabase& Db, QWidget* Parent)
 	model = new SqlModel(this, Db);
 	model->setTable("operaty");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
+	model->setJoinMode(QSqlRelationalTableModel::LeftJoin);
 	model->setEditable({ 2 });
 
 	model->setHeaderData(0, Qt::Horizontal, tr("ID"));
 	model->setHeaderData(1, Qt::Horizontal, tr("P Number"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Type"));
 
-	model->setJoinMode(QSqlRelationalTableModel::LeftJoin);
 	model->setRelation(2, QSqlRelation("rodzajeopr", "id", "nazwa"));
 
 	model->select();

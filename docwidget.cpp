@@ -40,7 +40,6 @@ DocWidget::DocWidget(QSqlDatabase& Db, QWidget* Parent)
 	model->setHeaderData(5, Qt::Horizontal, tr("Finished"));
 	model->setHeaderData(6, Qt::Horizontal, tr("Path"));
 
-	model->setJoinMode(QSqlRelationalTableModel::LeftJoin);
 	model->setRelation(2, QSqlRelation("operaty", "id", "numer"));
 	model->setRelation(3, QSqlRelation("rodzajedok", "id", "nazwa"));
 
