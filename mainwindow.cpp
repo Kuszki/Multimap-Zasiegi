@@ -449,11 +449,14 @@ void MainWindow::exportClicked(void)
 		if (!Data[Op].A.isEmpty()) Data[Op].A.append('#');
 		if (!Data[Op].B.isEmpty()) Data[Op].B.append('#');
 
-		const QString Sh = Query.value(3).toString();
+		const QString Sh = Query.value(3).toString().replace('-', '0');
 
 		QStringList
 				A = Query.value(4).toString().split(';'),
 				B = Query.value(5).toString().split(';');
+
+		A.replaceInStrings("X", "", Qt::CaseInsensitive);
+		B.replaceInStrings("X", "", Qt::CaseInsensitive);
 
 		for (auto& S : A) S.push_front(QString("%1-").arg(Sh));
 		for (auto& S : B) S.push_front(QString("%1-").arg(Sh));
