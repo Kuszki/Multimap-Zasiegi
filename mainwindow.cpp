@@ -441,13 +441,10 @@ void MainWindow::exportClicked(void)
 	if (Query.exec()) while (Query.next())
 	{
 		QString Op = Query.value(0).toString();
-		const int Count = ++Data[Op].Count;
+		const int Count = Data[Op].Count + 1;
 
 		if (Data[Op].Gm.isEmpty()) Data[Op].Gm = Query.value(1).toString();
 		if (Data[Op].Ob.isEmpty()) Data[Op].Ob = Query.value(2).toString();
-
-		if (!Data[Op].A.isEmpty()) Data[Op].A.append('#');
-		if (!Data[Op].B.isEmpty()) Data[Op].B.append('#');
 
 		const QString Sh = Query.value(3).toString().replace('-', '0');
 
@@ -455,14 +452,25 @@ void MainWindow::exportClicked(void)
 				A = Query.value(4).toString().split(';'),
 				B = Query.value(5).toString().split(';');
 
-		A.replaceInStrings("X", "", Qt::CaseInsensitive);
-		B.replaceInStrings("X", "", Qt::CaseInsensitive);
+		A.replaceInStrings("X", "", Qt::CaseInsensitive); A.removeAll("");
+		B.replaceInStrings("X", "", Qt::CaseInsensitive); B.removeAll("");
 
 		for (auto& S : A) S.push_front(QString("%1-").arg(Sh));
 		for (auto& S : B) S.push_front(QString("%1-").arg(Sh));
 
-		Data[Op].A.append(QString("%1:%2").arg(Count).arg(A.join(';')));
-		Data[Op].B.append(QString("%1:%2").arg(Count).arg(B.join(';')));
+		if (!A.isEmpty())
+		{
+			if (!Data[Op].A.isEmpty()) Data[Op].A.append('#');
+			Data[Op].A.append(QString("%1:%2").arg(Count).arg(A.join(';')));
+		}
+
+		if (!B.isEmpty())
+		{
+			if (!Data[Op].B.isEmpty()) Data[Op].B.append('#');
+			Data[Op].B.append(QString("%1:%2").arg(Count).arg(B.join(';')));
+		}
+
+		if (!A.isEmpty() || !B.isEmpty()) ++Data[Op].Count;
 	}
 
 	QFile File(Path); QTextStream Stream(&File);
@@ -472,7 +480,7 @@ void MainWindow::exportClicked(void)
 	{
 		Stream << i.key() << '\t'
 			  << i.value().Gm << '\t'
-			  << i.value().Ob << '\t'
+			  << QString('0').repeated(4 - i.value().Ob.size()) << i.value().Ob << '\t'
 			  << i.value().A << '\t'
 			  << i.value().B << '\n';
 	}
