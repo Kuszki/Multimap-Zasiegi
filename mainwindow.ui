@@ -94,6 +94,8 @@
     <addaction name="actionScan"/>
     <addaction name="actionRoles"/>
     <addaction name="separator"/>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
     <addaction name="actionPreferences"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -417,10 +419,20 @@
   </action>
   <action name="actionImportdata">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Import data</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="icon">
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Export</string>
    </property>
   </action>
  </widget>
@@ -779,6 +791,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionExport</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>exportClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>aboutClicked()</slot>
@@ -802,5 +830,6 @@
   <slot>settingsClicked()</slot>
   <slot>saveRotClicked()</slot>
   <slot>importClicked()</slot>
+  <slot>exportClicked()</slot>
  </slots>
 </ui>

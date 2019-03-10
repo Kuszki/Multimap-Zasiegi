@@ -417,11 +417,62 @@ void MainWindow::rolesClicked(void)
 
 void MainWindow::exportClicked(void)
 {
-	const QString Path = QFileDialog::getExistingDirectory(this, tr("Select directory"));
+	struct DATA { QString Gm, Ob, A, B; int Count = 0; };
+
+	const QString Path = QFileDialog::getSaveFileName(this, tr("Select save file"));
 
 	if (Path.isEmpty()) return;
 
+	QHash<QString, DATA> Data;
 	QSqlQuery Query(Db);
+
+	Query.prepare("SELECT "
+			    "o.numer, g.kod, b.numer, z.arkusz, z.stare, z.nowe "
+			    "FROM zmiany z "
+			    "INNER JOIN dokumenty d "
+			    "ON z.dokument = d.id "
+			    "INNER JOIN operaty o "
+			    "ON d.operat = o.id "
+			    "LEFT JOIN obreby b "
+			    "ON z.obreb = b.id "
+			    "LEFT JOIN gminy g "
+			    "ON b.gmina = g.id");
+
+	if (Query.exec()) while (Query.next())
+	{
+		QString Op = Query.value(0).toString();
+		const int Count = ++Data[Op].Count;
+
+		if (Data[Op].Gm.isEmpty()) Data[Op].Gm = Query.value(1).toString();
+		if (Data[Op].Ob.isEmpty()) Data[Op].Ob = Query.value(2).toString();
+
+		if (!Data[Op].A.isEmpty()) Data[Op].A.append('#');
+		if (!Data[Op].B.isEmpty()) Data[Op].B.append('#');
+
+		const QString Sh = Query.value(3).toString();
+
+		QStringList
+				A = Query.value(4).toString().split(';'),
+				B = Query.value(5).toString().split(';');
+
+		for (auto& S : A) S.push_front(QString("%1-").arg(Sh));
+		for (auto& S : B) S.push_front(QString("%1-").arg(Sh));
+
+		Data[Op].A.append(QString("%1:%2").arg(Count).arg(A.join(';')));
+		Data[Op].B.append(QString("%1:%2").arg(Count).arg(B.join(';')));
+	}
+
+	QFile File(Path); QTextStream Stream(&File);
+	File.open(QFile::WriteOnly | QFile::Text);
+
+	for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
+	{
+		Stream << i.key() << '\t'
+			  << i.value().Gm << '\t'
+			  << i.value().Ob << '\t'
+			  << i.value().A << '\t'
+			  << i.value().B << '\n';
+	}
 }
 
 void MainWindow::settingsClicked(void)
