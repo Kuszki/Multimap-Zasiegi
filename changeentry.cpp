@@ -158,7 +158,7 @@ void ChangeEntry::addRightClicked(void)
 
 	const QStringList Current = aModel->stringList();
 	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"),
-											   QString::SkipEmptyParts);
+											   Qt::SkipEmptyParts);
 
 	QStringList Now = Current + New;
 	Now.removeDuplicates();
@@ -175,7 +175,7 @@ void ChangeEntry::addLeftClicked(void)
 
 	const QStringList Current = bModel->stringList();
 	const QStringList New = ui->commonEdit->text().split(QRegExp("[\\s,;.]+"),
-											   QString::SkipEmptyParts);
+											   Qt::SkipEmptyParts);
 
 	QStringList Now = Current + New;
 	Now.removeDuplicates();

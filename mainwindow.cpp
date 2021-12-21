@@ -35,8 +35,9 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setPassword(Settings.value("password", "multimap").toString());
 	Db.setHostName(Settings.value("server", "localhost").toString());
 	Db.setDatabaseName(Settings.value("database", "zasiegi").toString());
-	Db.open();
 	Settings.endGroup();
+
+	setEnabled(Db.open());
 
 	image = new ImageDock(this);
 

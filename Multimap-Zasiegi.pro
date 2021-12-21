@@ -18,12 +18,12 @@
 #*                                                                         *
 #* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-QT			+=	core gui widgets concurrent sql network qml
+QT			+=	core gui widgets concurrent sql network
 
 TARGET		=	Multimap-Zasiegi
 TEMPLATE		=	app
 
-CONFIG		+=	c++14
+CONFIG		+=	c++20
 
 SOURCES		+=	main.cpp \
 				imagedock.cpp \
@@ -75,5 +75,3 @@ FORMS		+=	mainwindow.ui \
 RESOURCES		+=	resources.qrc
 
 TRANSLATIONS	+=	zasiegi_pl.ts
-
-INCLUDEPATH += /usr/lib/gcc/x86_64-linux-gnu/9/include/
