@@ -329,6 +329,9 @@
    <property name="text">
     <string>Add change</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
   </action>
   <action name="actionRemovechange">
    <property name="icon">
@@ -337,6 +340,9 @@
    </property>
    <property name="text">
     <string>Remove change</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
   <action name="actionUndochange">
@@ -367,6 +373,9 @@
    </property>
    <property name="text">
     <string>Unlock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
   <action name="actionImportdata">
@@ -407,7 +416,8 @@
   </action>
   <action name="actionImport">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Import</string>

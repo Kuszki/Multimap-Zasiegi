@@ -542,49 +542,64 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Dodaj grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="339"/>
+        <location filename="mainwindow.ui" line="333"/>
+        <source>Ctrl++</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="342"/>
         <source>Remove change</source>
         <oldsource>&amp;Remove change</oldsource>
         <translation>Usuń grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="348"/>
+        <location filename="mainwindow.ui" line="345"/>
+        <source>Ctrl+-</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="354"/>
         <source>Undo change</source>
         <oldsource>&amp;Undo change</oldsource>
         <translation>Cofnij zmiany grupy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="357"/>
+        <location filename="mainwindow.ui" line="363"/>
         <source>Lock next job</source>
         <translation>Zablokuj kolejne operaty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="360"/>
+        <location filename="mainwindow.ui" line="366"/>
         <source>Ctrl+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="369"/>
+        <location filename="mainwindow.ui" line="375"/>
         <source>Unlock</source>
         <translation>Odblokuj dokument</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="378"/>
+        <source>Ctrl+D</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="387"/>
         <source>Import documents</source>
         <translation>Importuj dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="396"/>
+        <location filename="mainwindow.ui" line="405"/>
         <source>Open File</source>
         <translation>Otwórz plik</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="405"/>
+        <location filename="mainwindow.ui" line="414"/>
         <source>Open Folder</source>
         <translation>Otwórz folder</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="413"/>
+        <location filename="mainwindow.ui" line="423"/>
         <source>Import</source>
         <translation>Importuj</translation>
     </message>
@@ -597,7 +612,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Importuj dane</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="387"/>
+        <location filename="mainwindow.ui" line="396"/>
         <source>Export</source>
         <translation>Eksportuj</translation>
     </message>
