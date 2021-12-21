@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -23,7 +23,7 @@
 
 #include <QStringListModel>
 #include <QSqlDatabase>
-#include <QVariantMap>
+#include <QVariantHash>
 #include <QSqlQuery>
 #include <QWidget>
 
@@ -45,18 +45,18 @@ class ChangeEntry : public QWidget
 		bool Locked;
 		int Status;
 
-		QVariantMap Origin;
+		QVariantHash Origin;
 
 	public:
 
-		explicit ChangeEntry(const QVariantMap& Data, QSqlDatabase& Db, bool Lock = false, QWidget* Parent = nullptr);
+		explicit ChangeEntry(const QVariantHash& Data, QSqlDatabase& Db, bool Lock = false, QWidget* Parent = nullptr);
 		virtual ~ChangeEntry(void) override;
 
-		QVariantMap getOrigin(void) const;
-		QVariantMap getData(void) const;
+		QVariantHash getOrigin(void) const;
+		QVariantHash getData(void) const;
 
-		void setOrigin(const QVariantMap& Data);
-		void setData(const QVariantMap& Data);
+		void setOrigin(const QVariantHash& Data);
+		void setData(const QVariantHash& Data);
 
 		bool isChanged(void) const;
 		bool isValid(void) const;

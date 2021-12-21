@@ -26,6 +26,7 @@ TEMPLATE		=	app
 CONFIG		+=	c++14
 
 SOURCES		+=	main.cpp \
+				imagedock.cpp \
 				mainwindow.cpp \
 				aboutdialog.cpp \
 				jobwidget.cpp \
@@ -43,6 +44,7 @@ SOURCES		+=	main.cpp \
 
 HEADERS		+=	mainwindow.hpp \
 				aboutdialog.hpp \
+				imagedock.hpp \
 				jobwidget.hpp \
 				docwidget.hpp \
 				indexdialog.hpp \
@@ -58,6 +60,7 @@ HEADERS		+=	mainwindow.hpp \
 
 FORMS		+=	mainwindow.ui \
 				aboutdialog.ui \
+				imagedock.ui \
 				jobwidget.ui \
 				docwidget.ui \
 				indexdialog.ui \
@@ -72,3 +75,5 @@ FORMS		+=	mainwindow.ui \
 RESOURCES		+=	resources.qrc
 
 TRANSLATIONS	+=	zasiegi_pl.ts
+
+INCLUDEPATH += /usr/lib/gcc/x86_64-linux-gnu/9/include/

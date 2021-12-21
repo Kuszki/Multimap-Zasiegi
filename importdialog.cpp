@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -111,7 +111,7 @@ void ImportDialog::accept(void)
 	QDialog::accept();
 
 	QSet<QString> jTypes, dTypes;
-	QVariantMap sDocs, sJobs;
+	QVariantHash sDocs, sJobs;
 
 	for (int i = 1; i < jmodel->rowCount(); ++i)
 	{

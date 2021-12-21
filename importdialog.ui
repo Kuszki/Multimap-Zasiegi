@@ -14,7 +14,8 @@
    <string>Import data</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="document-open"/>
+   <iconset theme="document-open">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -29,6 +30,12 @@
    </item>
    <item row="0" column="1">
     <widget class="QToolButton" name="openButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>Open</string>
      </property>

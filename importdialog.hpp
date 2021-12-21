@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -44,8 +44,8 @@ class ImportDialog : public QDialog
 
 		Ui::ImportDialog* ui;
 
-		QVariantMap Jobs;
-		QVariantMap Docs;
+		QVariantHash Jobs;
+		QVariantHash Docs;
 
 		QStandardItemModel* jmodel;
 		QStandardItemModel* dmodel;
@@ -70,7 +70,7 @@ class ImportDialog : public QDialog
 
 	signals:
 
-		void onLoadRequest(const QVariantMap&, const QVariantMap&);
+		void onLoadRequest(const QVariantHash&, const QVariantHash&);
 
 };
 

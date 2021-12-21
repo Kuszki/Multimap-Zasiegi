@@ -17,6 +17,9 @@
    <iconset theme="system-search">
     <normaloff>.</normaloff>.</iconset>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonFollowStyle</enum>
+  </property>
   <property name="documentMode">
    <bool>true</bool>
   </property>
@@ -27,55 +30,7 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>782</width>
-         <height>519</height>
-        </rect>
-       </property>
-       <layout class="QGridLayout" name="scroolLayout">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Select document</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-   </layout>
+   <layout class="QGridLayout" name="gridLayout"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -83,7 +38,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuApplication">
@@ -94,6 +49,7 @@
     <addaction name="actionScan"/>
     <addaction name="actionRoles"/>
     <addaction name="separator"/>
+    <addaction name="actionImport"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionPreferences"/>
@@ -118,7 +74,6 @@
     <addaction name="actionRotateleft"/>
     <addaction name="actionRotateright"/>
     <addaction name="separator"/>
-    <addaction name="actionSaverotation"/>
    </widget>
    <widget class="QMenu" name="menuDocument">
     <property name="title">
@@ -151,11 +106,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionSaverotation"/>
+   <addaction name="actionOpenfile"/>
+   <addaction name="actionOpenfolder"/>
+   <addaction name="separator"/>
    <addaction name="actionZoomin"/>
    <addaction name="actionZoomout"/>
    <addaction name="actionFit"/>
    <addaction name="actionOrg"/>
+   <addaction name="separator"/>
    <addaction name="actionRotateleft"/>
    <addaction name="actionRotateright"/>
   </widget>
@@ -171,6 +129,7 @@
    </attribute>
    <addaction name="actionAbout"/>
    <addaction name="actionPreferences"/>
+   <addaction name="separator"/>
    <addaction name="actionExit"/>
   </widget>
   <widget class="QToolBar" name="actionsTool">
@@ -186,8 +145,10 @@
    <addaction name="actionLock"/>
    <addaction name="actionUnlock"/>
    <addaction name="actionSave"/>
+   <addaction name="separator"/>
    <addaction name="actionPrevious"/>
    <addaction name="actionNext"/>
+   <addaction name="separator"/>
    <addaction name="actionLocknext"/>
   </widget>
   <widget class="QToolBar" name="changesTool">
@@ -408,22 +369,13 @@
     <string>Unlock</string>
    </property>
   </action>
-  <action name="actionSaverotation">
-   <property name="icon">
-    <iconset theme="document-properties">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Save rotation</string>
-   </property>
-  </action>
   <action name="actionImportdata">
    <property name="icon">
-    <iconset theme="document-open">
+    <iconset theme="address-book-new">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Import data</string>
+    <string>Import documents</string>
    </property>
   </action>
   <action name="actionExport">
@@ -433,6 +385,32 @@
    </property>
    <property name="text">
     <string>Export</string>
+   </property>
+  </action>
+  <action name="actionOpenfile">
+   <property name="icon">
+    <iconset theme="window-new">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="actionOpenfolder">
+   <property name="icon">
+    <iconset theme="view-restore">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Open Folder</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="icon">
+    <iconset theme="document-open"/>
+   </property>
+   <property name="text">
+    <string>Import</string>
    </property>
   </action>
  </widget>
@@ -760,26 +738,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionSaverotation</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveRotClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionImportdata</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>importClicked()</slot>
+   <slot>importdataClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -796,6 +758,54 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>exportClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenfile</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openfileClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpenfolder</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openfolderClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionImport</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>importClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -831,5 +841,8 @@
   <slot>saveRotClicked()</slot>
   <slot>importClicked()</slot>
   <slot>exportClicked()</slot>
+  <slot>openfolderClicked()</slot>
+  <slot>openfileClicked()</slot>
+  <slot>importdataClicked()</slot>
  </slots>
 </ui>

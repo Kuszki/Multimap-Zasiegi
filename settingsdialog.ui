@@ -65,7 +65,7 @@
             <x>0</x>
             <y>0</y>
             <width>364</width>
-            <height>166</height>
+            <height>175</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="typesLayout">
@@ -106,7 +106,7 @@
             <x>0</x>
             <y>0</y>
             <width>364</width>
-            <height>200</height>
+            <height>206</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="docLayout"/>
@@ -134,7 +134,7 @@
             <x>0</x>
             <y>0</y>
             <width>364</width>
-            <height>200</height>
+            <height>206</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="jobLayout"/>

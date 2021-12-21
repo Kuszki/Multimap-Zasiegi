@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -91,6 +91,8 @@ void DocWidget::setVisibleHeaders(const QVariantList& List)
 
 void DocWidget::setJobIndex(int Index)
 {
+	if (Index == Currjob) return;
+
 	model->setFilter(QString("operat = %1").arg(Index));
 	ui->tableView->selectionModel()->clearSelection();
 
@@ -98,12 +100,22 @@ void DocWidget::setJobIndex(int Index)
 	Currdoc = 0;
 	Currpath = QString();
 
-	emit onIndexChange(0);
-	emit onPathChange(QString());
+	if (model->rowCount())
+	{
+		selectionChanged(model->index(0, 0));
+		ui->tableView->selectRow(0);
+	}
+	else
+	{
+		emit onIndexChange(0);
+		emit onPathChange(QString());
+	}
 }
 
 void DocWidget::setDocIndex(int Index)
 {
+	if (Index == Currdoc) return;
+
 	const auto Flags = QItemSelectionModel::SelectCurrent |
 				    QItemSelectionModel::Rows;
 
@@ -131,6 +143,8 @@ void DocWidget::updateData(int Index)
 
 void DocWidget::selectionChanged(const QModelIndex& Current)
 {
+	if (!Current.isValid()) return;
+
 	Currdoc = model->data(model->index(Current.row(), 0)).toInt();
 	Currpath = model->data(model->index(Current.row(), 6)).toString();
 

@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -21,10 +21,12 @@
 #include "changeentry.hpp"
 #include "ui_changeentry.h"
 
-ChangeEntry::ChangeEntry(const QVariantMap& Data, QSqlDatabase& Db, bool Lock, QWidget* Parent) :
+ChangeEntry::ChangeEntry(const QVariantHash& Data, QSqlDatabase& Db, bool Lock, QWidget* Parent) :
 QWidget(Parent), ui(new Ui::ChangeEntry), Locked(Lock), Status(0)
 {
 	ui->setupUi(this);
+
+	ui->splitter->setHandleWidth(ui->horizontalLayout->spacing());
 
 	QSqlQuery Query("SELECT o.id, o.nazwa, g.nazwa "
 				 "FROM obreby o "
@@ -47,12 +49,12 @@ ChangeEntry::~ChangeEntry(void)
 	delete ui;
 }
 
-QVariantMap ChangeEntry::getOrigin(void) const
+QVariantHash ChangeEntry::getOrigin(void) const
 {
 	return Origin;
 }
 
-QVariantMap ChangeEntry::getData(void) const
+QVariantHash ChangeEntry::getData(void) const
 {
 	QStringListModel* bModel = dynamic_cast<QStringListModel*>(ui->beforeView->model());
 	QStringListModel* aModel = dynamic_cast<QStringListModel*>(ui->afterView->model());
@@ -70,7 +72,7 @@ QVariantMap ChangeEntry::getData(void) const
 	};
 }
 
-void ChangeEntry::setData(const QVariantMap& Data)
+void ChangeEntry::setData(const QVariantHash& Data)
 {
 	Status = Data.value("status", 0).toInt();
 	UID = Data.value("uid").toInt();
@@ -92,7 +94,7 @@ void ChangeEntry::setData(const QVariantMap& Data)
 	if (Data.value("status").toInt() == 3) lock();
 }
 
-void ChangeEntry::setOrigin(const QVariantMap& Data)
+void ChangeEntry::setOrigin(const QVariantHash& Data)
 {
 	Origin = Data;
 }
@@ -160,6 +162,7 @@ void ChangeEntry::addRightClicked(void)
 
 	QStringList Now = Current + New;
 	Now.removeDuplicates();
+	Now.removeAll("");
 
 	aModel->setStringList(Now);
 
@@ -176,6 +179,7 @@ void ChangeEntry::addLeftClicked(void)
 
 	QStringList Now = Current + New;
 	Now.removeDuplicates();
+	Now.removeAll("");
 
 	bModel->setStringList(Now);
 
@@ -204,8 +208,6 @@ void ChangeEntry::updateStatus(void)
 	const bool New = !Origin.value("uid").toInt();
 	const bool Ok = isValid();
 	const bool Ch = isChanged();
-
-	auto d = getData();
 
 	if (!Ok) Status = -1;
 	else if (New) Status = 1;

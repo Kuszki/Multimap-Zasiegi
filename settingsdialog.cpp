@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -21,7 +21,7 @@
 #include "settingsdialog.hpp"
 #include "ui_settingsdialog.h"
 
-SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op, QWidget* Parent)
+SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantHash& Op, QWidget* Parent)
 : QDialog(Parent), ui(new Ui::SettingsDialog)
 {
 	QSqlQuery Query("SELECT id, nazwa FROM rodzajedok ORDER BY nazwa", Db);
@@ -86,7 +86,7 @@ SettingsDialog::~SettingsDialog(void)
 	delete ui;
 }
 
-QVariantMap SettingsDialog::getValues(void) const
+QVariantHash SettingsDialog::getValues(void) const
 {
 	QVariantList Types, Jobs, Docs;
 

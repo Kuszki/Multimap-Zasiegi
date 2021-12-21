@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
+ *  K-Indexer : index documents in SQL database                            *
+ *  Copyright (C) 2020  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -18,46 +18,76 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INDEXDIALOG_HPP
-#define INDEXDIALOG_HPP
+#ifndef IMAGEDOCK_H
+#define IMAGEDOCK_H
 
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QFileDialog>
-#include <QDialog>
+#include <QtWidgets>
+#include <QtCore>
 
-namespace Ui
-{
-	class IndexDialog;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui {	class ImageWidget; }
+QT_END_NAMESPACE
 
-class IndexDialog : public QDialog
+class ImageDock : public QDockWidget
 {
 
 		Q_OBJECT
 
 	private:
 
-		Ui::IndexDialog* ui;
+		Ui::ImageWidget *ui;
+
+		QStandardItemModel* model;
+		QList<QPixmap> list;
+
+		QString prefix;
+		QString current;
+
+		QPixmap currentImage;
+		int currentIndex = 0;
+
+		double scale = 1.0;
+		int rotation = 0;
 
 	public:
 
-		explicit IndexDialog(QWidget* Parent = nullptr);
-		virtual ~IndexDialog(void) override;
+		explicit ImageDock(QWidget *parent = nullptr);
+		virtual ~ImageDock(void) override;
+
+	protected:
+
+		virtual void wheelEvent(QWheelEvent* event) override;
 
 	public slots:
 
-		virtual void accept(void) override;
+		void setImage(const QString& path);
+		void setPrefix(const QString& path);
+
+		void setIndex(int index);
+
+		void nextImage(void);
+		void prevImage(void);
+
+		void zoomIn(void);
+		void zoomOut(void);
+		void zoomOrg(void);
+		void zoomFit(void);
+
+		void rotateLeft(void);
+		void rotateRight(void);
+
+		void openFile(void);
+		void openFolder(void);
+
+		void clear(void);
 
 	private slots:
 
-		void openClicked(void);
-		void updateStatus(void);
+		void imageIndexChanged(const QModelIndex& index);
 
-	signals:
-
-		void onRefresh(const QString&, int, bool);
+		void selectionRangeChanged(const QItemSelection& s,
+							  const QItemSelection& d);
 
 };
 
-#endif // INDEXDIALOG_HPP
+#endif // IMAGEDOCK_H

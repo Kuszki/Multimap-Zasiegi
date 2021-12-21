@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -43,7 +43,7 @@ class ChangeWidget : public QWidget
 		Ui::ChangeWidget* ui;
 		QSqlDatabase& Database;
 
-		QMap<int, QList<QVariantMap>> Unsaved;
+		QMap<int, QList<QVariantHash>> Unsaved;
 
 		int Currentindex = 0;
 		bool Locked = true;
@@ -53,8 +53,8 @@ class ChangeWidget : public QWidget
 		explicit ChangeWidget(QSqlDatabase& Db, QWidget* Parent = nullptr);
 		virtual ~ChangeWidget(void) override;
 
-		QList<QVariantMap> getChanges(int Index) const;
-		QList<QVariantMap> getChanges(void) const;
+		QList<QVariantHash> getChanges(int Index) const;
+		QList<QVariantHash> getChanges(void) const;
 
 		QIcon getIcon(int Status) const;
 

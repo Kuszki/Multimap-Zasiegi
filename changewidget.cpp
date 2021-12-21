@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -32,15 +32,15 @@ ChangeWidget::~ChangeWidget(void)
 	delete ui;
 }
 
-QList<QVariantMap> ChangeWidget::getChanges(int Index) const
+QList<QVariantHash> ChangeWidget::getChanges(int Index) const
 {
 	if (Index == Currentindex) return getChanges();
 	else return Unsaved.value(Index);
 }
 
-QList<QVariantMap> ChangeWidget::getChanges(void) const
+QList<QVariantHash> ChangeWidget::getChanges(void) const
 {
-	QList<QVariantMap> Changes;
+	QList<QVariantHash> Changes;
 
 	for (int i = 0, N = ui->tabWidget->count(); i < N; ++i)
 	{
@@ -87,7 +87,7 @@ void ChangeWidget::discardChanged(int Index)
 
 void ChangeWidget::saveChanges(int Index)
 {
-	QList<QVariantMap> Current;
+	QList<QVariantHash> Current;
 
 	for (const auto& List : getChanges(Index))
 	{
@@ -144,7 +144,7 @@ void ChangeWidget::updateStatus(void)
 
 void ChangeWidget::setDocIndex(int Index, bool Lock, bool Clear)
 {
-	QList<QVariantMap> Current = Clear ? getChanges() : Unsaved.value(Index);
+	QList<QVariantHash> Current = Clear ? getChanges() : Unsaved.value(Index);
 
 	if (Current.isEmpty()) Unsaved.remove(Currentindex);
 	else Unsaved[Currentindex] = Current;
@@ -170,7 +170,7 @@ void ChangeWidget::setDocIndex(int Index, bool Lock, bool Clear)
 
 	if (Query.exec()) while (Query.next())
 	{
-		const QVariantMap Origin =
+		const QVariantHash Origin =
 		{
 			{ "uid", Query.value(0) },
 			{ "did", Index },
@@ -238,7 +238,7 @@ void ChangeWidget::unlock(void)
 
 void ChangeWidget::appendChange(void)
 {
-	const QVariantMap Change =
+	const QVariantHash Change =
 	{
 		{ "did", Currentindex },
 		{ "status", 1 }
@@ -257,7 +257,7 @@ void ChangeWidget::removeChange(void)
 
 	if (!Widget || Index == -1) return;
 
-	QVariantMap Data = Widget->getOrigin();
+	QVariantHash Data = Widget->getOrigin();
 	QVariantList Current;
 
 	if (Data.value("uid").toInt())
@@ -281,7 +281,7 @@ void ChangeWidget::undoChange(void)
 
 	if (!Widget || Index == -1) return;
 
-	QVariantMap Data = Widget->getOrigin();
+	QVariantHash Data = Widget->getOrigin();
 	QVariantList Current;
 
 	if (Data.value("uid").toInt())

@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -42,11 +42,11 @@ class SettingsDialog : public QDialog
 
 	public:
 
-		explicit SettingsDialog(QSqlDatabase& Db, const QVariantMap& Op,
+		explicit SettingsDialog(QSqlDatabase& Db, const QVariantHash& Op,
 						    QWidget* Parent = nullptr);
 		virtual ~SettingsDialog(void) override;
 
-		QVariantMap getValues(void) const;
+		QVariantHash getValues(void) const;
 
 	public slots:
 
@@ -54,7 +54,7 @@ class SettingsDialog : public QDialog
 
 	signals:
 
-		void onSaveSettings(const QVariantMap&);
+		void onSaveSettings(const QVariantHash&);
 
 };
 

@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -46,8 +46,7 @@ class LockWidget : public QWidget
 
 	public slots:
 
-		void appendDocument(const QString& File, int dID,
-						const QString& Job, int jID);
+		void appendDocument(const QString& Job, int jID);
 
 		void removeDocument(int Index);
 
@@ -59,7 +58,7 @@ class LockWidget : public QWidget
 
 	signals:
 
-		void onDocSelected(int, int);
+		void onDocSelected(int);
 
 };
 

@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -39,6 +39,8 @@
 #include "jobwidget.hpp"
 #include "docwidget.hpp"
 
+#include "imagedock.hpp"
+
 #include "appcommon.hpp"
 
 namespace Ui
@@ -56,7 +58,7 @@ class MainWindow : public QMainWindow
 		Ui::MainWindow* ui;
 		QSqlDatabase Db;
 
-		QVariantMap Options;
+		QVariantHash Options;
 
 		HistoryWidget* hwidget;
 		ChangeWidget* cwidget;
@@ -64,18 +66,18 @@ class MainWindow : public QMainWindow
 		JobWidget* jwidget;
 		DocWidget* dwidget;
 
+		ImageDock* image;
+
 		QDockWidget* history;
 		QDockWidget* changes;
 		QDockWidget* locks;
 		QDockWidget* jobs;
 		QDockWidget* docs;
 
-		QPixmap Image;
-
-		QList<QPair<int, int>> Queue;
+		QList<int> Queue;
 		QSet<int> Locked;
 
-		int CurrentDoc = 0;
+		int CurrentJob = 0;
 
 		double Scale = 1.0;
 		int Rotation = 0;
@@ -90,16 +92,13 @@ class MainWindow : public QMainWindow
 		void updateDocRoles(const QString& Path, bool Addnew);
 		void updateJobRoles(const QString& Path, bool Addnew);
 
-	protected:
-
-		virtual void wheelEvent(QWheelEvent* Event) override;
-
 	private slots:
 
 		void aboutClicked(void);
-		void importClicked(void);
+		void importdataClicked(void);
 		void scanClicked(void);
 		void rolesClicked(void);
+		void importClicked(void);
 		void exportClicked(void);
 		void settingsClicked(void);
 
@@ -117,19 +116,22 @@ class MainWindow : public QMainWindow
 
 		void rotateLeftClicked(void);
 		void rotateRightClicked(void);
-		void saveRotClicked(void);
+
+		void openfileClicked(void);
+		void openfolderClicked(void);
 
 		void changeAddClicked(void);
 		void changeDelClicked(void);
 		void changeUndoClicked(void);
 
+		void jobChanged(int Index);
 		void documentChanged(int Index);
 
-		void focusDocument(int Document, int Job);
+		void focusDocument(int Job);
 
 		void updateImage(const QString& Path);
 
-		void saveSettings(const QVariantMap& Settings);
+		void saveSettings(const QVariantHash& Settings);
 
 		void scanDirectory(const QString& Dir,
 					    int Mode, bool Rec);
@@ -138,8 +140,8 @@ class MainWindow : public QMainWindow
 					  const QString& Path,
 					  bool Addnew);
 
-		void importData(const QVariantMap& Jobs,
-					 const QVariantMap& Docs);
+		void importData(const QVariantHash& Jobs,
+					 const QVariantHash& Docs);
 
 	signals:
 

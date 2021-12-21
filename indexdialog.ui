@@ -30,6 +30,12 @@
    </item>
    <item row="0" column="2">
     <widget class="QToolButton" name="openButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>Open</string>
      </property>

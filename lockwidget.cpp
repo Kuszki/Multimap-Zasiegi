@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -27,7 +27,7 @@ LockWidget::LockWidget(QWidget* Parent)
 	ui->setupUi(this);
 
 	model = new QStandardItemModel(0, 5, this);
-	model->setHorizontalHeaderLabels({ tr("Document"), "", "", "", "" });
+	model->setHorizontalHeaderLabels({ tr("Job"), "", "", "", "" });
 
 	model->horizontalHeaderItem(1)->setIcon(QIcon::fromTheme("list-add"));
 	model->horizontalHeaderItem(2)->setIcon(QIcon::fromTheme("list-remove"));
@@ -49,109 +49,68 @@ LockWidget::~LockWidget(void)
 	delete ui;
 }
 
-void LockWidget::appendDocument(const QString& File, int dID, const QString& Job, int jID)
+void LockWidget::appendDocument(const QString& Job, int jID)
 {
 	QList<QStandardItem*> Row;
-	QModelIndex Parent;
 
-	auto* Doc = new QStandardItem(File);
-	Doc->setData(dID, Qt::UserRole);
+	auto* Doc = new QStandardItem(Job);
+	Doc->setData(jID, Qt::UserRole);
 	Row.append(Doc);
 
 	for (int i = 0; i < 4; ++i)
 	{
 		auto I = new QStandardItem("0");
-		I->setData(dID, Qt::UserRole);
+		I->setData(jID, Qt::UserRole);
 		Row.append(I);
 	}
 
-	for (int i = 0, N = model->rowCount(); i < N; ++i)
-	{
-		const auto Current = model->index(i, 0);
-
-		if (model->data(Current, Qt::UserRole) == jID)
-		{
-			Parent = Current;
-			i = N;
-		}
-	}
-
-	if (!Parent.isValid())
-	{
-		auto Item = new QStandardItem(Job);
-		Item->setData(jID, Qt::UserRole);
-
-		model->appendRow(Item);
-		Parent = Item->index();
-	}
-
-	model->itemFromIndex(Parent)->appendRow(Row);
+	model->appendRow(Row);
 }
 
 void LockWidget::removeDocument(int Index)
 {
-	QModelIndex Parent, Item;
+	QModelIndex Item;
 
 	for (int i = 0, N = model->rowCount(); i < N; ++i)
 	{
 		const auto CP = model->index(i, 0);
 
-		for (int j = 0, M = model->rowCount(CP); j < M; ++j)
+		if (model->data(CP, Qt::UserRole).toInt() == Index)
 		{
-			const auto CI = model->index(j, 0, CP);
-
-			if (model->data(CI, Qt::UserRole).toInt() == Index)
-			{
-				Parent = CP; i = model->rowCount();
-				Item = CI; j = model->rowCount(CP);
-			}
+			Item = CP; i = model->rowCount(CP);
 		}
 	}
 
-	if (Item.isValid())
-		model->removeRow(Item.row(), Parent);
-
-	if (Parent.isValid() && !model->rowCount(Parent))
-		model->removeRow(Parent.row());
+	if (Item.isValid()) model->removeRow(Item.row());
 }
 
 void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod, int Err)
 {
-	QModelIndex Parent;
 	int Row = -1;
 
 	for (int i = 0, N = model->rowCount(); i < N; ++i)
 	{
-		const auto Pind = model->index(i, 0);
+		const auto CP = model->index(i, 0);
 
-		for (int j = 0, M = model->rowCount(Pind); j < M; ++j)
+		if (model->data(CP, Qt::UserRole).toInt() == Index)
 		{
-			const auto Cind = model->index(j, 0, Pind);
-
-			if (model->data(Cind, Qt::UserRole).toInt() == Index)
-			{
-				Parent = Pind;
-				Row = j;
-
-				j = model->item(i, 0)->rowCount();
-				i = model->rowCount();
-			}
+			Row = i; i = model->rowCount(CP);
 		}
 	}
 
-	if (!Parent.isValid() || Row == -1) return;
+	if (Row == -1) return;
 
-	model->setData(model->index(Row, 1, Parent), Add);
-	model->setData(model->index(Row, 2, Parent), Del);
-	model->setData(model->index(Row, 3, Parent), Mod);
-	model->setData(model->index(Row, 4, Parent), Err);
+	model->setData(model->index(Row, 1), Add);
+	model->setData(model->index(Row, 2), Del);
+	model->setData(model->index(Row, 3), Mod);
+	model->setData(model->index(Row, 4), Err);
 }
 
 void LockWidget::itemSelected(const QModelIndex& Index)
 {
+	if (!Index.isValid()) return;
+
 	const auto Data = model->index(Index.row(), 0, Index.parent());
 
-	if (Index.parent().isValid()) emit onDocSelected(
-				model->data(Data, Qt::UserRole).toInt(),
-				model->data(Index.parent(), Qt::UserRole).toInt());
+	emit onDocSelected(model->data(Data, Qt::UserRole).toInt());
 }

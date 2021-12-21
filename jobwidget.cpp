@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -64,6 +64,23 @@ void JobWidget::setVisibleHeaders(const QVariantList& List)
 	for (int i = 0; i < model->columnCount(); ++i)
 	{
 		ui->tableView->setColumnHidden(i, !List.isEmpty() && !List.contains(i));
+	}
+}
+
+void JobWidget::setJobIndex(int Index)
+{
+	ui->tableView->clearSelection();
+
+	const auto I = model->findByUid(Index);
+
+	if (I.isValid())
+	{
+		ui->tableView->selectRow(I.row());
+		emit onIndexChange(Index);
+	}
+	else
+	{
+		emit onIndexChange(0);
 	}
 }
 

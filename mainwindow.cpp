@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Klient bazy danych projektu Multimap                                   *
- *  Copyright (C) 2018  Łukasz "Kuszki" Dróżdż  l.drozdz@openmailbox.org   *
+ *  Copyright (C) 2016  Łukasz "Kuszki" Dróżdż  lukasz.kuszki@gmail.com    *
  *                                                                         *
  *  This program is free software: you can redistribute it and/or modify   *
  *  it under the terms of the GNU General Public License as published by   *
@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget* Parent)
 : QMainWindow(Parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	ui->centralWidget->deleteLater();
 
 	QSettings Settings("Multimap", "Zasiegi");
 
@@ -36,6 +37,8 @@ MainWindow::MainWindow(QWidget* Parent)
 	Db.setDatabaseName(Settings.value("database", "zasiegi").toString());
 	Db.open();
 	Settings.endGroup();
+
+	image = new ImageDock(this);
 
 	hwidget = new HistoryWidget(Db, this);
 	history = new QDockWidget(tr("History"), this);
@@ -62,6 +65,7 @@ MainWindow::MainWindow(QWidget* Parent)
 	docs->setObjectName("Documents");
 	docs->setWidget(dwidget);
 
+	addDockWidget(Qt::TopDockWidgetArea, image);
 	addDockWidget(Qt::LeftDockWidgetArea, history);
 	addDockWidget(Qt::LeftDockWidgetArea, changes);
 	addDockWidget(Qt::LeftDockWidgetArea, locks);
@@ -70,8 +74,10 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	updateImage(QString());
 	documentChanged(0);
+	jobChanged(0);
 
 	Settings.beginGroup("Window");
+	setTabPosition(Qt::AllDockWidgetAreas, QTabWidget::TabPosition::North);
 	restoreGeometry(Settings.value("geometry").toByteArray());
 	restoreState(Settings.value("state").toByteArray());
 	Settings.endGroup();
@@ -86,30 +92,24 @@ MainWindow::MainWindow(QWidget* Parent)
 	Options.insert("Docs", Settings.value("docs").toList());
 	Settings.endGroup();
 
+	if (isMaximized()) setGeometry(QApplication::desktop()->availableGeometry(this));
+
 	QSqlQuery Query(Db);
 
-	Query.prepare("SELECT d.nazwa, d.id, o.numer, o.id "
-			    "FROM dokumenty d "
-			    "INNER JOIN operaty o "
-			    "ON d.operat = o.id "
+	Query.prepare("SELECT o.numer, o.id "
+			    "FROM operaty o "
 			    "INNER JOIN blokady b "
-			    "ON d.id = b.id "
+			    "ON o.id = b.id "
 			    "WHERE b.operator = ?");
 	Query.addBindValue(AppCommon::getCurrentUser());
 
 	if (Query.exec()) while (Query.next())
 	{
 		Locked.insert(Query.value(1).toInt());
-		Queue.append(
-		{
-			Query.value(1).toInt(),
-			Query.value(3).toInt()
-		});
+		Queue.append(Query.value(1).toInt());
 
 		lwidget->appendDocument(Query.value(0).toString(),
-						    Query.value(1).toInt(),
-						    Query.value(2).toString(),
-						    Query.value(3).toInt());
+						    Query.value(1).toInt());
 	}
 
 	ui->actionNext->setEnabled(Queue.size());
@@ -120,6 +120,9 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	connect(jwidget, &JobWidget::onIndexChange,
 		   dwidget, &DocWidget::setJobIndex);
+
+	connect(jwidget, &JobWidget::onIndexChange,
+		   this, &MainWindow::jobChanged);
 
 	connect(dwidget, &DocWidget::onIndexChange,
 		   this, &MainWindow::documentChanged);
@@ -343,17 +346,6 @@ void MainWindow::updateJobRoles(const QString& Path, bool Addnew)
 	setEnabled(true);
 }
 
-void MainWindow::wheelEvent(QWheelEvent* Event)
-{
-	QMainWindow::wheelEvent(Event);
-
-	if (CurrentDoc && QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
-	{
-		if (Event->angleDelta().y() > 0) zoomInClicked();
-		else if (Event->angleDelta().y() < 0) zoomOutClicked();
-	}
-}
-
 void MainWindow::aboutClicked(void)
 {
 	AboutDialog* Dialog = new AboutDialog(this);
@@ -367,7 +359,7 @@ void MainWindow::aboutClicked(void)
 	Dialog->open();
 }
 
-void MainWindow::importClicked(void)
+void MainWindow::importdataClicked(void)
 {
 	ImportDialog* Dialog = new ImportDialog(this);
 
@@ -415,6 +407,108 @@ void MainWindow::rolesClicked(void)
 	Dialog->open();
 }
 
+void MainWindow::importClicked(void)
+{
+	struct DATA { QString Ark, Stare, Nowe; int Obr; };
+
+	const auto Splitter = [] (QMap<int, DATA>& Hash, const QStringList& List, bool Mode) -> void
+	{
+		QRegExp Exp("(?:(\\d+)\\$)?(?:(\\w+)-)?(\\S+)");
+
+		for (const auto& D : List)
+		{
+			const QStringList Raw = D.split(':');
+			if (Raw.size() != 2) continue;
+
+			const int Group = Raw[0].toInt();
+
+			QStringList Lots;
+			QString Sheet;
+			int Region(0);
+
+			for (const auto& Str : Raw[1].split(';'))
+			{
+				if (Exp.indexIn(Str) == -1) continue;
+				const QStringList Cap = Exp.capturedTexts();
+
+				if (!Region && !Cap[1].isEmpty())
+					Region = Cap[1].toInt();
+
+				if (Sheet.isEmpty() && !Cap[2].isEmpty())
+					Sheet = Cap[2];
+
+				Lots.append(Cap[3]);
+			}
+
+			if (Group && !Lots.isEmpty())
+			{
+				if (Mode) Hash[Group].Nowe = Lots.join(';');
+				else Hash[Group].Stare = Lots.join(';');
+
+				if (Hash[Group].Ark.isEmpty())
+					Hash[Group].Ark = Sheet;
+
+				if (Hash[Group].Obr == 0)
+					Hash[Group].Obr = Region;
+			}
+		}
+	};
+
+	const QString Path = QFileDialog::getOpenFileName(this, tr("Select source file"));
+
+	if (Path.isEmpty()) return;
+	else setEnabled(false);
+
+	QFile Input(Path);
+	QTextStream Stream(&Input);
+	Input.open(QFile::Text | QFile::ReadOnly);
+
+	QHash<QString, int> Docs;
+
+	QSqlQuery Query(Db);
+	Query.prepare("SELECT numer, id FROM operaty");
+
+	if (Query.exec()) while (Query.next())
+	{
+		Docs.insert(Query.value(0).toString(),
+				  Query.value(1).toInt());
+	}
+
+	Query.prepare("INSERT INTO zmiany (dokument, arkusz, obreb, stare, nowe) "
+			    "VALUES (?, ?, ?, ?, ?)");
+
+	while (!Stream.atEnd())
+	{
+		const QStringList Row = Stream.readLine().split('\t');
+
+		if (Row.size() != 3) continue;
+		const QString& Jobname = Row[0];
+
+		if (!Docs.contains(Jobname)) continue;
+		const int Jobid = Docs[Jobname];
+
+		QMap<int, DATA> Hash;
+
+		Splitter(Hash, Row[1].split('#'), false);
+		Splitter(Hash, Row[2].split('#'), true);
+
+		for (const auto& D : Hash)
+		{
+			Query.addBindValue(Jobid);
+			Query.addBindValue(D.Ark);
+			Query.addBindValue(D.Obr);
+			Query.addBindValue(D.Stare.isNull() ? "" : D.Stare);
+			Query.addBindValue(D.Nowe.isNull() ? "" : D.Nowe);
+
+			Query.exec();
+		}
+
+		QApplication::processEvents();
+	}
+
+	setEnabled(true);
+}
+
 void MainWindow::exportClicked(void)
 {
 	struct DATA { QString Gm, Ob, A, B; int Count = 0; };
@@ -422,6 +516,7 @@ void MainWindow::exportClicked(void)
 	const QString Path = QFileDialog::getSaveFileName(this, tr("Select save file"));
 
 	if (Path.isEmpty()) return;
+	else setEnabled(false);
 
 	QHash<QString, DATA> Data;
 	QSqlQuery Query(Db);
@@ -447,6 +542,7 @@ void MainWindow::exportClicked(void)
 		if (Data[Op].Ob.isEmpty()) Data[Op].Ob = Query.value(2).toString();
 
 		const QString Sh = Query.value(3).toString().replace('-', '0');
+		const int Obr = Query.value(2).toInt();
 
 		QStringList
 				A = Query.value(4).toString().split(';'),
@@ -455,8 +551,8 @@ void MainWindow::exportClicked(void)
 		A.replaceInStrings("X", "", Qt::CaseInsensitive); A.removeAll("");
 		B.replaceInStrings("X", "", Qt::CaseInsensitive); B.removeAll("");
 
-		for (auto& S : A) S.push_front(QString("%1-").arg(Sh));
-		for (auto& S : B) S.push_front(QString("%1-").arg(Sh));
+		for (auto& S : A) S.push_front(QString("%1$%2-").arg(Obr).arg(Sh));
+		for (auto& S : B) S.push_front(QString("%1$%2-").arg(Obr).arg(Sh));
 
 		if (!A.isEmpty())
 		{
@@ -471,6 +567,8 @@ void MainWindow::exportClicked(void)
 		}
 
 		if (!A.isEmpty() || !B.isEmpty()) ++Data[Op].Count;
+
+		QApplication::processEvents();
 	}
 
 	QFile File(Path); QTextStream Stream(&File);
@@ -479,11 +577,13 @@ void MainWindow::exportClicked(void)
 	for (auto i = Data.constBegin(); i != Data.constEnd(); ++i)
 	{
 		Stream << i.key() << '\t'
-			  << i.value().Gm << '\t'
-			  << QString('0').repeated(4 - i.value().Ob.size()) << i.value().Ob << '\t'
 			  << i.value().A << '\t'
 			  << i.value().B << '\n';
+
+		QApplication::processEvents();
 	}
+
+	setEnabled(true);
 }
 
 void MainWindow::settingsClicked(void)
@@ -506,7 +606,7 @@ void MainWindow::nextClicked(void)
 {
 	auto Index = Queue.takeFirst();
 
-	if (CurrentDoc == Index.first && Queue.size())
+	if (CurrentJob == Index && Queue.size())
 	{
 		Queue.push_back(Index);
 		Index = Queue.takeFirst();
@@ -514,14 +614,14 @@ void MainWindow::nextClicked(void)
 
 	Queue.push_back(Index);
 
-	focusDocument(Index.first, Index.second);
+	focusDocument(Index);
 }
 
 void MainWindow::prevClicked(void)
 {
 	auto Index = Queue.takeLast();
 
-	if (CurrentDoc == Index.first && Queue.size())
+	if (CurrentJob == Index && Queue.size())
 	{
 		Queue.push_front(Index);
 		Index = Queue.takeLast();
@@ -529,7 +629,7 @@ void MainWindow::prevClicked(void)
 
 	Queue.push_front(Index);
 
-	focusDocument(Index.first, Index.second);
+	focusDocument(Index);
 }
 
 void MainWindow::saveClicked(void)
@@ -545,7 +645,7 @@ void MainWindow::saveClicked(void)
 
 	docQuery.prepare("UPDATE dokumenty SET operator = ?, data = CURRENT_TIMESTAMP WHERE id = ?");
 
-	for (const auto& Change : cwidget->getChanges(CurrentDoc)) switch (Change.value("status").toInt())
+	for (const auto& Change : cwidget->getChanges(CurrentJob)) switch (Change.value("status").toInt())
 	{
 		case 1:
 			addQuery.addBindValue(Change.value("did"));
@@ -576,13 +676,13 @@ void MainWindow::saveClicked(void)
 	}
 
 	docQuery.addBindValue(AppCommon::getCurrentUser());
-	docQuery.addBindValue(CurrentDoc);
+	docQuery.addBindValue(CurrentJob);
 
 	docQuery.exec();
 
 	if (Err) QMessageBox::warning(this, tr("Saving changes"), tr("There are %n unsaved changes(s) due incomplete data.", nullptr, Err));
 
-	emit onSaveChanges(CurrentDoc);
+	emit onSaveChanges(CurrentJob);
 }
 
 void MainWindow::editClicked(void)
@@ -592,32 +692,27 @@ void MainWindow::editClicked(void)
 	Query.prepare("INSERT INTO blokady (id, operator) "
 			    "VALUES (?, ?)");
 
-	Query.addBindValue(CurrentDoc);
+	Query.addBindValue(CurrentJob);
 	Query.addBindValue(AppCommon::getCurrentUser());
 
 	if (Query.exec())
 	{
-		Query.prepare("SELECT d.nazwa, d.id, o.numer, o.id "
-				    "FROM dokumenty d "
-				    "INNER JOIN operaty o "
-				    "ON d.operat = o.id "
-				    "WHERE d.id = ?");
+		Query.prepare("SELECT o.numer, o.id "
+				    "FROM operaty o "
+				    "WHERE o.id = ?");
 
-		Query.addBindValue(CurrentDoc);
+		Query.addBindValue(CurrentJob);
 
 		if (Query.exec() && Query.next())
 		{
-			Queue.append(qMakePair(Query.value(1).toInt(),
-							   Query.value(3).toInt()));
+			Queue.append(CurrentJob);
 
 			lwidget->appendDocument(Query.value(0).toString(),
-							    Query.value(1).toInt(),
-							    Query.value(2).toString(),
-							    Query.value(3).toInt());
+							    Query.value(1).toInt());
 		}
 
-		Locked.insert(CurrentDoc);
-		documentChanged(CurrentDoc);
+		Locked.insert(CurrentJob);
+		jobChanged(CurrentJob);
 	}
 
 	ui->actionNext->setEnabled(Queue.size());
@@ -630,12 +725,11 @@ void MainWindow::lockClicked(void)
 	const int Count = Options.value("Count", 1).toInt();
 	const QString User = AppCommon::getCurrentUser();
 
-	QVector<QString> dNames, jNames;
-	QMap<int, QList<int>> IDS;
+	QList<QPair<int, QString>> List;
 
 	QSqlQuery Query("LOCK TABLES blokady WRITE, operaty AS o READ, dokumenty AS d READ, rodzajedok AS r READ", Db);
 
-	Query.prepare(QString("SELECT DISTINCT o.id FROM operaty o "
+	Query.prepare(QString("SELECT DISTINCT o.id, o.numer FROM operaty o "
 					  "INNER JOIN dokumenty d ON d.operat = o.id "
 					  "INNER JOIN rodzajedok r ON d.rodzaj = r.id "
 					  "WHERE d.rodzaj IN (%1) AND d.data IS NULL "
@@ -643,46 +737,24 @@ void MainWindow::lockClicked(void)
 					  "LIMIT %2")
 			    .arg(Types).arg(Count));
 
-	if (Query.exec()) while (Query.next())
-	{
-		IDS.insert(Query.value(0).toInt(), QList<int>());
-	}
-
-	Query.prepare(QString("SELECT d.nazwa, d.id, o.numer, o.id FROM dokumenty d "
-					  "INNER JOIN operaty o ON d.operat = o.id "
-					  "INNER JOIN rodzajedok r ON d.rodzaj = r.id "
-					  "WHERE o.id = ? AND d.rodzaj IN (%1) AND d.data IS NULL "
-					  "AND d.id NOT IN (SELECT id FROM blokady)")
-			    .arg(Types));
-
-	for (auto i = IDS.begin(); i != IDS.end(); ++i)
-	{
-		Query.addBindValue(i.key());
-
-		if (Query.exec()) while (Query.next())
-		{
-			const QString dName = Query.value(0).toString();
-			const QString oName = Query.value(2).toString();
-
-			const int dID = Query.value(1).toInt();
-			const int oID = Query.value(3).toInt();
-
-			lwidget->appendDocument(dName, dID, oName, oID);
-			Queue.append({ dID, oID });
-			Locked.insert(dID);
-
-			i.value().append(dID);
-		}
-	}
+	if (Query.exec()) while (Query.next()) List.append({
+		Query.value(0).toInt(),
+		Query.value(1).toString()
+	});
 
 	Query.prepare("INSERT INTO blokady (id, operator) VALUES (?, ?)");
 
-	for (const auto& List : IDS) for (const auto& ID : List)
+	for (const auto& I : List)
 	{
-		Query.addBindValue(ID);
+		Query.addBindValue(I.first);
 		Query.addBindValue(User);
 
-		Query.exec();
+		if (Query.exec())
+		{
+			lwidget->appendDocument(I.second, I.first);
+			Queue.append(I.first);
+			Locked.insert(I.first);
+		}
 	}
 
 	Query.exec("UNLOCK TABLES");
@@ -700,25 +772,20 @@ void MainWindow::unlockClicked(void)
 								    QMessageBox::Save | QMessageBox::Ignore | QMessageBox::Abort))
 	{
 		case QMessageBox::Save: saveClicked(); break;
-		case QMessageBox::Abort: return; default:;
+		case QMessageBox::Abort: return;
+		default:;
 	}
 
 	QSqlQuery Query(Db);
 
 	Query.prepare("DELETE FROM blokady WHERE id = ?");
-	Query.addBindValue(CurrentDoc);
+	Query.addBindValue(CurrentJob);
 	Query.exec();
 
-	for (int i = 0; i < Queue.size(); ++i)
-	{
-		if (Queue[i].first == CurrentDoc)
-		{
-			Queue.removeAt(i--);
-		}
-	}
+	Queue.removeAll(CurrentJob);
+	Locked.remove(CurrentJob);
 
-	Locked.remove(CurrentDoc);
-	cwidget->discardChanged(CurrentDoc);
+	cwidget->discardChanged(CurrentJob);
 
 	ui->actionAddchange->setEnabled(false);
 	ui->actionRemovechange->setEnabled(false);
@@ -731,57 +798,47 @@ void MainWindow::unlockClicked(void)
 	ui->actionNext->setEnabled(Queue.size());
 	ui->actionPrevious->setEnabled(Queue.size());
 
-	lwidget->removeDocument(CurrentDoc);
+	lwidget->removeDocument(CurrentJob);
 }
 
 void MainWindow::zoomInClicked(void)
 {
-	ui->label->setPixmap(Image.scaledToHeight(int((Scale += 0.1) * Image.height()))
-					 .transformed(QTransform().rotate(Rotation)));
+	image->zoomIn();
 }
 
 void MainWindow::zoomOutClicked(void)
 {
-	ui->label->setPixmap(Image.scaledToHeight(int((Scale -= 0.1) * Image.height()))
-					 .transformed(QTransform().rotate(Rotation)));
+	image->zoomOut();
 }
 
 void MainWindow::zoomOrgClicked(void)
 {
-	ui->label->setPixmap(Image.transformed(QTransform().rotate(Rotation)));
-
-	Scale = 1.0;
+	image->zoomOrg();
 }
 
 void MainWindow::zoomFitClicked(void)
 {
-	auto Img = Image.transformed(QTransform().rotate(Rotation))
-			 .scaled(ui->scrollArea->size(), Qt::KeepAspectRatio);
-
-	Scale = double(Img.height()) / double(Image.height());
-
-	ui->label->setPixmap(Img);
+	image->zoomFit();
 }
 
 void MainWindow::rotateLeftClicked(void)
 {
-	if ((Rotation -= 90) <= -360) Rotation = 0;
-
-	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
-					 .transformed(QTransform().rotate(Rotation)));
+	image->rotateLeft();
 }
 
 void MainWindow::rotateRightClicked(void)
 {
-	if ((Rotation += 90) >= 360) Rotation = 0;
-
-	ui->label->setPixmap(Image.scaledToHeight(int(Scale* Image.height()))
-					 .transformed(QTransform().rotate(Rotation)));
+	image->rotateRight();
 }
 
-void MainWindow::saveRotClicked(void)
+void MainWindow::openfileClicked(void)
 {
-	auto Img = Image.transformed(QTransform().rotate(Rotation));
+	image->openFile();
+}
+
+void MainWindow::openfolderClicked(void)
+{
+	image->openFolder();
 }
 
 void MainWindow::changeAddClicked(void)
@@ -799,7 +856,7 @@ void MainWindow::changeUndoClicked(void)
 	cwidget->undoChange();
 }
 
-void MainWindow::documentChanged(int Index)
+void MainWindow::jobChanged(int Index)
 {
 	const bool Lock = Locked.contains(Index);
 
@@ -811,42 +868,32 @@ void MainWindow::documentChanged(int Index)
 	ui->actionSave->setEnabled(Lock);
 	ui->actionUnlock->setEnabled(Lock);
 
+	cwidget->setDocIndex(Index, !Lock);
+
+	CurrentJob = Index;
+}
+
+void MainWindow::documentChanged(int Index)
+{
 	ui->actionRotateleft->setEnabled(Index);
 	ui->actionRotateright->setEnabled(Index);
 	ui->actionFit->setEnabled(Index);
 	ui->actionOrg->setEnabled(Index);
 	ui->actionZoomin->setEnabled(Index);
 	ui->actionZoomout->setEnabled(Index);
-	ui->actionSaverotation->setEnabled(Index);
-
-	cwidget->setDocIndex(Index, !Lock);
-	CurrentDoc = Index;
 }
 
-void MainWindow::focusDocument(int Document, int Job)
+void MainWindow::focusDocument(int Job)
 {
-	dwidget->setJobIndex(Job);
-	dwidget->setDocIndex(Document);
+	jwidget->setJobIndex(Job);
 }
 
 void MainWindow::updateImage(const QString& Path)
 {
 	const bool Img = QFile(Path).exists();
 
-	if (Img)
-	{
-		Rotation = 0;
-
-		ui->label->clear();
-		Image = QPixmap(Path);
-		zoomFitClicked();
-	}
-	else
-	{
-		ui->label->clear();
-		Image = QPixmap();
-		ui->label->setText(tr("Select document"));
-	}
+	if (!Img) image->clear();
+	else image->setImage(Path);
 
 	ui->actionFit->setEnabled(Img);
 	ui->actionOrg->setEnabled(Img);
@@ -854,9 +901,11 @@ void MainWindow::updateImage(const QString& Path)
 	ui->actionZoomout->setEnabled(Img);
 	ui->actionRotateleft->setEnabled(Img);
 	ui->actionRotateright->setEnabled(Img);
+	ui->actionOpenfile->setEnabled(Img);
+	ui->actionOpenfolder->setEnabled(Img);
 }
 
-void MainWindow::saveSettings(const QVariantMap& Settings)
+void MainWindow::saveSettings(const QVariantHash& Settings)
 {
 	Options = Settings;
 
@@ -875,6 +924,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 	QHash<QString, int> Jobs;
 
 	QSqlQuery Query("SELECT id, numer FROM operaty", Db);
+
+	setEnabled(false);
 
 	while (Query.next())
 	{
@@ -990,6 +1041,8 @@ void MainWindow::scanDirectory(const QString& Dir, int Mode, bool Rec)
 
 		QApplication::processEvents();
 	}
+
+	setEnabled(true);
 }
 
 void MainWindow::updateRoles(int Objecttype, const QString& Path, bool Addnew)
@@ -998,7 +1051,7 @@ void MainWindow::updateRoles(int Objecttype, const QString& Path, bool Addnew)
 	else if (Objecttype == 1) updateJobRoles(Path, Addnew);
 }
 
-void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
+void MainWindow::importData(const QVariantHash& Jobs, const QVariantHash& Docs)
 {
 	QHash<QString, int> jRoles;
 	QHash<QString, int> dRoles;
@@ -1064,12 +1117,10 @@ void MainWindow::importData(const QVariantMap& Jobs, const QVariantMap& Docs)
 
 	for (auto i = Docs.constBegin(); i != Docs.constEnd(); ++i)
 	{
-		if (!QFile::exists(i.key())) continue;
-
 		const QStringList Data = i.value().toStringList();
 
 		Query.addBindValue(QFileInfo(i.key()).fileName());
-		Query.addBindValue(QFileInfo(i.key()).absoluteFilePath());
+		Query.addBindValue(i.key());
 		Query.addBindValue(dRoles.value(Data.value(1)));
 		Query.addBindValue(jUids.value(Data.value(0)));
 
