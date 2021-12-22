@@ -77,7 +77,7 @@ void LockWidget::removeDocument(int Index)
 
 		if (model->data(CP, Qt::UserRole).toInt() == Index)
 		{
-			Item = CP; i = model->rowCount(CP);
+			Item = CP; break;
 		}
 	}
 
@@ -94,7 +94,7 @@ void LockWidget::recalcChanges(int Index, int Add, int Del, int Mod, int Err)
 
 		if (model->data(CP, Qt::UserRole).toInt() == Index)
 		{
-			Row = i; i = model->rowCount(CP);
+			Row = i; break;
 		}
 	}
 
