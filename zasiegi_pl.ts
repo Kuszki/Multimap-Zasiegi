@@ -165,6 +165,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="historywidget.cpp" line="48"/>
+        <location filename="historywidget.cpp" line="100"/>
         <source>Date</source>
         <translation>Data</translation>
     </message>
@@ -175,10 +176,14 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Operat</translation>
     </message>
     <message>
-        <location filename="historywidget.cpp" line="48"/>
-        <location filename="historywidget.cpp" line="100"/>
+        <location filename="historywidget.cpp" line="88"/>
+        <location filename="historywidget.cpp" line="139"/>
+        <source>na</source>
+        <translation>nd</translation>
+    </message>
+    <message>
         <source>Documents</source>
-        <translation>Dokumenty</translation>
+        <translation type="vanished">Dokumenty</translation>
     </message>
     <message>
         <location filename="historywidget.cpp" line="48"/>
@@ -190,12 +195,13 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
 <context>
     <name>ImageDock</name>
     <message>
-        <location filename="imagedock.cpp" line="118"/>
+        <location filename="imagedock.cpp" line="137"/>
+        <location filename="imagedock.cpp" line="167"/>
         <source>Unable to load image</source>
         <translation>Nie udało się wczytać obrazu</translation>
     </message>
     <message>
-        <location filename="imagedock.cpp" line="232"/>
+        <location filename="imagedock.cpp" line="286"/>
         <source>Select document</source>
         <translation>Wybierz dokument</translation>
     </message>
@@ -203,22 +209,22 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
 <context>
     <name>ImageWidget</name>
     <message>
-        <location filename="imagedock.ui" line="17"/>
+        <location filename="imagedock.ui" line="18"/>
         <source>Preview</source>
         <translation>Podgląd</translation>
     </message>
     <message>
-        <location filename="imagedock.ui" line="30"/>
+        <location filename="imagedock.ui" line="31"/>
         <source>&lt;-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imagedock.ui" line="91"/>
+        <location filename="imagedock.ui" line="92"/>
         <source>Select document</source>
         <translation>Wybierz dokument</translation>
     </message>
     <message>
-        <location filename="imagedock.ui" line="114"/>
+        <location filename="imagedock.ui" line="115"/>
         <source>-&gt;</source>
         <translation></translation>
     </message>
@@ -406,7 +412,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.ui" line="156"/>
-        <location filename="mainwindow.cpp" line="49"/>
+        <location filename="mainwindow.cpp" line="50"/>
         <source>Changes</source>
         <translation>Zmiany</translation>
     </message>
@@ -617,42 +623,42 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Eksportuj</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="44"/>
+        <location filename="mainwindow.cpp" line="45"/>
         <source>History</source>
         <translation>Historia</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="54"/>
+        <location filename="mainwindow.cpp" line="55"/>
         <source>Locked</source>
         <translation>Zablokowane</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="59"/>
+        <location filename="mainwindow.cpp" line="60"/>
         <source>Jobs</source>
         <translation>Operaty</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="64"/>
+        <location filename="mainwindow.cpp" line="65"/>
         <source>Documents</source>
         <translation>Dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Select source file</source>
         <translation>Wybierz plik źródłowy</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="516"/>
+        <location filename="mainwindow.cpp" line="524"/>
         <source>Select save file</source>
         <translation>Wybierz plik do eksportu</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="683"/>
+        <location filename="mainwindow.cpp" line="691"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="770"/>
+        <location filename="mainwindow.cpp" line="778"/>
         <source>Unlocking document</source>
         <translation>Odblokowanie dokumentu</translation>
     </message>
@@ -661,7 +667,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Niezapisane zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="683"/>
+        <location filename="mainwindow.cpp" line="691"/>
         <source>There are %n unsaved changes(s) due incomplete data.</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana, posiadająca niekompletne dane.</numerusform>
@@ -674,7 +680,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Lokalne zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="771"/>
+        <location filename="mainwindow.cpp" line="779"/>
         <source>There are %n unsaved changes(s).</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana.</numerusform>

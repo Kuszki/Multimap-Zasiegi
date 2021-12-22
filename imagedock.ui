@@ -11,7 +11,8 @@
    </rect>
   </property>
   <property name="windowIcon">
-   <iconset theme="emblem-documents"/>
+   <iconset theme="emblem-documents">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <property name="windowTitle">
    <string>Preview</string>
@@ -59,8 +60,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>622</width>
-         <height>408</height>
+         <width>618</width>
+         <height>518</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="scroolLayout">
@@ -121,7 +122,7 @@
     <item row="1" column="0" colspan="3">
      <widget class="QListView" name="listView">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -129,8 +130,14 @@
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
       <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
       </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
@@ -139,7 +146,7 @@
        <enum>QAbstractItemView::DragDrop</enum>
       </property>
       <property name="defaultDropAction">
-       <enum>Qt::IgnoreAction</enum>
+       <enum>Qt::CopyAction</enum>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::SingleSelection</enum>
@@ -149,12 +156,9 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>196</width>
-        <height>256</height>
+        <width>138</width>
+        <height>196</height>
        </size>
-      </property>
-      <property name="movement">
-       <enum>QListView::Free</enum>
       </property>
       <property name="flow">
        <enum>QListView::LeftToRight</enum>
@@ -162,17 +166,8 @@
       <property name="isWrapping" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="resizeMode">
-       <enum>QListView::Fixed</enum>
-      </property>
-      <property name="layoutMode">
-       <enum>QListView::SinglePass</enum>
-      </property>
       <property name="viewMode">
        <enum>QListView::IconMode</enum>
-      </property>
-      <property name="uniformItemSizes">
-       <bool>true</bool>
       </property>
       <property name="itemAlignment">
        <set>Qt::AlignCenter</set>

@@ -71,31 +71,50 @@ void ImageDock::wheelEvent(QWheelEvent* event)
 	}
 }
 
-void ImageDock::setImage(const QString& path)
+void ImageDock::setImage(const QString& path, bool absolute)
 {
 	while (model->rowCount()) model->removeRow(0);
 
-	QImageReader reader(current = prefix + path);
+	if (absolute) current = path;
+	else current = prefix + path;
+
+	QImageReader reader(current);
 	int imageId = 0;
 
 	list.clear();
 	currentIndex = 0;
 
-	if (reader.canRead()) do
+	if (reader.canRead())
 	{
-		reader.jumpToImage(imageId++);
-		const QImage img = reader.read();
+		if (preview) do
+		{
+			reader.jumpToImage(imageId++);
+			const QImage img = reader.read();
 
-		QPixmap pixmap;
-		pixmap.convertFromImage(img);
+			QPixmap pixmap;
+			pixmap.convertFromImage(img);
 
-		QStandardItem* item = new QStandardItem(pixmap, QString::number(imageId));
-		model->appendRow(item);
+			QStandardItem* item = new QStandardItem(pixmap, QString::number(imageId));
+			model->appendRow(item);
 
-		list.append(pixmap);
+			list.append(pixmap);
+		}
+		while (imageId < reader.imageCount());
+		else do
+		{
+			reader.jumpToImage(imageId++);
+
+			QStandardItem* item = new QStandardItem(QString::number(imageId));
+			model->appendRow(item);
+
+			list.append(QPixmap());
+		}
+		while (imageId < reader.imageCount());
 	}
-	while (imageId < reader.imageCount());
 
+	ui->listView->setViewMode(preview ? QListView::IconMode : QListView::ListMode);
+	ui->listView->setMinimumHeight(ui->listView->sizeHintForRow(0) +
+							 ui->listView->verticalScrollBar()->height());
 	ui->listView->setVisible(list.size() > 1);
 	ui->next->setVisible(list.size() > 1);
 	ui->prev->setVisible(list.size() > 1);
@@ -126,11 +145,46 @@ void ImageDock::setIndex(int index)
 					model->index(index, 0),
 					QItemSelectionModel::ClearAndSelect);
 
-		currentImage = list[index];
 		currentIndex = index;
+
+		if (preview) currentImage = list[index];
+		else
+		{
+			QImageReader reader(current);
+
+			if (reader.canRead() && index < reader.imageCount())
+			{
+				reader.jumpToImage(index);
+				const QImage img = reader.read();
+
+				QPixmap pixmap;
+				pixmap.convertFromImage(img);
+
+				currentImage = pixmap;
+			}
+			else
+			{
+				ui->label->setText(tr("Unable to load image"));
+				currentImage = QPixmap();
+			}
+
+		}
 
 		zoomFit();
 	}
+}
+
+bool ImageDock::getPreview(void) const
+{
+	return preview;
+}
+
+void ImageDock::setPreview(bool newPreview)
+{
+	if (newPreview == preview) return;
+
+	preview = newPreview;
+	setImage(current, true);
 }
 
 void ImageDock::nextImage(void)

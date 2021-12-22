@@ -24,6 +24,7 @@
 #include <QStandardItemModel>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QWidget>
 
 #include "appcommon.hpp"

@@ -93,6 +93,10 @@ MainWindow::MainWindow(QWidget* Parent)
 	Options.insert("Docs", Settings.value("docs").toList());
 	Settings.endGroup();
 
+	Settings.beginGroup("Images");
+	image->setPreview(Settings.value("preview", false).toBool());
+	Settings.endGroup();
+
 	if (isMaximized()) setGeometry(QApplication::desktop()->availableGeometry(this));
 
 	QSqlQuery Query(Db);
@@ -163,6 +167,9 @@ MainWindow::~MainWindow(void)
 	Settings.setValue("docs", Options.value("Docs").toList());
 	Settings.endGroup();
 
+	Settings.beginGroup("Images");
+	Settings.setValue("preview", image->getPreview());
+	Settings.endGroup();
 
 	delete ui;
 }
@@ -512,7 +519,7 @@ void MainWindow::importClicked(void)
 
 void MainWindow::exportClicked(void)
 {
-	struct DATA { QString Gm, Ob, A, B; int Count = 0; };
+	struct DATA { QString A, B; int Count = 0; };
 
 	const QString Path = QFileDialog::getSaveFileName(this, tr("Select save file"));
 
@@ -522,32 +529,24 @@ void MainWindow::exportClicked(void)
 	QHash<QString, DATA> Data;
 	QSqlQuery Query(Db);
 
-	Query.prepare("SELECT "
-			    "o.numer, g.kod, b.numer, z.arkusz, z.stare, z.nowe "
+	Query.prepare("SELECT o.numer, b.numer, z.arkusz, z.stare, z.nowe "
 			    "FROM zmiany z "
-			    "INNER JOIN dokumenty d "
-			    "ON z.dokument = d.id "
 			    "INNER JOIN operaty o "
-			    "ON d.operat = o.id "
-			    "LEFT JOIN obreby b "
-			    "ON z.obreb = b.id "
-			    "LEFT JOIN gminy g "
-			    "ON b.gmina = g.id");
+			    "ON z.dokument = o.id "
+			    "INNER JOIN obreby b "
+			    "ON z.obreb = b.id");
 
 	if (Query.exec()) while (Query.next())
 	{
 		QString Op = Query.value(0).toString();
 		const int Count = Data[Op].Count + 1;
 
-		if (Data[Op].Gm.isEmpty()) Data[Op].Gm = Query.value(1).toString();
-		if (Data[Op].Ob.isEmpty()) Data[Op].Ob = Query.value(2).toString();
-
-		const QString Sh = Query.value(3).toString().replace('-', '0');
-		const int Obr = Query.value(2).toInt();
+		const QString Sh = Query.value(2).toString().replace('-', '0');
+		const int Obr = Query.value(1).toInt();
 
 		QStringList
-				A = Query.value(4).toString().split(';'),
-				B = Query.value(5).toString().split(';');
+				A = Query.value(3).toString().split(';'),
+				B = Query.value(4).toString().split(';');
 
 		A.replaceInStrings("X", "", Qt::CaseInsensitive); A.removeAll("");
 		B.replaceInStrings("X", "", Qt::CaseInsensitive); B.removeAll("");
@@ -644,7 +643,7 @@ void MainWindow::saveClicked(void)
 
 	addQuery.prepare("INSERT INTO zmiany (dokument, arkusz, obreb, stare, nowe, uwagi) VALUES (?, ?, ?, ?, ?, ?)");
 
-	docQuery.prepare("UPDATE dokumenty SET operator = ?, data = CURRENT_TIMESTAMP WHERE id = ?");
+	docQuery.prepare("UPDATE operaty SET operator = ?, data = CURRENT_TIMESTAMP WHERE id = ?");
 
 	for (const auto& Change : cwidget->getChanges(CurrentJob)) switch (Change.value("status").toInt())
 	{
@@ -726,15 +725,15 @@ void MainWindow::lockClicked(void)
 	const int Count = Options.value("Count", 1).toInt();
 	const QString User = AppCommon::getCurrentUser();
 
-	QList<QPair<int, QString>> List;
+	QVector<QPair<int, QString>> List;
 
 	QSqlQuery Query("LOCK TABLES blokady WRITE, operaty AS o READ, dokumenty AS d READ, rodzajedok AS r READ", Db);
 
 	Query.prepare(QString("SELECT DISTINCT o.id, o.numer FROM operaty o "
 					  "INNER JOIN dokumenty d ON d.operat = o.id "
 					  "INNER JOIN rodzajedok r ON d.rodzaj = r.id "
-					  "WHERE d.rodzaj IN (%1) AND d.data IS NULL "
-					  "AND d.id NOT IN (SELECT id FROM blokady) "
+					  "WHERE d.rodzaj IN (%1) AND o.data IS NULL "
+					  "AND o.id NOT IN (SELECT id FROM blokady) "
 					  "LIMIT %2")
 			    .arg(Types).arg(Count));
 

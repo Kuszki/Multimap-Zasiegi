@@ -49,10 +49,14 @@ class ImageDock : public QDockWidget
 		double scale = 1.0;
 		int rotation = 0;
 
+		bool preview = true;
+
 	public:
 
 		explicit ImageDock(QWidget *parent = nullptr);
 		virtual ~ImageDock(void) override;
+
+		bool getPreview(void) const;
 
 	protected:
 
@@ -60,7 +64,7 @@ class ImageDock : public QDockWidget
 
 	public slots:
 
-		void setImage(const QString& path);
+		void setImage(const QString& path, bool absolute = false);
 		void setPrefix(const QString& path);
 
 		void setIndex(int index);
@@ -80,6 +84,8 @@ class ImageDock : public QDockWidget
 		void openFolder(void);
 
 		void clear(void);
+
+		void setPreview(bool newPreview);
 
 	private slots:
 

@@ -102,7 +102,6 @@ void DocWidget::setJobIndex(int Index)
 
 	if (model->rowCount())
 	{
-		selectionChanged(model->index(0, 0));
 		ui->tableView->selectRow(0);
 	}
 	else
