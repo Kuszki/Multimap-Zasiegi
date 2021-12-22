@@ -36,9 +36,7 @@ DocWidget::DocWidget(QSqlDatabase& Db, QWidget* Parent)
 	model->setHeaderData(1, Qt::Horizontal, tr("Name"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Job"));
 	model->setHeaderData(3, Qt::Horizontal, tr("Type"));
-	model->setHeaderData(4, Qt::Horizontal, tr("Worker"));
-	model->setHeaderData(5, Qt::Horizontal, tr("Finished"));
-	model->setHeaderData(6, Qt::Horizontal, tr("Path"));
+	model->setHeaderData(4, Qt::Horizontal, tr("Path"));
 
 	model->setRelation(2, QSqlRelation("operaty", "id", "numer"));
 	model->setRelation(3, QSqlRelation("rodzajedok", "id", "nazwa"));
@@ -94,7 +92,7 @@ void DocWidget::setJobIndex(int Index)
 	if (Index == Currjob) return;
 
 	model->setFilter(QString("operat = %1").arg(Index));
-	ui->tableView->selectionModel()->clearSelection();
+	ui->tableView->clearSelection();
 
 	Currjob = Index;
 	Currdoc = 0;
@@ -123,7 +121,7 @@ void DocWidget::setDocIndex(int Index)
 	ui->tableView->selectionModel()->select(I, Flags);
 
 	Currdoc = model->data(model->index(I.row(), 0)).toInt();
-	Currpath = model->data(model->index(I.row(), 6)).toString();
+	Currpath = model->data(model->index(I.row(), 4)).toString();
 
 	emit onIndexChange(Currdoc);
 	emit onPathChange(Currpath);
@@ -145,7 +143,7 @@ void DocWidget::selectionChanged(const QModelIndex& Current)
 	if (!Current.isValid()) return;
 
 	Currdoc = model->data(model->index(Current.row(), 0)).toInt();
-	Currpath = model->data(model->index(Current.row(), 6)).toString();
+	Currpath = model->data(model->index(Current.row(), 4)).toString();
 
 	emit onIndexChange(Currdoc);
 	emit onPathChange(Currpath);

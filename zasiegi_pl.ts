@@ -121,17 +121,15 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Rodzaj</translation>
     </message>
     <message>
-        <location filename="docwidget.cpp" line="39"/>
         <source>Worker</source>
-        <translation>Operator</translation>
+        <translation type="vanished">Operator</translation>
     </message>
     <message>
-        <location filename="docwidget.cpp" line="40"/>
         <source>Finished</source>
-        <translation>Ukończony</translation>
+        <translation type="vanished">Ukończony</translation>
     </message>
     <message>
-        <location filename="docwidget.cpp" line="41"/>
+        <location filename="docwidget.cpp" line="39"/>
         <source>Path</source>
         <translation>Ścieżka</translation>
     </message>
@@ -308,12 +306,12 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
 <context>
     <name>JobWidget</name>
     <message>
-        <location filename="jobwidget.ui" line="33"/>
+        <location filename="jobwidget.ui" line="36"/>
         <source>Search</source>
         <translation>Wyszukaj</translation>
     </message>
     <message>
-        <location filename="jobwidget.ui" line="49"/>
+        <location filename="jobwidget.ui" line="52"/>
         <source>Refresh</source>
         <translation>Odśwież</translation>
     </message>
@@ -326,6 +324,16 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <location filename="jobwidget.cpp" line="36"/>
         <source>P Number</source>
         <translation>Numer P</translation>
+    </message>
+    <message>
+        <location filename="jobwidget.cpp" line="38"/>
+        <source>Finished</source>
+        <translation>Ukończony</translation>
+    </message>
+    <message>
+        <location filename="jobwidget.cpp" line="39"/>
+        <source>Worker</source>
+        <translation>Operator</translation>
     </message>
     <message>
         <source>KERG Number</source>
@@ -653,12 +661,12 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Wybierz plik do eksportu</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="691"/>
+        <location filename="mainwindow.cpp" line="683"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="778"/>
+        <location filename="mainwindow.cpp" line="770"/>
         <source>Unlocking document</source>
         <translation>Odblokowanie dokumentu</translation>
     </message>
@@ -667,7 +675,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Niezapisane zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="691"/>
+        <location filename="mainwindow.cpp" line="683"/>
         <source>There are %n unsaved changes(s) due incomplete data.</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana, posiadająca niekompletne dane.</numerusform>
@@ -680,7 +688,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Lokalne zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="779"/>
+        <location filename="mainwindow.cpp" line="771"/>
         <source>There are %n unsaved changes(s).</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana.</numerusform>
@@ -777,28 +785,28 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Obręb</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="37"/>
+        <location filename="settingsdialog.cpp" line="39"/>
         <source>Name</source>
         <translation>Plik</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="38"/>
+        <location filename="settingsdialog.cpp" line="40"/>
         <source>Job</source>
         <translation>Operat</translation>
     </message>
     <message>
         <location filename="settingsdialog.cpp" line="32"/>
-        <location filename="settingsdialog.cpp" line="39"/>
+        <location filename="settingsdialog.cpp" line="41"/>
         <source>Type</source>
         <translation>Rodzaj</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="40"/>
+        <location filename="settingsdialog.cpp" line="34"/>
         <source>Worker</source>
         <translation>Operator</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="41"/>
+        <location filename="settingsdialog.cpp" line="33"/>
         <source>Finished</source>
         <translation>Ukończony</translation>
     </message>

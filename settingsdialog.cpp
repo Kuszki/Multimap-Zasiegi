@@ -30,6 +30,8 @@ SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantHash& Op, QWidget
 	{
 		{ tr("P Number"), 1 },
 		{ tr("Type"), 2 },
+		{ tr("Finished"), 3 },
+		{ tr("Worker"), 4 },
 	};
 
 	static const QHash<QString, int> docFields =
@@ -37,9 +39,7 @@ SettingsDialog::SettingsDialog(QSqlDatabase& Db, const QVariantHash& Op, QWidget
 		{ tr("Name"), 1 },
 		{ tr("Job"), 2 },
 		{ tr("Type"), 3 },
-		{ tr("Worker"), 4 },
-		{ tr("Finished"), 5 },
-		{ tr("Path"), 6 }
+		{ tr("Path"), 4 }
 	};
 
 	ui->setupUi(this);

@@ -35,6 +35,8 @@ JobWidget::JobWidget(QSqlDatabase& Db, QWidget* Parent)
 	model->setHeaderData(0, Qt::Horizontal, tr("ID"));
 	model->setHeaderData(1, Qt::Horizontal, tr("P Number"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Type"));
+	model->setHeaderData(3, Qt::Horizontal, tr("Finished"));
+	model->setHeaderData(4, Qt::Horizontal, tr("Worker"));
 
 	model->setRelation(2, QSqlRelation("rodzajeopr", "id", "nazwa"));
 
