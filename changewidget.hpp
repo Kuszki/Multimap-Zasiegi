@@ -53,8 +53,8 @@ class ChangeWidget : public QWidget
 		explicit ChangeWidget(QSqlDatabase& Db, QWidget* Parent = nullptr);
 		virtual ~ChangeWidget(void) override;
 
-		QList<QVariantHash> getChanges(int Index) const;
-		QList<QVariantHash> getChanges(void) const;
+		QList<QVariantHash> getChanges(int Index, const QSet<int> Filter = QSet<int>()) const;
+		QList<QVariantHash> getChanges(const QSet<int> Filter = QSet<int>()) const;
 
 		QIcon getIcon(int Status) const;
 

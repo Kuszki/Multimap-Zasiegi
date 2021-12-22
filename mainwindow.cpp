@@ -765,7 +765,7 @@ void MainWindow::lockClicked(void)
 
 void MainWindow::unlockClicked(void)
 {
-	const int Chg = cwidget->getChanges().size();
+	const int Chg = cwidget->getChanges({-1, 1, 2, 3}).size();
 
 	if (Chg) switch (QMessageBox::question(this, tr("Unlocking document"),
 								    tr("There are %n unsaved changes(s).", nullptr, Chg),

@@ -95,6 +95,7 @@ void ImageDock::setImage(const QString& path, bool absolute)
 			pixmap.convertFromImage(img);
 
 			QStandardItem* item = new QStandardItem(pixmap, QString::number(imageId));
+			item->setTextAlignment(Qt::AlignCenter);
 			model->appendRow(item);
 
 			list.append(pixmap);
@@ -105,6 +106,7 @@ void ImageDock::setImage(const QString& path, bool absolute)
 			reader.jumpToImage(imageId++);
 
 			QStandardItem* item = new QStandardItem(QString::number(imageId));
+			item->setTextAlignment(Qt::AlignCenter);
 			model->appendRow(item);
 
 			list.append(QPixmap());
@@ -160,7 +162,7 @@ void ImageDock::setIndex(int index)
 				QPixmap pixmap;
 				pixmap.convertFromImage(img);
 
-				currentImage = pixmap;
+				currentImage = std::move(pixmap);
 			}
 			else
 			{

@@ -32,13 +32,13 @@ ChangeWidget::~ChangeWidget(void)
 	delete ui;
 }
 
-QList<QVariantHash> ChangeWidget::getChanges(int Index) const
+QList<QVariantHash> ChangeWidget::getChanges(int Index, const QSet<int> Filter) const
 {
-	if (Index == Currentindex) return getChanges();
+	if (Index == Currentindex) return getChanges(Filter);
 	else return Unsaved.value(Index);
 }
 
-QList<QVariantHash> ChangeWidget::getChanges(void) const
+QList<QVariantHash> ChangeWidget::getChanges(const QSet<int> Filter) const
 {
 	QList<QVariantHash> Changes;
 
@@ -47,7 +47,10 @@ QList<QVariantHash> ChangeWidget::getChanges(void) const
 		const auto W = dynamic_cast<ChangeEntry*>(ui->tabWidget->widget(i));
 		const auto Data = W->getData();
 
-		if (Data.value("status").toInt()) Changes.append(Data);
+		const int Status = Data.value("status").toInt();
+		const bool OK = Filter.isEmpty() || Filter.contains(Status);
+
+		if (OK) Changes.append(Data);
 	}
 
 	return Changes;
@@ -89,7 +92,7 @@ void ChangeWidget::saveChanges(int Index)
 {
 	QList<QVariantHash> Current;
 
-	for (const auto& List : getChanges(Index))
+	for (const auto& List : getChanges(Index, {-1, 1, 2, 3}))
 	{
 		if (List.value("status").toInt() == -1)
 		{
@@ -144,7 +147,7 @@ void ChangeWidget::updateStatus(void)
 
 void ChangeWidget::setDocIndex(int Index, bool Lock, bool Clear)
 {
-	QList<QVariantHash> Current = Clear ? getChanges() : Unsaved.value(Index);
+	QList<QVariantHash> Current = Clear ? getChanges({-1, 1, 2, 3}) : Unsaved.value(Index);
 
 	if (Current.isEmpty()) Unsaved.remove(Currentindex);
 	else Unsaved[Currentindex] = Current;
@@ -238,11 +241,22 @@ void ChangeWidget::unlock(void)
 
 void ChangeWidget::appendChange(void)
 {
-	const QVariantHash Change =
+	const auto Items = getChanges();
+
+	QVariantHash Change =
 	{
 		{ "did", Currentindex },
 		{ "status", 1 }
 	};
+
+	for (auto i = Items.cbegin(); i != Items.cend(); ++i)
+	{
+		const QString Sheet = (*i).value("sheet", QString()).toString();
+		const int Area = (*i).value("area", 0).toInt();
+
+		if (!Sheet.isEmpty()) Change["sheet"] = Sheet;
+		if (Area > 0) Change["area"] = Area;
+	}
 
 	ChangeEntry* Widget = new ChangeEntry(Change, Database, false, this);
 	ui->tabWidget->addTab(Widget, getIcon(1), QString("%1").arg(ui->tabWidget->count() + 1));
