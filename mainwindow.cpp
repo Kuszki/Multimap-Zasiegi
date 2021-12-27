@@ -83,6 +83,13 @@ MainWindow::MainWindow(QWidget* Parent)
 	restoreState(Settings.value("state").toByteArray());
 	Settings.endGroup();
 
+	Settings.beginGroup("Docks");
+	ui->actionAllowclose->setChecked(Settings.value("close", true).toBool());
+	ui->actionAllowfloat->setChecked(Settings.value("float", true).toBool());
+	ui->actionAllowmove->setChecked(Settings.value("move", true).toBool());
+	ui->actionLockdocks->setChecked(Settings.value("lock", false).toBool());
+	Settings.endGroup();
+
 	Settings.beginGroup("Reservations");
 	Options.insert("Count", Settings.value("count", 1).toInt());
 	Options.insert("Types", Settings.value("types").toList());
@@ -146,6 +153,8 @@ MainWindow::MainWindow(QWidget* Parent)
 
 	connect(this, &MainWindow::onSaveChanges,
 		   cwidget, &ChangeWidget::saveChanges);
+
+	dockOptionsChanged();
 }
 
 MainWindow::~MainWindow(void)
@@ -155,6 +164,13 @@ MainWindow::~MainWindow(void)
 	Settings.beginGroup("Window");
 	Settings.setValue("state", saveState());
 	Settings.setValue("geometry", saveGeometry());
+	Settings.endGroup();
+
+	Settings.beginGroup("Docks");
+	Settings.setValue("close", ui->actionAllowclose->isChecked());
+	Settings.setValue("float", ui->actionAllowfloat->isChecked());
+	Settings.setValue("move", ui->actionAllowmove->isChecked());
+	Settings.setValue("lock", ui->actionLockdocks->isChecked());
 	Settings.endGroup();
 
 	Settings.beginGroup("Reservations");
@@ -854,6 +870,38 @@ void MainWindow::changeDelClicked(void)
 void MainWindow::changeUndoClicked(void)
 {
 	cwidget->undoChange();
+}
+
+void MainWindow::dockOptionsChanged(void)
+{
+	QDockWidget::DockWidgetFeatures flags = QDockWidget::NoDockWidgetFeatures;
+
+	if (ui->actionAllowfloat->isChecked())
+		flags |= QDockWidget::DockWidgetFloatable;
+
+	if (ui->actionAllowmove->isChecked())
+		flags |= QDockWidget::DockWidgetMovable;
+
+	if (ui->actionAllowclose->isChecked())
+		flags |= QDockWidget::DockWidgetClosable;
+
+	if (ui->actionLockdocks->isChecked())
+		flags = QDockWidget::NoDockWidgetFeatures;
+
+	for (const auto& w : this->children())
+	{
+		if (auto d = dynamic_cast<QDockWidget*>(w))
+		{
+			d->setFeatures(flags);
+		}
+		else if (auto b = dynamic_cast<QToolBar*>(w))
+		{
+			b->setFloatable(ui->actionAllowfloat->isChecked() &&
+						 !ui->actionLockdocks->isChecked());
+			b->setMovable(ui->actionAllowmove->isChecked() &&
+					    !ui->actionLockdocks->isChecked());
+		}
+	}
 }
 
 void MainWindow::jobChanged(int Index)

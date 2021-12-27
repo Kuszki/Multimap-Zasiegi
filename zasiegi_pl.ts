@@ -193,13 +193,13 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
 <context>
     <name>ImageDock</name>
     <message>
-        <location filename="imagedock.cpp" line="137"/>
-        <location filename="imagedock.cpp" line="167"/>
+        <location filename="imagedock.cpp" line="139"/>
+        <location filename="imagedock.cpp" line="169"/>
         <source>Unable to load image</source>
         <translation>Nie udało się wczytać obrazu</translation>
     </message>
     <message>
-        <location filename="imagedock.cpp" line="286"/>
+        <location filename="imagedock.cpp" line="288"/>
         <source>Select document</source>
         <translation>Wybierz dokument</translation>
     </message>
@@ -396,13 +396,13 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
     </message>
     <message>
         <location filename="mainwindow.ui" line="61"/>
-        <location filename="mainwindow.ui" line="122"/>
+        <location filename="mainwindow.ui" line="133"/>
         <source>Help</source>
         <translation>Pomoc</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="67"/>
-        <location filename="mainwindow.ui" line="101"/>
+        <location filename="mainwindow.ui" line="112"/>
         <source>View</source>
         <oldsource>&amp;View</oldsource>
         <translation>Widok</translation>
@@ -414,208 +414,233 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="137"/>
+        <location filename="mainwindow.ui" line="96"/>
+        <source>Docks</source>
+        <translation>Doki</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="148"/>
         <source>Actions</source>
         <translation>Akcje</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="156"/>
+        <location filename="mainwindow.ui" line="167"/>
         <location filename="mainwindow.cpp" line="50"/>
         <source>Changes</source>
         <translation>Zmiany</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="174"/>
+        <location filename="mainwindow.ui" line="185"/>
         <source>Scan directory</source>
         <oldsource>&amp;Scan directory</oldsource>
         <translation>Skanuj katalog</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="183"/>
+        <location filename="mainwindow.ui" line="194"/>
         <source>Exit</source>
         <oldsource>&amp;Exit</oldsource>
         <translation>Zakończ</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="192"/>
+        <location filename="mainwindow.ui" line="203"/>
         <source>About</source>
         <oldsource>&amp;About</oldsource>
         <translation>O programie</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="195"/>
+        <location filename="mainwindow.ui" line="206"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="204"/>
+        <location filename="mainwindow.ui" line="215"/>
         <source>Zoom in</source>
         <oldsource>&amp;Zoom in</oldsource>
         <translation>Przybliż</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="207"/>
+        <location filename="mainwindow.ui" line="218"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="216"/>
+        <location filename="mainwindow.ui" line="227"/>
         <source>Zoom out</source>
         <oldsource>Zoo&amp;m out</oldsource>
         <translation>Oddal</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="219"/>
+        <location filename="mainwindow.ui" line="230"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="228"/>
+        <location filename="mainwindow.ui" line="239"/>
         <source>Fit to screen</source>
         <oldsource>&amp;Fit to screen</oldsource>
         <translation>Dopasuj do okna</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="237"/>
+        <location filename="mainwindow.ui" line="248"/>
         <source>Original size</source>
         <oldsource>&amp;Original size</oldsource>
         <translation>Rozmiar oryginalny</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="246"/>
+        <location filename="mainwindow.ui" line="257"/>
         <source>Update roles</source>
         <oldsource>&amp;Update roles</oldsource>
         <translation>Aktualizuj dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="255"/>
+        <location filename="mainwindow.ui" line="266"/>
         <source>Next document</source>
         <oldsource>&amp;Next document</oldsource>
         <translation>Następny dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="258"/>
+        <location filename="mainwindow.ui" line="269"/>
         <source>Ctrl+Right</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="267"/>
+        <location filename="mainwindow.ui" line="278"/>
         <source>Previous document</source>
         <oldsource>&amp;Previous document</oldsource>
         <translation>Poprzedni dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="270"/>
+        <location filename="mainwindow.ui" line="281"/>
         <source>Ctrl+Left</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="279"/>
+        <location filename="mainwindow.ui" line="290"/>
         <source>Lock</source>
         <oldsource>&amp;Lock</oldsource>
         <translation>Zablokuj dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="282"/>
+        <location filename="mainwindow.ui" line="293"/>
         <source>Ctrl+E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="291"/>
+        <location filename="mainwindow.ui" line="302"/>
         <source>Save</source>
         <oldsource>&amp;Save</oldsource>
         <translation>Zapisz</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="294"/>
+        <location filename="mainwindow.ui" line="305"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="303"/>
+        <location filename="mainwindow.ui" line="314"/>
         <source>Preferences</source>
         <oldsource>&amp;Preferences</oldsource>
         <translation>Preferencje</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="312"/>
+        <location filename="mainwindow.ui" line="323"/>
         <source>Rotate left</source>
         <oldsource>&amp;Rotate left</oldsource>
         <translation>Obróć w lewo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="321"/>
+        <location filename="mainwindow.ui" line="332"/>
         <source>Rotate right</source>
         <oldsource>Ro&amp;tate right</oldsource>
         <translation>Obróć w prawo</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="330"/>
+        <location filename="mainwindow.ui" line="341"/>
         <source>Add change</source>
         <oldsource>&amp;Add change</oldsource>
         <translation>Dodaj grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="333"/>
+        <location filename="mainwindow.ui" line="344"/>
         <source>Ctrl++</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="342"/>
+        <location filename="mainwindow.ui" line="353"/>
         <source>Remove change</source>
         <oldsource>&amp;Remove change</oldsource>
         <translation>Usuń grupę zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="345"/>
+        <location filename="mainwindow.ui" line="356"/>
         <source>Ctrl+-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="354"/>
+        <location filename="mainwindow.ui" line="365"/>
         <source>Undo change</source>
         <oldsource>&amp;Undo change</oldsource>
         <translation>Cofnij zmiany grupy</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="363"/>
+        <location filename="mainwindow.ui" line="374"/>
         <source>Lock next job</source>
         <translation>Zablokuj kolejne operaty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="366"/>
+        <location filename="mainwindow.ui" line="377"/>
         <source>Ctrl+Return</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="375"/>
+        <location filename="mainwindow.ui" line="386"/>
         <source>Unlock</source>
         <translation>Odblokuj dokument</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="378"/>
+        <location filename="mainwindow.ui" line="389"/>
         <source>Ctrl+D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="387"/>
+        <location filename="mainwindow.ui" line="398"/>
         <source>Import documents</source>
         <translation>Importuj dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="405"/>
+        <location filename="mainwindow.ui" line="416"/>
         <source>Open File</source>
         <translation>Otwórz plik</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="414"/>
+        <location filename="mainwindow.ui" line="425"/>
         <source>Open Folder</source>
         <translation>Otwórz folder</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="423"/>
+        <location filename="mainwindow.ui" line="434"/>
         <source>Import</source>
         <translation>Importuj</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="446"/>
+        <source>Allow close</source>
+        <translation>Zezwalaj na zamykanie</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="458"/>
+        <source>Lock docks</source>
+        <translation>Zablokuj doki</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="470"/>
+        <source>Allow float</source>
+        <translation>Zezwalaj na odczepianie</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="482"/>
+        <source>Allow move</source>
+        <translation>Zezwalaj na przemieszczanie</translation>
     </message>
     <message>
         <source>Save rotation</source>
@@ -626,7 +651,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Importuj dane</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="396"/>
+        <location filename="mainwindow.ui" line="407"/>
         <source>Export</source>
         <translation>Eksportuj</translation>
     </message>
@@ -651,22 +676,22 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation>Dokumenty</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="465"/>
+        <location filename="mainwindow.cpp" line="481"/>
         <source>Select source file</source>
         <translation>Wybierz plik źródłowy</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="524"/>
+        <location filename="mainwindow.cpp" line="540"/>
         <source>Select save file</source>
         <translation>Wybierz plik do eksportu</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="683"/>
+        <location filename="mainwindow.cpp" line="699"/>
         <source>Saving changes</source>
         <translation>Zapisywanie zmian</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="770"/>
+        <location filename="mainwindow.cpp" line="786"/>
         <source>Unlocking document</source>
         <translation>Odblokowanie dokumentu</translation>
     </message>
@@ -675,7 +700,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Niezapisane zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="683"/>
+        <location filename="mainwindow.cpp" line="699"/>
         <source>There are %n unsaved changes(s) due incomplete data.</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana, posiadająca niekompletne dane.</numerusform>
@@ -688,7 +713,7 @@ Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on użyteczny �
         <translation type="vanished">Lokalne zmiany</translation>
     </message>
     <message numerus="yes">
-        <location filename="mainwindow.cpp" line="771"/>
+        <location filename="mainwindow.cpp" line="787"/>
         <source>There are %n unsaved changes(s).</source>
         <translation>
             <numerusform>Istnieje jedna niezapisana zmiana.</numerusform>

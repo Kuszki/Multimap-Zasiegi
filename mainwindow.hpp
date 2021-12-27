@@ -124,6 +124,8 @@ class MainWindow : public QMainWindow
 		void changeDelClicked(void);
 		void changeUndoClicked(void);
 
+		void dockOptionsChanged(void);
+
 		void jobChanged(int Index);
 		void documentChanged(int Index);
 
