@@ -489,7 +489,7 @@ void MainWindow::importClicked(void)
 	{
 		const QStringList Row = Stream.readLine().split('\t');
 
-		if (Row.size() != 3) continue;
+		if (Row.size() < 1) continue;
 		const QString& Jobname = Row[0];
 
 		if (!Docs.contains(Jobname)) continue;
@@ -497,8 +497,8 @@ void MainWindow::importClicked(void)
 
 		QMap<int, DATA> Hash;
 
-		Splitter(Hash, Row[1].split('#'), false);
-		Splitter(Hash, Row[2].split('#'), true);
+		Splitter(Hash, Row.value(1).split('#'), false);
+		Splitter(Hash, Row.value(2).split('#'), true);
 
 		for (const auto& D : Hash)
 		{
